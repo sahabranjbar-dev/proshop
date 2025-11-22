@@ -79,9 +79,9 @@ function Button({
         </>
       ) : (
         <>
-          {leftIcon}
-          {children}
           {rightIcon}
+          {children}
+          {leftIcon}
         </>
       )}
     </Comp>

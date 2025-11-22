@@ -11,7 +11,7 @@ function Input({
   ...props
 }: React.ComponentProps<"input">) {
   return (
-    <div className="relative inline-block w-fit max-w-fit">
+    <div className="relative inline-block w-full">
       <input
         type={type}
         data-slot="input"

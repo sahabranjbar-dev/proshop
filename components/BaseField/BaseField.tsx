@@ -10,6 +10,7 @@ const BaseField = ({
   validate,
   loading,
   disabled,
+  className,
   ...res
 }: IBaseField) => {
   const { control } = useFormContext();
@@ -24,17 +25,24 @@ const BaseField = ({
       }}
       render={({ field, formState }) => {
         return (
-          <div>
-            <label htmlFor={name}>
-              {label} {required && <span className=" text-red-500">{"*"}</span>}
-            </label>
+          <div className="flex flex-col justify-between items-start gap-2">
+            {label && (
+              <label htmlFor={name}>
+                {label}{" "}
+                {required && <span className=" text-red-500">{"*"}</span>}
+              </label>
+            )}
             <Input
               {...field}
               {...res}
               id={name}
-              className={cn("border", {
-                "border-red-500": formState.errors[name],
-              })}
+              className={cn(
+                "border",
+                {
+                  "border-red-500": formState.errors[name],
+                },
+                className
+              )}
               disabled={
                 (typeof disabled === "boolean"
                   ? disabled
@@ -43,7 +51,16 @@ const BaseField = ({
               data-loading={loading ? true : false}
             />
             <span className="text-red-500 text-xs">
-              {formState.errors[name]?.message as string}
+              {formState.errors[name] && (
+                <>
+                  {formState.errors[name]?.message}
+                  {/* اگر چند خطا باشه (مثل superRefine یا refine چندتایی) */}
+                  {formState.errors[name]?.type === "manual" &&
+                    (formState.errors[name] as any)?.messages?.map(
+                      (msg: string, i: number) => <div key={i}>{msg}</div>
+                    )}
+                </>
+              )}
             </span>
           </div>
         );

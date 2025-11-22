@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 import { clsx } from "clsx";
+import QueryClientWrapper from "@/container/QueryClientWrapper/QueryClientWrapper";
+import { Toaster } from "@/components/ui/sonner";
 
 const iranSansFont = localFont({
   src: [
@@ -34,7 +36,11 @@ export default function RootLayout({
         className={clsx("antialiased", iranSansFont.className)}
         style={iranSansFont.style}
       >
-        {children}
+        <QueryClientWrapper>{children}</QueryClientWrapper>
+        <Toaster
+          style={iranSansFont.style}
+          className={iranSansFont.className}
+        />
       </body>
     </html>
   );

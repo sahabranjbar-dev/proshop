@@ -1,20 +1,34 @@
 import * as zod from "zod";
 
-export const convertToEnglishDigits = (str: string) => {
-  return str
-    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
-    .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)));
+// نقشه‌ی تبدیل ارقام فارسی و عربی به انگلیسی
+const FARSI_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
+const ARABIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
+
+// تبدیل‌کننده‌ی واحد
+export const convertToEnglishDigits = (input: string): string => {
+  return input.replace(/[۰-۹٠-٩]/g, (char) => {
+    const fIndex = FARSI_DIGITS.indexOf(char);
+    if (fIndex !== -1) return String(fIndex);
+
+    const aIndex = ARABIC_DIGITS.indexOf(char);
+    if (aIndex !== -1) return String(aIndex);
+
+    return char;
+  });
 };
 
-export const mobileValidation = () => {
-  const schema = zod.object({
+// اسکیما با خوانایی بهتر
+export const mobileValidation = () =>
+  zod.object({
     phone: zod
-      .string({
-        error: "شماره موبایل الزامی است.",
-      })
-      .min(11, { message: "شماره موبایل باید ۱۱ رقم باشد." })
-      .max(11, { message: "شماره موبایل باید ۱۱ رقم باشد." })
-      .regex(/^09[0-9]{9}$/, { message: "فرمت شماره موبایل صحیح نیست." }),
+      .string()
+      .trim()
+      .transform(convertToEnglishDigits)
+      .pipe(
+        zod
+          .string()
+          .min(1, "شماره موبایل الزامی است.")
+          .length(11, "شماره موبایل باید دقیقاً ۱۱ رقم باشد.")
+          .regex(/^09\d{9}$/, "شماره موبایل باید با ۰۹ شروع شود.")
+      ),
   });
-  return schema;
-};
