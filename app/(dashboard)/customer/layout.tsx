@@ -11,10 +11,8 @@ export default function CustomerLayout({ children }: { children: ReactNode }) {
       </aside>
 
       <main className="flex-1">
-        <header className="h-16 border-b flex items-center px-4">
-          {/* Header */}
-          <CustomerHeader />
-        </header>
+        {/* Header */}
+        <CustomerHeader />
 
         <div className="p-6">{children}</div>
       </main>

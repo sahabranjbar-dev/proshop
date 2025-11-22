@@ -3,16 +3,16 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useMutation, useMutationState } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { signIn, useSession } from "next-auth/react";
+import { Loader2, PenLine, RotateCcw, ShieldCheck } from "lucide-react";
+import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { LoginFormType } from "./LoginForm";
-import { Loader2, PenLine, ShieldCheck, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import { LoginFormType } from "./LoginForm";
 import TimerToResendCode from "./TimerToResendCode";
-import { useRouter } from "next/navigation";
 
 interface IVerifyForm {
   setLoginFormType: Dispatch<SetStateAction<LoginFormType>>;
@@ -20,10 +20,9 @@ interface IVerifyForm {
 }
 
 const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
-  const session = useSession();
   const router = useRouter();
 
-  const { mutateAsync, isPending, data } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: async (code: string) => {
       const response = await signIn("credentials", {
         redirect: false,
@@ -33,15 +32,14 @@ const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
       return response;
     },
     mutationKey: ["verify-otp"],
-    onSuccess(data) {
+    async onSuccess(data) {
       if (data?.ok) {
+        const session = await getSession();
         toast("با موفقیت وارد شدید");
-        if (session.data?.user.role === "ADMIN") {
+        if (session?.user.role === "ADMIN") {
           router.push("/admin");
-        } else if (session.data?.user.role === "USER") {
+        } else if (session?.user.role === "USER") {
           router.push("/customer");
-        } else {
-          session.update();
         }
       } else {
         toast(data?.error);
@@ -55,6 +53,7 @@ const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
     mutateAsync(data.otp);
   };
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const otpValue = watch("otp");
 
   const changeNumberHandler = () => {
