@@ -2,19 +2,28 @@
 
 import * as React from "react";
 import { cn } from "../../lib/utils";
+import { useList } from "../../container/ListContainer/ListContainer";
 import { Skeleton } from "./skeleton";
-import { AlertTriangle } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDownNarrowWide,
+  ArrowUpNarrowWide,
+} from "lucide-react";
+import PaginationWrapper from "../Pagination/Pagination";
 import { ITable, ITableColumns } from "@/types/Table";
 
 function Table({
   className,
   columns,
-  data,
-  loading,
-  error,
-  fetch,
 }: ITable & Omit<React.ComponentProps<"table">, "loading">) {
-  const listData = data;
+  const { data, loading, error, fetch, onSort, sortDirection, sortField } =
+    useList();
+
+  const listData = data?.resultList;
+
+  const handleSort = (field: string) => {
+    onSort(field);
+  };
 
   const renderCellContent = (
     column: ITableColumns,
@@ -97,16 +106,28 @@ function Table({
         >
           <TableHeader>
             <TableRow className="bg-muted/30">
-              {columns.map((column) => (
+              {columns.map(({ field, title, sortable = true, width }) => (
                 <TableHead
-                  key={column.field}
+                  key={field}
                   className="text-center px-2 py-3 whitespace-nowrap font-semibold text-gray-800"
                   style={{
-                    width: column.width || "auto",
-                    minWidth: column.width || "100px", // مهم: minWidth
+                    width: width || "auto",
+                    minWidth: width || "100px", // مهم: minWidth
                   }}
+                  onClick={() => sortable && handleSort(field)}
                 >
-                  {column.title}
+                  <div className="flex justify-center items-center gap-2 cursor-pointer select-none">
+                    {title}
+                    {sortable && sortField === field && (
+                      <span>
+                        {sortDirection === "asc" ? (
+                          <ArrowUpNarrowWide size={16} />
+                        ) : (
+                          <ArrowDownNarrowWide size={16} />
+                        )}
+                      </span>
+                    )}
+                  </div>
                 </TableHead>
               ))}
             </TableRow>
@@ -143,19 +164,15 @@ function Table({
                   colSpan={columns.length}
                   className="flex justify-between items-center"
                 >
-                  {/* <PaginationWrapper
+                  <PaginationWrapper
                     loading={loading ?? true}
                     currentPage={data?.page}
                     totalCount={data?.totalItems}
                     totalPages={data?.totalPages}
                     onPageChange={(page) => {
-                      fetch?.({
-                        inputParams: {
-                          page,
-                        },
-                      });
+                      console.log({ page });
                     }}
-                  /> */}
+                  />
                 </TableCell>
               </TableRow>
             </TableFooter>

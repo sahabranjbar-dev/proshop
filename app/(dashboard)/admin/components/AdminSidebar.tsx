@@ -1,25 +1,127 @@
-import React from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { authOptions } from "@/lib/authOptions";
 
-const menu = [
-  { title: "داشبورد", href: "/admin" },
-  { title: "محصولات", href: "/admin/products" },
-  { title: "سفارش‌ها", href: "/admin/orders" },
-  { title: "کاربران", href: "/admin/users" },
+import {
+  ChartColumnStacked,
+  ChevronUp,
+  Home,
+  ShieldBan,
+  ShoppingCart,
+  Store,
+  User2,
+  Users,
+} from "lucide-react";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
+
+const items = [
+  {
+    title: "داشبورد",
+    url: "",
+    icon: Home,
+  },
+  {
+    title: "کاربران",
+    url: "/users",
+    icon: Users,
+  },
+  {
+    title: "محصولات",
+    url: "/products",
+    icon: Store,
+  },
+  {
+    title: "دسته‌بندی‌ها",
+    url: "/categories",
+    icon: ChartColumnStacked,
+  },
+  {
+    title: "سفارش‌ها",
+    url: "/orders",
+    icon: ShoppingCart,
+  },
+  {
+    title: "نقش‌ها و دسترسی‌ها",
+    url: "/roles",
+    icon: ShieldBan,
+  },
 ];
 
-const AdminSidebar = () => {
+const AdminSidebar = async () => {
+  const session = await getServerSession(authOptions);
+
   return (
-    <nav className="p-4 space-y-2">
-      {menu.map((item) => (
-        <a
-          key={item.href}
-          href={item.href}
-          className="block px-3 py-2 rounded hover:bg-gray-100"
-        >
-          {item.title}
-        </a>
-      ))}
-    </nav>
+    <Sidebar side="right">
+      <SidebarHeader />
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>داشبورد ادمین</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link href={`/admin${item.url}`}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton>
+                  <User2 />{" "}
+                  {session?.user.name ||
+                    session?.user.phone ||
+                    session?.user.email ||
+                    "کاربر میهمان"}
+                  <ChevronUp className="mr-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                className="w-[--radix-popper-anchor-width] bg-white p-4"
+              >
+                <DropdownMenuItem>
+                  <span>Account</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <span>Billing</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
   );
 };
 

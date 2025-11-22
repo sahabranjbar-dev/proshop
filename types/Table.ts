@@ -11,5 +11,6 @@ export interface ITableColumns<T = any> {
   title: string;
   width?: string;
   hasDateFormatter?: boolean;
+  sortable?: boolean;
   render?: (value: any, item: T, rowMeta: { index: number }) => React.ReactNode;
 }

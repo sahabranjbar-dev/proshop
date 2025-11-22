@@ -30,7 +30,6 @@ const SendCodeForm = ({
 
   const handleSubmit = async (data: IFormValue) => {
     await mutateAsync(data.phone).then((data: any) => {
-      console.log(data);
       if (data.success) {
         setLoginFormType("verify");
         setMobile(data.mobile);
