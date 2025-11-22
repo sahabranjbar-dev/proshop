@@ -37,9 +37,11 @@ const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
       if (data?.ok) {
         toast("با موفقیت وارد شدید");
         if (session.data?.user.role === "ADMIN") {
-          router.push("/dashboard/admin");
+          router.push("/admin");
+        } else if (session.data?.user.role === "USER") {
+          router.push("/customer");
         } else {
-          router.push("/dashboard/customer");
+          session.update();
         }
       } else {
         toast(data?.error);

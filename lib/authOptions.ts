@@ -6,18 +6,27 @@ import Credentials from "next-auth/providers/credentials";
 
 declare module "next-auth" {
   interface User {
-    role?: string;
+    id: string;
+    role: string;
+    phone: string;
+    userId: string;
   }
   interface Session {
     user: {
-      role?: string;
+      id: string;
+      role: string;
+      phone: string;
+      userId: string;
     } & DefaultSession["user"];
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    role?: string;
+    id: string;
+    role: string;
+    phone: string;
+    userId: string;
   }
 }
 
@@ -58,7 +67,13 @@ export const authOptions: AuthOptions = {
           create: { phone },
         });
 
-        return user;
+        // ✅ برگرداندن object درست برای JWT و Session
+        return {
+          id: user.id, // حتما id باشه
+          userId: user.id, // می‌تونه اضافه هم باشه
+          phone: user.phone ?? "",
+          role: user.role,
+        };
       },
     }),
   ],
@@ -66,13 +81,19 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id; // حتما id رو بذار
+        token.userId = user.userId; // برای استفاده داخلی
+        token.phone = user.phone;
         token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session?.user) {
-        session.user.role = token.role as string;
+      if (session.user) {
+        session.user.id = token.id; // مهم: id اضافه کن
+        session.user.userId = token.userId; // برای استفاده داخلی
+        session.user.phone = token.phone;
+        session.user.role = token.role;
       }
       return session;
     },
