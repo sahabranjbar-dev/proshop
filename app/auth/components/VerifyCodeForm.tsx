@@ -5,13 +5,14 @@ import {
 } from "@/components/ui/input-otp";
 import { useMutation, useMutationState } from "@tanstack/react-query";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { Dispatch, SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { LoginFormType } from "./LoginForm";
 import { Loader2, PenLine, ShieldCheck, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import TimerToResendCode from "./TimerToResendCode";
+import { useRouter } from "next/navigation";
 
 interface IVerifyForm {
   setLoginFormType: Dispatch<SetStateAction<LoginFormType>>;
@@ -19,6 +20,9 @@ interface IVerifyForm {
 }
 
 const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
+  const session = useSession();
+  const router = useRouter();
+
   const { mutateAsync, isPending, data } = useMutation({
     mutationFn: async (code: string) => {
       const response = await signIn("credentials", {
@@ -29,8 +33,17 @@ const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
       return response;
     },
     mutationKey: ["verify-otp"],
-    onSuccess(data, variables, onMutateResult, context) {
-      toast(data?.error);
+    onSuccess(data) {
+      if (data?.ok) {
+        toast("با موفقیت وارد شدید");
+        if (session.data?.user.role === "ADMIN") {
+          router.push("/dashboard/admin");
+        } else {
+          router.push("/dashboard/customer");
+        }
+      } else {
+        toast(data?.error);
+      }
     },
   });
 

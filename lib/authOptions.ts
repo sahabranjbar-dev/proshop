@@ -1,8 +1,25 @@
 import { convertToEnglishDigits } from "@/utils/common";
 import prisma from "@/utils/prisma";
 import bcrypt from "bcryptjs";
-import { AuthOptions } from "next-auth";
+import { AuthOptions, DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+
+declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
+  interface Session {
+    user: {
+      role?: string;
+    } & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string;
+  }
+}
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -46,4 +63,18 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: { strategy: "jwt" },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.role = token.role as string;
+      }
+      return session;
+    },
+  },
 };
