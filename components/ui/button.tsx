@@ -50,6 +50,7 @@ function Button({
   loading,
   loadingText,
   leftIcon,
+  disabled,
   rightIcon,
   ...props
 }: React.ComponentProps<"button"> &
@@ -70,6 +71,7 @@ function Button({
         buttonVariants({ variant, size, className }),
         loading && "cursor-wait"
       )}
+      disabled={disabled || loading}
       {...props}
     >
       {loading ? (

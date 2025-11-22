@@ -5,4 +5,5 @@ export interface IBaseField
   required?: boolean;
   validate?: (value: any) => string | boolean;
   loading?: boolean;
+  component: any;
 }

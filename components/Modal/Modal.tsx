@@ -1,16 +1,18 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { DialogTrigger } from "@radix-ui/react-dialog";
+import { JSX } from "react";
 
-interface AppModalProps {
+interface ModalProps {
   open: boolean;
   onClose: () => void;
   title?: string;
@@ -21,9 +23,10 @@ interface AppModalProps {
   onAction?: () => void;
   hideActions?: boolean;
   width?: string;
+  modalTrigger: JSX.Element;
 }
 
-export function AppModal({
+export function Modal({
   open,
   onClose,
   title,
@@ -34,9 +37,11 @@ export function AppModal({
   onAction,
   hideActions,
   width = "max-w-lg",
-}: AppModalProps) {
+  modalTrigger: ModalTrigger,
+}: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
+      <DialogTrigger>{ModalTrigger}</DialogTrigger>
       <DialogContent className={width}>
         {title && (
           <DialogHeader className="m-4">

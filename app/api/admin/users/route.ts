@@ -1,8 +1,20 @@
+import { authOptions } from "@/lib/authOptions";
+import { Role } from "@/types/common";
+import { isRequestByAdmin, ServerError } from "@/utils/errors";
 import prisma from "@/utils/prisma";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import z from "zod";
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+
+    const isAdmin = session?.user.role === Role.ADMIN;
+
+    if (!isAdmin) {
+      return NextResponse.json({ error: "not Allowed" }, { status: 403 });
+    }
     const { searchParams } = new URL(request.url);
 
     // گرفتن فیلترها
@@ -98,5 +110,87 @@ export async function GET(request: NextRequest) {
       { message: "خطا در دریافت کاربران." },
       { status: 500 }
     );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    const isAdmin = session?.user.role === Role.ADMIN;
+
+    if (!isAdmin) {
+      return NextResponse.json({ error: "not Allowed" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(request.url);
+
+    // گرفتن فیلترها
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "id is required" }, { status: 401 });
+    }
+
+    await prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return ServerError();
+  }
+}
+
+const putSchema = z.object({
+  id: z.string({
+    error: "آیدی الزامی است",
+  }),
+  email: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  phone: z.string({
+    error: "موبایل الزامی است",
+  }),
+  role: z.enum([Role.ADMIN, Role.USER], {
+    error: "نقش الزامی است",
+  }),
+});
+
+export async function PUT(request: NextRequest) {
+  try {
+    const isAdmin = await isRequestByAdmin();
+
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Not allowed" }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const parsedBody = putSchema.safeParse(body);
+
+    if (!parsedBody.success) {
+      return NextResponse.json(
+        { error: parsedBody.error.message },
+        { status: 400 }
+      );
+    }
+
+    const { id, email, firstName, lastName, phone, role } = parsedBody.data;
+
+    const user = await prisma.user.update({
+      where: { id },
+      data: { email, firstName, lastName, phone, role },
+    });
+
+    return NextResponse.json(
+      { success: true, user, message: "عملیات با موفقیت انجام شد" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return ServerError();
   }
 }

@@ -1,7 +1,7 @@
-import { Controller, useFormContext } from "react-hook-form";
-import { Input } from "../ui/input";
-import { IBaseField } from "./meta/types";
+"use client";
 import { cn } from "@/lib/utils";
+import { Controller, useFormContext } from "react-hook-form";
+import { IBaseField } from "./meta/types";
 
 const BaseField = ({
   name,
@@ -11,6 +11,7 @@ const BaseField = ({
   loading,
   disabled,
   className,
+  component: Compo,
   ...res
 }: IBaseField) => {
   const { control } = useFormContext();
@@ -32,7 +33,7 @@ const BaseField = ({
                 {required && <span className=" text-red-500">{"*"}</span>}
               </label>
             )}
-            <Input
+            <Compo
               {...field}
               {...res}
               id={name}

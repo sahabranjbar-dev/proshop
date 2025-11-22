@@ -46,6 +46,10 @@ export default async function RootLayout({
         <Toaster
           style={iranSansFont.style}
           className={iranSansFont.className}
+          visibleToasts={10}
+          closeButton
+          richColors
+          theme="light"
         />
       </body>
     </html>

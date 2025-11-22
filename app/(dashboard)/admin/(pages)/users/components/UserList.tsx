@@ -1,8 +1,9 @@
 "use client";
+import ListAcionButtons from "@/components/ListAcionButtons/ListAcionButtons";
 import { Table } from "@/components/ui/table";
 import ListDataProvider from "@/container/ListDataProvider/ListDataProvider";
 import { ITableColumns } from "@/types/Table";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 
 const UserList = () => {
   const columns: ITableColumns[] = useMemo(
@@ -45,6 +46,16 @@ const UserList = () => {
       {
         field: "id",
         title: "عملیات",
+        render: (id) => {
+          return (
+            <ListAcionButtons
+              deleteUrl="/admin/users"
+              id={id}
+              editHref={`/admin/users/${id}`}
+              key={id}
+            />
+          );
+        },
       },
     ],
     []
