@@ -23,7 +23,7 @@ const UserList = () => {
       },
       {
         field: "phone",
-        title: "تلفن",
+        title: "موبایل",
       },
       {
         field: "email",
@@ -32,6 +32,7 @@ const UserList = () => {
       {
         field: "role",
         title: "نقش",
+        render: (value) => (value === "ADMIN" ? "ادمین" : "کاربر"),
       },
       {
         field: "createdAt",

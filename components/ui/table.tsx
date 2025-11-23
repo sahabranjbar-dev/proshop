@@ -62,7 +62,7 @@ function Table({
       }
     }
 
-    return value ?? "---";
+    return value ? value : "---";
   };
 
   const renderLoadingState = () => (

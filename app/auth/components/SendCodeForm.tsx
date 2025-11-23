@@ -8,6 +8,7 @@ import { ChevronRight, Loader2, ShieldCheck, Smartphone } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { LoginFormType } from "./LoginForm";
 import { useSendOtp } from "../hooks/useSendOtp";
+import { Input } from "@/components/ui/input";
 
 interface IFormValue {
   phone: string;
@@ -68,6 +69,7 @@ const SendCodeForm = ({
                 شماره موبایل
               </label>
               <BaseField
+                component={Input}
                 type="tel"
                 name="phone"
                 className="text-left w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"

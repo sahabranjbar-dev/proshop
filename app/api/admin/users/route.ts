@@ -1,4 +1,5 @@
 import { Role } from "@/types/common";
+import { convertToEnglishDigits } from "@/utils/common";
 import { isRequestByAdmin, ServerError } from "@/utils/errors";
 import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,74 +8,86 @@ import z from "zod";
 export async function GET(request: NextRequest) {
   try {
     const isAdmin = await isRequestByAdmin();
-
     if (!isAdmin) {
       return NextResponse.json({ error: "Not allowed" }, { status: 403 });
     }
+
     const { searchParams } = new URL(request.url);
 
-    // گرفتن فیلترها
-    const firstName = searchParams.get("firstName");
-    const lastName = searchParams.get("lastName");
-    const email = searchParams.get("email");
-    const phone = searchParams.get("phone");
+    // Filters
+    const firstName = searchParams.get("firstName")?.trim() || "";
+    const lastName = searchParams.get("lastName")?.trim() || "";
+    const email = searchParams.get("email")?.trim() || "";
+    const phone = searchParams.get("phone")?.trim() || "";
     const role = searchParams.get("role") as "ADMIN" | "USER" | undefined;
 
-    // پجینیشن
+    // Pagination
     const page = Number(searchParams.get("page")) || 1;
     const pageSize = Number(searchParams.get("pageSize")) || 10;
 
-    // سورت
-    const sortBy = searchParams.get("sortField") || "createdAt";
-    const sortOrder =
+    // Sorting
+    const sortField = searchParams.get("sortField") || "createdAt";
+    const sortDirection =
       searchParams.get("sortDirection") === "asc" ? "asc" : "desc";
 
-    const filters: any = {
-      OR: [
-        {
-          firstName: {
-            contains: firstName ?? "",
-            mode: "insensitive",
-          },
+    // Build OR filters only if values exist
+    const OR: any[] = [];
+
+    if (firstName) {
+      OR.push({
+        firstName: {
+          contains: firstName,
+          mode: "insensitive",
         },
-        {
-          lastName: {
-            contains: lastName ?? "",
-            mode: "insensitive",
-          },
+      });
+    }
+
+    if (lastName) {
+      OR.push({
+        lastName: {
+          contains: lastName,
+          mode: "insensitive",
         },
-        {
-          email: {
-            contains: email ?? "",
-            mode: "insensitive",
-          },
+      });
+    }
+
+    if (email) {
+      OR.push({
+        email: {
+          contains: email,
+          mode: "insensitive",
         },
-        {
-          phone: {
-            contains: phone ?? "",
-            mode: "insensitive",
-          },
+      });
+    }
+
+    if (phone) {
+      OR.push({
+        phone: {
+          contains: convertToEnglishDigits(phone),
+          mode: "insensitive",
         },
-      ],
+      });
+    }
+
+    // Final where object
+    const where: any = {
+      ...(OR.length > 0 ? { OR } : {}),
+      ...(role ? { role } : {}),
     };
 
-    // گرفتن تعداد کل
+    // Count total items
     const totalItems = await prisma.user.count({
-      where: {
-        ...filters,
-        role: role ? role : undefined,
-      },
+      where,
     });
 
-    // گرفتن دیتا
+    // Fetch paginated result
     const users = await prisma.user.findMany({
-      where: {
-        ...filters,
-        role: role ? role : undefined,
-      },
+      where,
       skip: (page - 1) * pageSize,
       take: pageSize,
-      orderBy: { [sortBy]: sortOrder },
+      orderBy: {
+        [sortField]: sortDirection,
+      },
       select: {
         id: true,
         firstName: true,
@@ -87,21 +100,25 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const usersData = users.map((user, index) => ({
+    // Add row number and full name
+    const resultList = users.map((user, index) => ({
       ...user,
       rowNumber: (page - 1) * pageSize + index + 1,
       fullName: [user.firstName, user.lastName].filter(Boolean).join(" "),
     }));
 
-    return NextResponse.json({
-      resultList: usersData,
-      totalItems,
-      page,
-      pageSize,
-      totalPages: Math.ceil(totalItems / pageSize),
-    });
+    return NextResponse.json(
+      {
+        resultList,
+        totalItems,
+        page,
+        pageSize,
+        totalPages: Math.ceil(totalItems / pageSize),
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("❌ Error in GET /dashboard/user:", error);
+    console.error("❌ Error in GET /admin/users:", error);
     return NextResponse.json(
       { message: "خطا در دریافت کاربران." },
       { status: 500 }

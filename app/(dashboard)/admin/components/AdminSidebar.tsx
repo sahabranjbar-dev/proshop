@@ -18,51 +18,9 @@ import {
 } from "@/components/ui/sidebar";
 import { authOptions } from "@/lib/authOptions";
 
-import {
-  ChartColumnStacked,
-  ChevronUp,
-  Home,
-  ShieldBan,
-  ShoppingCart,
-  Store,
-  User2,
-  Users,
-} from "lucide-react";
+import { ChevronUp, User2 } from "lucide-react";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
-
-const items = [
-  {
-    title: "داشبورد",
-    url: "",
-    icon: Home,
-  },
-  {
-    title: "کاربران",
-    url: "/users",
-    icon: Users,
-  },
-  {
-    title: "محصولات",
-    url: "/products",
-    icon: Store,
-  },
-  {
-    title: "دسته‌بندی‌ها",
-    url: "/categories",
-    icon: ChartColumnStacked,
-  },
-  {
-    title: "سفارش‌ها",
-    url: "/orders",
-    icon: ShoppingCart,
-  },
-  {
-    title: "نقش‌ها و دسترسی‌ها",
-    url: "/roles",
-    icon: ShieldBan,
-  },
-];
+import SideBarItem from "./SideBarItem";
 
 const AdminSidebar = async () => {
   const session = await getServerSession(authOptions);
@@ -74,18 +32,7 @@ const AdminSidebar = async () => {
         <SidebarGroup>
           <SidebarGroupLabel>داشبورد ادمین</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={`/admin${item.url}`}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <SideBarItem />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

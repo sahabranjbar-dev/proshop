@@ -16,7 +16,7 @@ export async function GET() {
 
     const roleMap: Record<Role, { englishTitle: string; farsiTitle: string }> =
       {
-        [Role.ADMIN]: { englishTitle: "ADMIN", farsiTitle: "مدیر" },
+        [Role.ADMIN]: { englishTitle: "ADMIN", farsiTitle: "ادمین" },
         [Role.USER]: { englishTitle: "USER", farsiTitle: "کاربر" },
       };
 

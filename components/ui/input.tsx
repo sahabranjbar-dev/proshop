@@ -2,15 +2,22 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { ShieldAlert } from "lucide-react";
-import { formatPrice, unFormatPrice } from "@/utils/common";
+import { convertToEnglishDigits } from "@/utils/common";
 
 function Input({
   className,
   type,
   disabled,
   placeholder,
+  formatter,
+  onChange,
+  value,
   ...props
-}: React.ComponentProps<"input">) {
+}: React.ComponentProps<"input"> & {
+  onChange: any;
+  formatter: boolean;
+  value: any;
+}) {
   return (
     <div className="relative inline-block w-full">
       <input
@@ -26,6 +33,22 @@ function Input({
         )}
         disabled={disabled}
         placeholder={disabled ? "" : placeholder}
+        value={
+          value !== null && value !== undefined
+            ? value.toLocaleString("fa")
+            : ""
+        }
+        onChange={(e: any) => {
+          if (!formatter) {
+            onChange(e.target.value);
+            return;
+          }
+          onChange(
+            convertToEnglishDigits(e.target.value)
+              .replace(/[٬,]/g, "")
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          );
+        }}
       />
 
       {disabled && (

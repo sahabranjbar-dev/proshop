@@ -6,7 +6,7 @@ import { IData, IFormValues } from "../meta/type";
 import { Input } from "@/components/ui/input";
 import ComboboxItemDataGetter from "@/container/ComboboxItemDataGetter/ComboboxItemDataGetter";
 import Combobox from "@/components/Combobox/Combobox";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ const UserForm = ({
   phone,
   role,
 }: IFormValues) => {
+  const queryClient = useQueryClient();
   const { mutateAsync } = useMutation({
     mutationFn: async (data: IData) => {
       const response = await api({
@@ -43,7 +44,12 @@ const UserForm = ({
       success: boolean;
       message: string;
     }) => {
-      if (data.success) toast.success(data.message);
+      if (data.success) {
+        toast.success(data.message);
+        queryClient.invalidateQueries({
+          queryKey: ["admin", "users"],
+        });
+      }
     },
   });
   const onSubmit = (data: IFormValues) => {
@@ -66,7 +72,10 @@ const UserForm = ({
       <BaseField component={Input} name="lastName" label="نام خانوادگی" />
       <BaseField component={Input} name="email" label="ایمیل" />
       <BaseField component={Input} name="phone" label="موبایل" required />
-      <ComboboxItemDataGetter queryKey={["user", "role"]} url="/admin/role">
+      <ComboboxItemDataGetter
+        queryKey={["admin", "user-role"]}
+        url="/admin/role"
+      >
         <BaseField
           component={Combobox}
           name="role"
