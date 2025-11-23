@@ -1,19 +1,15 @@
-import { authOptions } from "@/lib/authOptions";
 import { Role } from "@/types/common";
 import { isRequestByAdmin, ServerError } from "@/utils/errors";
 import prisma from "@/utils/prisma";
-import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    const isAdmin = session?.user.role === Role.ADMIN;
+    const isAdmin = await isRequestByAdmin();
 
     if (!isAdmin) {
-      return NextResponse.json({ error: "not Allowed" }, { status: 403 });
+      return NextResponse.json({ error: "Not allowed" }, { status: 403 });
     }
     const { searchParams } = new URL(request.url);
 
@@ -115,12 +111,10 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    const isAdmin = session?.user.role === Role.ADMIN;
+    const isAdmin = await isRequestByAdmin();
 
     if (!isAdmin) {
-      return NextResponse.json({ error: "not Allowed" }, { status: 403 });
+      return NextResponse.json({ error: "Not allowed" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

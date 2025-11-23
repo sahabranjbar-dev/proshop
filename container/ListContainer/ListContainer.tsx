@@ -1,10 +1,10 @@
 "use client";
 
-import { PropsWithChildren, useContext, useState } from "react";
-import { IListContainer, SortDirection } from "./meta/types";
-import { ListContainerContext } from "./context/ListContainerContext";
-import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
+import { PropsWithChildren, useContext, useState } from "react";
+import { ListContainerContext } from "./context/ListContainerContext";
+import { IListContainer } from "./meta/types";
 
 const ListContainer = ({
   children,
@@ -12,13 +12,12 @@ const ListContainer = ({
   params,
   queryKey,
 }: PropsWithChildren<IListContainer>) => {
-  const [sortField, setSortField] = useState<string>("createdAt");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [searchParams, setSearchParams] = useState<any>({});
 
-  const resolvedParams = { ...params, sortField, sortDirection };
+  const resolvedParams = { ...params, ...searchParams };
 
   const { data, error, refetch, isFetching, isLoading } = useQuery({
-    queryKey: [...queryKey, sortField, sortDirection],
+    queryKey: [...queryKey, searchParams],
     queryFn: async () => {
       const response = await api.get(url, {
         params: resolvedParams,
@@ -27,12 +26,6 @@ const ListContainer = ({
     },
   });
 
-  const handleSort = (field: string) => {
-    setSortDirection(
-      sortField === field && sortDirection === "asc" ? "desc" : "asc"
-    );
-    setSortField(field);
-  };
   return (
     <ListContainerContext.Provider
       value={{
@@ -41,9 +34,7 @@ const ListContainer = ({
         loading: isFetching || isLoading,
         fetch: refetch,
         url,
-        onSort: handleSort,
-        sortField: sortField,
-        sortDirection: sortDirection,
+        setSearchParams,
       }}
     >
       {children}

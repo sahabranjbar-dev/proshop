@@ -6,4 +6,5 @@ export interface IBaseField
   validate?: (value: any) => string | boolean;
   loading?: boolean;
   component: any;
+  formatter?: boolean;
 }

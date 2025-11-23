@@ -1,0 +1,37 @@
+import { authOptions } from "@/lib/authOptions";
+import { Role } from "@/types/common";
+import prisma from "@/utils/prisma";
+import { getServerSession } from "next-auth";
+import React from "react";
+import ProductForm from "./components/ProductForm";
+
+const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user.role !== Role.ADMIN) {
+    return "شما دسترسی به این صفحه ندارید";
+  }
+
+  const resolvedParams = await params;
+
+  const { id } = resolvedParams;
+  if (id === "new-product") {
+    return <ProductForm />;
+  }
+
+  const product = await prisma.product.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return (
+    <ProductForm
+      id={product?.id}
+      price={product?.price}
+      title={product?.title}
+    />
+  );
+};
+
+export default ProductPage;

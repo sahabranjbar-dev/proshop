@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Controller, useFormContext } from "react-hook-form";
 import { IBaseField } from "./meta/types";
+import { convertToEnglishDigits } from "@/utils/common";
 
 const BaseField = ({
   name,
@@ -12,6 +13,7 @@ const BaseField = ({
   disabled,
   className,
   component: Compo,
+  formatter = false,
   ...res
 }: IBaseField) => {
   const { control } = useFormContext();
@@ -50,6 +52,22 @@ const BaseField = ({
                   : Boolean(disabled)) || loading
               }
               data-loading={loading ? true : false}
+              value={
+                field.value !== null && field.value !== undefined
+                  ? field.value.toLocaleString("fa")
+                  : ""
+              }
+              onChange={(e: any) => {
+                if (!formatter) {
+                  field.onChange(e.target.value);
+                  return;
+                }
+                field.onChange(
+                  convertToEnglishDigits(e.target.value)
+                    .replace(/[٬,]/g, "")
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                );
+              }}
             />
             <span className="text-red-500 text-xs">
               {formState.errors[name] && (

@@ -32,3 +32,15 @@ export const mobileValidation = () =>
           .regex(/^09\d{9}$/, "شماره موبایل باید با ۰۹ شروع شود.")
       ),
   });
+
+export function formatPrice(value: string) {
+  if (!value) return "";
+  const number = Number(value.replace(/,/g, ""));
+  if (Number.isNaN(number)) return "";
+  return number.toLocaleString("fa-IR");
+}
+
+export function unFormatPrice(value: string) {
+  if (!value) return "";
+  return value.replace(/,/g, "");
+}

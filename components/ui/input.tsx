@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { ShieldAlert } from "lucide-react";
+import { formatPrice, unFormatPrice } from "@/utils/common";
 
 function Input({
   className,
@@ -13,6 +14,7 @@ function Input({
   return (
     <div className="relative inline-block w-full">
       <input
+        {...props}
         type={type}
         data-slot="input"
         className={cn(
@@ -24,7 +26,6 @@ function Input({
         )}
         disabled={disabled}
         placeholder={disabled ? "" : placeholder}
-        {...props}
       />
 
       {disabled && (

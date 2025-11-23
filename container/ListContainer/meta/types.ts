@@ -1,4 +1,5 @@
 import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
+import { Dispatch, SetStateAction } from "react";
 
 export interface IListContainer {
   url: string;
@@ -14,9 +15,7 @@ export interface IListContainerContext<TData = any, TError = any> {
   ) => Promise<QueryObserverResult<TData, TError>>;
   error?: any;
   url?: string;
-  onSort: (field: string) => void;
-  sortField: string;
-  sortDirection: SortDirection;
+  setSearchParams: Dispatch<SetStateAction<any>>;
 }
 
 export type SortDirection = "desc" | "asc";

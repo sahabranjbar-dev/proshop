@@ -1,28 +1,41 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "../../lib/utils";
-import { useList } from "../../container/ListContainer/ListContainer";
-import { Skeleton } from "./skeleton";
+import { ITable, ITableColumns } from "@/types/Table";
 import {
   AlertTriangle,
   ArrowDownNarrowWide,
-  ArrowUpNarrowWide,
+  ArrowDownWideNarrow,
 } from "lucide-react";
+import * as React from "react";
+import { useList } from "../../container/ListContainer/ListContainer";
+import { cn } from "../../lib/utils";
 import PaginationWrapper from "../Pagination/Pagination";
-import { ITable, ITableColumns } from "@/types/Table";
+import { Skeleton } from "./skeleton";
+import clsx from "clsx";
 
 function Table({
   className,
   columns,
 }: ITable & Omit<React.ComponentProps<"table">, "loading">) {
-  const { data, loading, error, fetch, onSort, sortDirection, sortField } =
-    useList();
+  const [sort, setSort] = React.useState<{
+    sortField?: string;
+    sortDirection?: "asc" | "desc";
+  }>({});
+  const { data, loading, error, setSearchParams } = useList();
 
   const listData = data?.resultList;
 
+  React.useEffect(() => {
+    setSearchParams(sort);
+  }, [sort, setSearchParams]);
+
   const handleSort = (field: string) => {
-    onSort(field);
+    if (field === "rowNumber" || field === "id") return;
+
+    setSort((prev) => ({
+      sortField: field,
+      sortDirection: prev.sortDirection === "asc" ? "desc" : "asc",
+    }));
   };
 
   const renderCellContent = (
@@ -116,14 +129,19 @@ function Table({
                   }}
                   onClick={() => sortable && handleSort(field)}
                 >
-                  <div className="flex justify-center items-center gap-2 cursor-pointer select-none">
+                  <div
+                    className={clsx(
+                      "inline-flex justify-center items-center gap-2 select-none",
+                      { "cursor-pointer": sortable }
+                    )}
+                  >
                     {title}
-                    {sortable && sortField === field && (
+                    {sortable && sort.sortField === field && (
                       <span>
-                        {sortDirection === "asc" ? (
-                          <ArrowUpNarrowWide size={16} />
-                        ) : (
+                        {sort.sortDirection === "asc" ? (
                           <ArrowDownNarrowWide size={16} />
+                        ) : (
+                          <ArrowDownWideNarrow size={16} />
                         )}
                       </span>
                     )}
@@ -170,7 +188,9 @@ function Table({
                     totalCount={data?.totalItems}
                     totalPages={data?.totalPages}
                     onPageChange={(page) => {
-                      console.log({ page });
+                      setSearchParams?.({
+                        page: String(page),
+                      });
                     }}
                   />
                 </TableCell>
@@ -271,11 +291,11 @@ function TableCaption({
 
 export {
   Table,
-  TableHeader,
   TableBody,
+  TableCaption,
+  TableCell,
   TableFooter,
   TableHead,
+  TableHeader,
   TableRow,
-  TableCell,
-  TableCaption,
 };
