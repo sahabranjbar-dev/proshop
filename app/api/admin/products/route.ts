@@ -2,6 +2,7 @@ import { isRequestByAdmin, ServerError } from "@/utils/errors";
 import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
+
 export async function GET(request: NextRequest) {
   try {
     const isAdmin = await isRequestByAdmin();
@@ -43,6 +44,20 @@ export async function GET(request: NextRequest) {
       take: pageSize,
       orderBy: { [sortBy]: sortOrder },
       where,
+      select: {
+        id: true,
+        price: true,
+        title: true,
+        createdAt: true,
+        updatedAt: true,
+        files: {
+          select: {
+            id: true,
+            url: true,
+            key: true,
+          },
+        },
+      },
     });
 
     const productsData = products.map((product, index) => ({
@@ -72,10 +87,10 @@ const productSchema = z.object({
     error: "نام محصول اجباری می‌باشد",
   }),
   price: z.number({
-    error: "قیمت اجباری می‌باشد",
+    error: "ثیمت محصول اجباری می‌باشد",
   }),
-  image: z.file().optional(),
 });
+
 export async function POST(request: NextRequest) {
   try {
     const isAdmin = await isRequestByAdmin();
@@ -90,18 +105,16 @@ export async function POST(request: NextRequest) {
 
     if (!parsedBody.success) {
       return NextResponse.json(
-        { error: parsedBody.error.message },
+        { error: parsedBody.error.format() },
         { status: 400 }
       );
     }
 
-    const { image, price, title } = parsedBody.data;
+    const { title, price } = parsedBody.data;
+
+    // سپس محصول را ایجاد می‌کنیم و فایل‌ها را وصل می‌کنیم
     const product = await prisma.product.create({
-      data: {
-        price,
-        title,
-        image: "",
-      },
+      data: { price, title },
     });
 
     return NextResponse.json(
@@ -118,17 +131,6 @@ const productUpdateSchema = z.object({
   id: z.string({
     error: "آیدی اجباری می‌باشد",
   }),
-  title: z.string({
-    error: "نام محصول اجباری می‌باشد",
-  }),
-  price: z
-    .number({
-      error: "قیمت اجباری می‌باشد",
-    })
-    .max(100_000_000, {
-      error: "قیمت نباید بیشتر از ۱۰۰ میلیون باشد",
-    }),
-  image: z.file().optional(),
 });
 export async function PUT(request: NextRequest) {
   try {
@@ -149,13 +151,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { id, price, title } = parsedBody.data;
+    const { id } = parsedBody.data;
     const product = await prisma.product.update({
-      data: {
-        price,
-        title,
-        image: "",
-      },
+      data: {},
       where: {
         id,
       },
@@ -193,7 +191,10 @@ export async function DELETE(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json(
+      { success: true, message: "محصول با موفقیت ویرایش شد" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
     return ServerError();

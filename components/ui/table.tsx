@@ -101,8 +101,10 @@ function Table({
       ))
     ) : (
       <TableRow>
-        <TableCell colSpan={columns.length} className="text-center py-6">
-          <p className="text-gray-500">هیچ داده‌ای برای نمایش وجود ندارد.</p>
+        <TableCell colSpan={columns.length} className=" py-6">
+          <p className="text-gray-500 text-center">
+            هیچ داده‌ای برای نمایش وجود ندارد.
+          </p>
         </TableCell>
       </TableRow>
     );

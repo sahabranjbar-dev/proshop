@@ -1,5 +1,5 @@
 import { authOptions } from "@/lib/authOptions";
-import { Role } from "@/types/common";
+import { IFiles, Role } from "@/types/common";
 import prisma from "@/utils/prisma";
 import { getServerSession } from "next-auth";
 import React from "react";
@@ -23,13 +23,25 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     where: {
       id,
     },
+    select: {
+      files: {
+        where: {
+          productId: id,
+        },
+      },
+      id: true,
+      price: true,
+      title: true,
+    },
   });
+  console.log({ product });
 
   return (
     <ProductForm
       id={product?.id}
       price={product?.price}
       title={product?.title}
+      files={product?.files}
     />
   );
 };

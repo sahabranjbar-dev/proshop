@@ -5,4 +5,6 @@ export interface ICombobox<T = any, D = any> {
   refetch?: () => void;
   onChange?: (value: any) => void;
   value?: any;
+  selectLabel?: string;
+  placeholder?: string;
 }

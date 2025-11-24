@@ -2,21 +2,20 @@
 import BaseField from "@/components/BaseField/BaseField";
 import Form from "@/components/Form/Form";
 import FormButtons from "@/components/FormButtons/FormButtons";
-import { Input } from "@/components/ui/input";
-import { IData, IProductFormValues } from "../meta/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import FileUpload from "@/components/FileUpload/FileUpload";
 
-const ProductForm = ({ id, image, price, title }: IProductFormValues) => {
+const ProductForm = ({ id }: any) => {
   const { replace } = useRouter();
 
   const queryClient = useQueryClient();
 
   const { mutateAsync } = useMutation({
-    mutationFn: async (data: IData) => {
+    mutationFn: async (data: any) => {
       const response = await api({
         method: id ? "PUT" : "POST",
         url: "/admin/products",
@@ -34,13 +33,10 @@ const ProductForm = ({ id, image, price, title }: IProductFormValues) => {
         toast.error(item.message);
       });
     },
-    onSuccess: (data: {
-      product: IProductFormValues;
-      success: boolean;
-      message: string;
-    }) => {
+    onSuccess: (data: { product: any; success: boolean; message: string }) => {
       if (data.success) {
         toast.success(data.message);
+
         queryClient.invalidateQueries({
           queryKey: ["products"],
         });
@@ -49,34 +45,24 @@ const ProductForm = ({ id, image, price, title }: IProductFormValues) => {
       }
     },
   });
-  const onSubmit = (data: IProductFormValues) => {
+
+  const onSubmit = (data: any) => {
+    console.log({ data });
+
     mutateAsync({
-      price: +String(data.price).replace(/,/g, ""),
-      title: data.title,
-      id,
+      ...data,
     });
   };
-  return (
-    <Form<IProductFormValues>
-      className="grid grid-cols-3 gap-4"
-      onSubmit={onSubmit}
-      defaultValues={{
-        id: id ?? "",
-        title: title ?? "",
-        price: price,
-      }}
-    >
-      <BaseField component={Input} name="title" label="نام محصول" required />
-      <BaseField
-        type="text"
-        component={Input}
-        name="price"
-        label="قیمت محصول"
-        required
-        formatter
-      />
 
-      <FormButtons cancelUrl="/admin/products" id={id} />
+  return (
+    <Form className="grid grid-cols-3 gap-4" onSubmit={onSubmit}>
+      <BaseField
+        component={FileUpload}
+        name="title"
+        label="نام محصول"
+        required
+      />
+      <FormButtons cancelUrl="" id="" submitLoading />
     </Form>
   );
 };

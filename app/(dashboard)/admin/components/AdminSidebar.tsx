@@ -21,6 +21,7 @@ import { authOptions } from "@/lib/authOptions";
 import { ChevronUp, User2 } from "lucide-react";
 import { getServerSession } from "next-auth";
 import SideBarItem from "./SideBarItem";
+import SignoutButton from "@/components/SignoutButton/SignoutButton";
 
 const AdminSidebar = async () => {
   const session = await getServerSession(authOptions);
@@ -60,8 +61,8 @@ const AdminSidebar = async () => {
                 <DropdownMenuItem>
                   <span>Billing</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Sign out</span>
+                <DropdownMenuItem asChild>
+                  <SignoutButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
@@ -17,6 +17,8 @@ model User {
   role      Role      @default(USER)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  orders    Order[]
 }
 
 enum Role {
@@ -25,31 +27,63 @@ enum Role {
 }
 
 model Product {
-  id        String    @id @default(cuid())
-  title     String
-  price     Int
-  image     String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  price       Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  files       File[]      @relation("ProductFiles")
+  categories  Category[]  @relation("ProductCategories")
+  orders      Order[]     @relation("OrderProducts")
 }
 
 model Category {
   id        String    @id @default(cuid())
-  name      String
+  name      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  products  Product[] @relation("ProductCategories")
 }
 
 model Order {
   id        String    @id @default(cuid())
+  status    OrderStatus @default(PENDING)
+  total     Int
   userId    String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products  Product[] @relation("OrderProducts")
 }
 
 model OtpCode {
-  phone     String    @id @default(cuid())
+  phone     String    @id
   code      String
   createdAt DateTime  @default(now())
+}
 
+model File {
+  id        String    @id @default(cuid())
+  key       String    @unique
+  url       String
+  name      String?
+  size      Int?
+  type      String?
+  createdAt DateTime  @default(now())
+
+  product   Product?  @relation("ProductFiles", fields: [productId], references: [id], onDelete: Cascade)
+  productId String?
+
+  @@index([productId])
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
 }
