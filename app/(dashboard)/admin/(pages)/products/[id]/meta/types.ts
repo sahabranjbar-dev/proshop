@@ -6,4 +6,5 @@ export interface IData {
   id?: string;
   title?: string;
   price?: number;
+  files?: any;
 }

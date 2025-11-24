@@ -9,9 +9,13 @@ import api from "@/lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import FileUpload from "@/components/FileUpload/FileUpload";
+import Combobox from "@/components/Combobox/Combobox";
+import Image from "next/image";
 
-const ProductForm = ({ id, image, price, title }: IProductFormValues) => {
+const ProductForm = ({ id, files, price, title }: IProductFormValues) => {
   const { replace } = useRouter();
+  console.log({ files });
 
   const queryClient = useQueryClient();
 
@@ -49,13 +53,21 @@ const ProductForm = ({ id, image, price, title }: IProductFormValues) => {
       }
     },
   });
+
+  const onUploaded = (publicUrl: string, fileId: string) => {
+    console.log("in productForm", publicUrl, fileId);
+  };
   const onSubmit = (data: IProductFormValues) => {
+    console.log({ data });
+
     mutateAsync({
       price: +String(data.price).replace(/,/g, ""),
       title: data.title,
       id,
+      files: data.files,
     });
   };
+
   return (
     <Form<IProductFormValues>
       className="grid grid-cols-3 gap-4"
@@ -64,19 +76,55 @@ const ProductForm = ({ id, image, price, title }: IProductFormValues) => {
         id: id ?? "",
         title: title ?? "",
         price: price,
+        files: files,
       }}
     >
-      <BaseField component={Input} name="title" label="نام محصول" required />
-      <BaseField
-        type="text"
-        component={Input}
-        name="price"
-        label="قیمت محصول"
-        required
-        formatter
-      />
+      {({ getValues }) => {
+        const files = getValues("files");
+        return (
+          <>
+            <BaseField
+              component={Input}
+              name="title"
+              label="نام محصول"
+              required
+            />
+            <BaseField
+              type="text"
+              component={Input}
+              name="price"
+              label="قیمت محصول"
+              required
+              formatter
+            />
 
-      <FormButtons cancelUrl="/admin/products" id={id} />
+            <BaseField
+              type="text"
+              component={Combobox}
+              name="category"
+              label="دسته‌بندی محصول"
+            />
+
+            <BaseField
+              component={FileUpload}
+              name="productImage"
+              onUploaded={onUploaded}
+            />
+
+            {files.map((item) => (
+              <div key={item?.id}>
+                <Image
+                  src={item?.url}
+                  alt={`product-image-${item?.key}`}
+                  width={100}
+                  height={100}
+                />
+              </div>
+            ))}
+            <FormButtons cancelUrl="/admin/products" id={id} />
+          </>
+        );
+      }}
     </Form>
   );
 };

@@ -7,4 +7,6 @@ export interface IBaseField
   loading?: boolean;
   component: any;
   formatter?: boolean;
+  onUploaded?: (publicUrl: string, fileId: string) => void;
+  [key: string]: any;
 }

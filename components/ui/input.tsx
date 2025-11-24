@@ -14,9 +14,9 @@ function Input({
   value,
   ...props
 }: React.ComponentProps<"input"> & {
-  onChange: any;
-  formatter: boolean;
-  value: any;
+  onChange?: any;
+  formatter?: boolean;
+  value?: any;
 }) {
   return (
     <div className="relative inline-block w-full">

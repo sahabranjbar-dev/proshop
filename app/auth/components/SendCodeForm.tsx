@@ -1,14 +1,13 @@
 "use client";
 import BaseField from "@/components/BaseField/BaseField";
 import Form from "@/components/Form/Form";
+import { Input } from "@/components/ui/input";
 import { mobileValidation } from "@/utils/common";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { ChevronRight, Loader2, ShieldCheck, Smartphone } from "lucide-react";
+import { ChevronRight, Loader2, ShieldCheck } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
-import { LoginFormType } from "./LoginForm";
 import { useSendOtp } from "../hooks/useSendOtp";
-import { Input } from "@/components/ui/input";
+import { LoginFormType } from "./LoginForm";
 
 interface IFormValue {
   phone: string;

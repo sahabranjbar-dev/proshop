@@ -23,5 +23,16 @@ export interface IProduct {
   updatedAt: string;
   rowNumber: number;
   createdAt: string;
-  image: File | string;
+  // TODO: set the type in file
+  productImage?: IFiles;
+  files: any;
+}
+
+export interface IFiles {
+  id: string;
+  key: string;
+  url: string;
+  productId: string;
+  fileId: string;
+  publicUrl: string;
 }

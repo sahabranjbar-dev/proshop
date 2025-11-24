@@ -43,6 +43,20 @@ export async function GET(request: NextRequest) {
       take: pageSize,
       orderBy: { [sortBy]: sortOrder },
       where,
+      select: {
+        id: true,
+        price: true,
+        title: true,
+        createdAt: true,
+        updatedAt: true,
+        files: {
+          select: {
+            id: true,
+            url: true,
+            key: true,
+          },
+        },
+      },
     });
 
     const productsData = products.map((product, index) => ({
@@ -74,8 +88,17 @@ const productSchema = z.object({
   price: z.number({
     error: "قیمت اجباری می‌باشد",
   }),
-  image: z.file().optional(),
+  files: z
+    .array(
+      z.object({
+        url: z.string().optional(),
+        key: z.string().optional(),
+        id: z.string().optional(),
+      })
+    )
+    .optional(),
 });
+
 export async function POST(request: NextRequest) {
   try {
     const isAdmin = await isRequestByAdmin();
@@ -90,17 +113,24 @@ export async function POST(request: NextRequest) {
 
     if (!parsedBody.success) {
       return NextResponse.json(
-        { error: parsedBody.error.message },
+        { error: parsedBody.error.format() },
         { status: 400 }
       );
     }
 
-    const { image, price, title } = parsedBody.data;
+    const { price, title, files: filesData } = parsedBody.data;
+
+    // سپس محصول را ایجاد می‌کنیم و فایل‌ها را وصل می‌کنیم
     const product = await prisma.product.create({
       data: {
-        price,
         title,
-        image: "",
+        price,
+        files: {
+          connect: filesData?.map((f) => ({ id: f?.id })),
+        },
+      },
+      include: {
+        files: true,
       },
     });
 
@@ -128,7 +158,15 @@ const productUpdateSchema = z.object({
     .max(100_000_000, {
       error: "قیمت نباید بیشتر از ۱۰۰ میلیون باشد",
     }),
-  image: z.file().optional(),
+  files: z
+    .array(
+      z.object({
+        url: z.string().optional(),
+        key: z.string().optional(),
+        id: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 export async function PUT(request: NextRequest) {
   try {
@@ -149,12 +187,14 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { id, price, title } = parsedBody.data;
+    const { id, price, title, files: filesData } = parsedBody.data;
     const product = await prisma.product.update({
       data: {
         price,
         title,
-        image: "",
+        files: {
+          connect: filesData?.map((f) => ({ id: f?.id })),
+        },
       },
       where: {
         id,

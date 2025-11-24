@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Controller, useFormContext } from "react-hook-form";
 import { IBaseField } from "./meta/types";
+import { Input } from "../ui/input";
 
 const BaseField = ({
   name,
@@ -11,7 +12,8 @@ const BaseField = ({
   loading,
   disabled,
   className,
-  component: Compo,
+  component: Compo = Input,
+  defaultValue,
   ...res
 }: IBaseField) => {
   const { control } = useFormContext();
@@ -19,7 +21,7 @@ const BaseField = ({
     <Controller
       name={name}
       control={control}
-      defaultValue={""}
+      defaultValue={defaultValue}
       rules={{
         required: required ? "فیلد اجباری است" : false,
         validate: validate ? validate : undefined,
@@ -38,7 +40,6 @@ const BaseField = ({
               {...res}
               id={name}
               className={cn(
-                "border",
                 {
                   "border-red-500": formState.errors[name],
                 },
