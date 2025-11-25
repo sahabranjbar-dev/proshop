@@ -131,7 +131,7 @@ export async function DELETE(request: NextRequest) {
     const isAdmin = await isRequestByAdmin();
 
     if (!isAdmin) {
-      return NextResponse.json({ error: "Not allowed" }, { status: 403 });
+      return NextResponse.json({ error: "دسترسی ندارید" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -140,7 +140,20 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ error: "id is required" }, { status: 401 });
+      return NextResponse.json({ error: "آیدی اجباری است" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (user?.role === "ADMIN") {
+      return NextResponse.json(
+        { error: "شما نمیتوانید کاربر با نقش ادمین را حذف کنید" },
+        { status: 403 }
+      );
     }
 
     await prisma.user.delete({
@@ -149,7 +162,10 @@ export async function DELETE(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json(
+      { success: true, message: "کاربر با موفقیت حذف شد" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
     return ServerError();

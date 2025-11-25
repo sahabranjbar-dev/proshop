@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const UserForm = ({
   id,
@@ -19,6 +20,7 @@ const UserForm = ({
   phone,
   role,
 }: IFormValues) => {
+  const { replace } = useRouter();
   const queryClient = useQueryClient();
   const { mutateAsync } = useMutation({
     mutationFn: async (data: IData) => {
@@ -49,6 +51,7 @@ const UserForm = ({
         queryClient.invalidateQueries({
           queryKey: ["admin", "users"],
         });
+        replace("/admin/users");
       }
     },
   });

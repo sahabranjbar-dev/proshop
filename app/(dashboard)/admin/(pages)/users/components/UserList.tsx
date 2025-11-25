@@ -54,6 +54,7 @@ const UserList = () => {
               id={id}
               editHref={`/admin/users/${id}`}
               key={id}
+              modalContent="پس از حذف امکان بازیابی کاربر وجود ندارد."
             />
           );
         },

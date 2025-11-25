@@ -8,9 +8,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
-import { JSX } from "react";
+import clsx from "clsx";
 
 interface ModalProps {
   open: boolean;
@@ -23,7 +23,8 @@ interface ModalProps {
   onAction?: () => void;
   hideActions?: boolean;
   width?: string;
-  modalTrigger: JSX.Element;
+  triggerElement?: React.ReactNode; // optional
+  className?: string;
 }
 
 export function Modal({
@@ -37,22 +38,28 @@ export function Modal({
   onAction,
   hideActions,
   width = "max-w-lg",
-  modalTrigger: ModalTrigger,
+  triggerElement,
+  className,
 }: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogTrigger>{ModalTrigger}</DialogTrigger>
-      <DialogContent className={width}>
-        {title && (
+      {triggerElement && (
+        <DialogTrigger asChild>{triggerElement}</DialogTrigger>
+      )}
+
+      <DialogContent className={clsx(className, width)}>
+        {(title || description) && (
           <DialogHeader className="m-4">
-            <DialogTitle>{title}</DialogTitle>
+            {title && (
+              <DialogTitle className="text-center">{title}</DialogTitle>
+            )}
             {description && (
               <DialogDescription>{description}</DialogDescription>
             )}
           </DialogHeader>
         )}
 
-        <div className="py-2">{children}</div>
+        <div className="p-2">{children}</div>
 
         {!hideActions && (
           <DialogFooter>

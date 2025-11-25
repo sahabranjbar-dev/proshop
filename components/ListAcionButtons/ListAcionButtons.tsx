@@ -8,11 +8,22 @@ import { useMutation } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { useList } from "@/container/ListContainer/ListContainer";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { useSession } from "next-auth/react";
 
-function ListAcionButtons({ editHref, deleteUrl, id }: IListAcionButtons) {
+function ListAcionButtons({
+  editHref,
+  deleteUrl,
+  id,
+  modalContent = "پس از حذف امکان بازیابی وجود ندارد.",
+}: IListAcionButtons) {
+  const session = useSession();
+
+  const userId = session.data?.user?.id;
+
   const { fetch } = useList();
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
-  const { mutateAsync } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: async () => {
       const response = await api.delete(deleteUrl, {
         params: {
@@ -21,14 +32,21 @@ function ListAcionButtons({ editHref, deleteUrl, id }: IListAcionButtons) {
       });
       return response.data;
     },
-    onSuccess: (data: { success: boolean }) => {
+    onError(error: AxiosError<{ error: string }>) {
+      const message = error.response?.data.error;
+      toast.error(message);
+    },
+    onSuccess: (data: { success: boolean; message: string }) => {
       if (!data.success) return;
-      toast.success("آیتم با موفقیت حذف شد");
+      toast.success(data.message || "آیتم با موفقیت حذف شد");
       fetch();
     },
   });
+
+  const showDelete = userId !== id;
+
   return (
-    <div className="flex justify-center items-center gap-2">
+    <div className="flex justify-start items-center gap-2">
       <Link href={editHref}>
         <SquarePen
           className="cursor-pointer hover:bg-gray-300 p-1 text-blue-500"
@@ -36,24 +54,27 @@ function ListAcionButtons({ editHref, deleteUrl, id }: IListAcionButtons) {
         />
       </Link>
 
-      <Modal
-        open={openDeleteModal}
-        onClose={() => {
-          setOpenDeleteModal((prev) => !prev);
-        }}
-        title="آیا مطمئن هستید؟"
-        modalTrigger={
-          <Trash2
-            className="cursor-pointer hover:bg-gray-300 p-1 text-red-500"
-            size={30}
-          />
-        }
-        onAction={() => {
-          mutateAsync();
-        }}
-      >
-        در صورت حذف آیتم دیگر قابل بازگشت نیست
-      </Modal>
+      {showDelete && (
+        <Modal
+          open={openDeleteModal}
+          onClose={() => {
+            setOpenDeleteModal((prev) => !prev);
+          }}
+          actionLoading={isPending}
+          title="آیا از حذف این آیتم مطمئن هستید؟"
+          triggerElement={
+            <Trash2
+              className="cursor-pointer hover:bg-gray-300 p-1 text-red-500"
+              size={30}
+            />
+          }
+          onAction={() => {
+            mutateAsync();
+          }}
+        >
+          {modalContent}
+        </Modal>
+      )}
     </div>
   );
 }

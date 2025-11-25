@@ -1,8 +1,7 @@
 import { authOptions } from "@/lib/authOptions";
-import { IFiles, Role } from "@/types/common";
+import { Role } from "@/types/common";
 import prisma from "@/utils/prisma";
 import { getServerSession } from "next-auth";
-import React from "react";
 import ProductForm from "./components/ProductForm";
 
 const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {

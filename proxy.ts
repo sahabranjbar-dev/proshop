@@ -20,7 +20,7 @@ const adminRules: Rule[] = [
 // 2) قواعد مخصوص مسیرهای Customer
 const customerRules: Rule[] = [
   (req, session) => {
-    if (!session) return redirectToLogin(req);
+    if (!session?.user) return redirectToLogin(req);
   },
 ];
 

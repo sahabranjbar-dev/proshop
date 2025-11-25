@@ -5,7 +5,7 @@ import ProductsList from "./components/ProductsList";
 
 const ProductsPage = () => {
   return (
-    <ListContainer queryKey={["products"]} url="/admin/products">
+    <ListContainer queryKey={["admin", "products"]} url="/admin/products">
       <ProductsHeader />
       <ProductsList />
     </ListContainer>
