@@ -4,7 +4,7 @@ import Form from "@/components/Form/Form";
 import { Input } from "@/components/ui/input";
 import { mobileValidation } from "@/utils/common";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronRight, Loader2, ShieldCheck } from "lucide-react";
+import { ChevronRight, Loader2, Send, ShieldCheck } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { useSendOtp } from "../hooks/useSendOtp";
 import { LoginFormType } from "./LoginForm";
@@ -91,7 +91,7 @@ const SendCodeForm = ({
                 </>
               ) : (
                 <>
-                  <ChevronRight size={18} />
+                  <Send size={18} />
                   <span>ارسال کد تایید</span>
                 </>
               )}

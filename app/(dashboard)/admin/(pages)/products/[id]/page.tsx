@@ -34,7 +34,6 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       title: true,
     },
   });
-  console.log({ product });
 
   return (
     <ProductForm

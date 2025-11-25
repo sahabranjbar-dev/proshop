@@ -47,8 +47,6 @@ const ProductForm = ({ id }: any) => {
   });
 
   const onSubmit = (data: any) => {
-    console.log({ data });
-
     mutateAsync({
       ...data,
     });

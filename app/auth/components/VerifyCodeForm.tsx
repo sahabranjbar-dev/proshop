@@ -5,18 +5,18 @@ import {
 } from "@/components/ui/input-otp";
 import { useMutation } from "@tanstack/react-query";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { Loader2, PenLine, RotateCcw, ShieldCheck } from "lucide-react";
+import { Loader2, RotateCcw, ShieldCheck } from "lucide-react";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { LoginFormType } from "./LoginForm";
-import TimerToResendCode from "./TimerToResendCode";
+import ResendCode from "./ResendCode";
 
 interface IVerifyForm {
   setLoginFormType: Dispatch<SetStateAction<LoginFormType>>;
-  mobile: string | null;
+  mobile: string;
 }
 
 const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
@@ -47,7 +47,7 @@ const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
     },
   });
 
-  const { control, handleSubmit, watch } = useForm<{ otp: string }>();
+  const { control, handleSubmit, watch, reset } = useForm<{ otp: string }>();
 
   const onSubmit = (data: { otp: string }) => {
     mutateAsync(data.otp);
@@ -56,26 +56,25 @@ const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
   // eslint-disable-next-line react-hooks/incompatible-library
   const otpValue = watch("otp");
 
-  const changeNumberHandler = () => {
-    setLoginFormType("sendCode");
+  const lastInputOtpChangeHandler = (e: string) => {
+    if (e.length < 6) return;
+    const code = Number(e);
+    if (isNaN(code)) {
+      toast.error("کد وارد شده اشتباه می‌باشد");
+      return;
+    }
+
+    onSubmit({ otp: e });
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 select-none">
       <div className="text-center">
         <h2 className="text-xl font-bold text-gray-800 mb-3">
           تایید شماره موبایل
         </h2>
         <p className="text-gray-600 text-sm leading-relaxed">
-          کد تایید به شماره{" "}
-          <span
-            onClick={changeNumberHandler}
-            className="text-blue-500 inline-flex justify-center items-center gap-1 group cursor-pointer hover:underline font-medium"
-          >
-            {mobile}
-            <PenLine size={14} className="group-hover:inline transition-all" />
-          </span>{" "}
-          ارسال شد
+          کد تایید به شماره {mobile} ارسال شد
         </p>
       </div>
 
@@ -88,10 +87,14 @@ const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
             render={({ field }) => (
               <div className="flex justify-center">
                 <InputOTP
+                  {...field}
                   dir="ltr"
                   maxLength={6}
                   pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-                  {...field}
+                  onChange={(e) => {
+                    lastInputOtpChangeHandler(e);
+                    field.onChange(e);
+                  }}
                 >
                   <InputOTPGroup dir="ltr" className="flex">
                     <InputOTPSlot index={0} />
@@ -108,7 +111,11 @@ const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
 
           {/* تایمر ارسال مجدد */}
           <div className="text-center">
-            <TimerToResendCode seconds={120} mobile={mobile} />
+            <ResendCode
+              setLoginFormType={setLoginFormType}
+              mobile={mobile}
+              resetOtpInputs={reset}
+            />
           </div>
         </div>
 

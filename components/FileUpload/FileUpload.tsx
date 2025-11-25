@@ -15,12 +15,8 @@ const FileUpload = ({
   savedFolderName = "products",
   ...rest
 }: IFileUpload) => {
-  console.log({ value });
-
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { uploadFile, progress, loading, setProgress } = useUpload();
-
-  console.log({ progress });
 
   const previewUrl = useMemo(() => {
     if (!value) return "";
