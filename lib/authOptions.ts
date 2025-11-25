@@ -91,15 +91,6 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      const user = await prisma.user.findUnique({
-        where: { id: token.id },
-      });
-      if (!user) {
-        return {
-          user: null,
-          expires: new Date().toISOString(),
-        };
-      }
       if (session.user) {
         session.user.id = token.id; // مهم: id اضافه کن
         session.user.userId = token.userId; // برای استفاده داخلی
