@@ -8,82 +8,303 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String?
-  phone     String?   @unique
-  firstName String?
-  lastName  String?
-  password  String?
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String     @id @default(cuid())
+  email         String?    @unique
+  phone         String?    @unique
+  firstName     String?
+  lastName      String?
+  password      String?
+  avatar        String?
+  emailVerified DateTime?
+  isActive      Boolean    @default(true)
+  role          Role       @default(USER)
 
-  orders    Order[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+
+  //            Relations
+  orders        Order[]
+  addresses     Address[]
+  reviews       Review[]
+  cart          Cart?
+
+  @@index([email, phone])
+  @@map("users")
+}
+
+model Address {
+  id         String    @id @default(cuid())
+  title      String    @default("Home")
+  postalCode String
+  city       String
+  address    String    @db.Text
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  orders     Order[]
+
+  createdAt  DateTime  @default(now())
+
+  updatedAt  DateTime  @updatedAt
+
+  @@map("addresses")
 }
 
 enum Role {
   ADMIN
   USER
+  EDITOR
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  title       String
-  description String?
-  price       Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                                                                String          @id @default(cuid())
+  title                                                             String
+  slug                                                              String          @unique // برای SEO: /product/my-cool-product
+  description                                                       String?         @db.Text
+  content                                                           String?         @db.Text // توضیحات کامل HTML
+  price                                                             Decimal         @db.Decimal(10, 2) // استفاده از Decimal برای پول دقیق‌تره
+  comparePrice                                                      Decimal?        @db.Decimal(10, 2) // قیمت خط خورده (تخفیف)
 
-  files       File[]      @relation("ProductFiles")
-  categories  Category[]  @relation("ProductCategories")
-  orders      Order[]     @relation("OrderProducts")
+  stock                                                             Int             @default(0) // موجودی انبار
+  sku                                                               String?         @unique // کد انبارداری
+  isPublished                                                       Boolean         @default(true) // محصول پیش‌نویس یا منتشر شده
+
+  createdAt                                                         DateTime        @default(now())
+  updatedAt                                                         DateTime        @updatedAt
+  deletedAt                                                         DateTime?
+
+  //                                                                Relations
+  campaigns                                                         SaleCampaign[] @relation("CampaignProducts")
+  files                                                             File[]         @relation("ProductFiles")
+  categories                                                        Category[]     @relation("ProductCategories")
+  orderItems  OrderItem[] 
+  reviews                                                           Review[]
+
+  @@index([slug,                                                    isPublished])
+  @@map("products")
 }
 
 model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          String          @id @default(cuid())
+  name        String
+  slug        String          @unique
+  description String?
 
-  products  Product[] @relation("ProductCategories")
+  // Self-relation برای زیرمجموعه‌ها (مثلا: الکترونیک -> موبایل)
+  parentId    String?
+  parent      Category?      @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[]     @relation("CategoryHierarchy")
+  products    Product[]      @relation("ProductCategories")
+  campaigns   SaleCampaign[] @relation("CampaignCategories")
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@map("categories")
+}
+
+model Review {
+  id        String    @id @default(cuid())
+  rating    Int       @default(5) // 1 تا 5
+  comment   String?   @db.Text
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+
+  createdAt DateTime  @default(now())
+
+  @@map("reviews")
 }
 
 model Order {
-  id        String    @id @default(cuid())
-  status    OrderStatus @default(PENDING)
-  total     Int
-  userId    String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                                                     String       @id @default(cuid())
+  orderNumber                                            String       @unique @default(cuid()) // شماره سفارش قابل خواندن برای کاربر
+  status                                                 OrderStatus  @default(PENDING)
+  totalAmount                                            Decimal      @db.Decimal(10, 2) // مجموع کل
+  discountAmount                                         Decimal      @default(0) @db.Decimal(10, 2)
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  products  Product[] @relation("OrderProducts")
+  couponId                                               String?
+  coupon                                                 Coupon?     @relation(fields: [couponId], references: [id])
+
+  userId                                                 String
+  user                                                   User        @relation(fields: [userId], references: [id])
+
+  addressId                                              String?
+  address                                                Address?    @relation(fields: [addressId], references: [id])
+
+  orderItems    OrderItem[] // لیست آیتم‌های خریداری شده
+  payment       Payment?    // اطلاعات پرداخت
+
+  createdAt                                              DateTime     @default(now())
+  updatedAt                                              DateTime     @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String    @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  quantity  Int
+  price     Decimal   @db.Decimal(10, 2)
+
+  @@map("order_items")
+}
+
+model Payment {
+  id                                                  String         @id @default(cuid())
+  amount                                              Decimal        @db.Decimal(10, 2)
+  method                                              PaymentMethod  @default(ONLINE)
+  status                                              PaymentStatus  @default(PENDING)
+  authority     String?       // کد پیگیری درگاه بانک
+  refId         String?       // شماره مرجع تراکنش
+
+  orderId                                             String         @unique
+  order                                               Order         @relation(fields: [orderId], references: [id])
+
+  createdAt                                           DateTime       @default(now())
+  updatedAt                                           DateTime       @updatedAt
+
+  @@map("payments")
 }
 
 model OtpCode {
-  phone     String    @id
-  code      String
-  createdAt DateTime  @default(now())
+  phone                                  String    @id
+  code                                   String
+  expiresAt DateTime // انقضا برای امنیت
+  createdAt                              DateTime  @default(now())
+
+  @@map("otp_codes")
 }
 
 model File {
+  id                                         String    @id @default(cuid())
+  key                                        String    @unique
+  url                                        String
+  name                                       String?
+  size                                       Int?
+  type      String?  // MimeType (image/png)
+
+  productId                                  String?
+  product                                    Product? @relation("ProductFiles", fields: [productId], references: [id], onDelete: SetNull)
+
+  createdAt                                  DateTime  @default(now())
+
+  @@map("files")
+}
+
+model Coupon {
+  id                                                                            String        @id @default(cuid())
+  code                                                                          String        @unique // کدی که کاربر وارد میکنه: OFF20
+  type                                                                          DiscountType
+  value                                                                         Decimal       @db.Decimal(10, 2) // مقدار تخفیف (درصد یا پول)
+
+  startDate   DateTime?    // شروع اعتبار
+  endDate     DateTime?    // انقضا
+
+  usageLimit  Int?         // سقف تعداد استفاده کلی (مثلا فقط برای 100 نفر اول)
+  usedCount                                                                     Int           @default(0) // تعداد دفعات استفاده شده تا الان
+
+  minOrderAmount                                                                Decimal?      @db.Decimal(10, 2) // حداقل خرید برای اعمال کد
+
+  isActive                                                                      Boolean       @default(true) // دکمه غیرفعال سازی دستی
+
+  //                                                                            Relations
+  orders                                                                        Order[]
+
+  createdAt                                                                     DateTime      @default(now())
+  updatedAt                                                                     DateTime      @updatedAt
+
+  @@map("coupons")
+}
+
+model SaleCampaign {
+  id                                                   String        @id @default(cuid())
+  title       String       // نام جشنواره: "فروش یلدا"
+  description                                          String?
+  bannerUrl   String?      // عکس بنر جشنواره
+
+  type                                                 DiscountType
+  value                                                Decimal       @db.Decimal(10, 2)
+
+  startDate                                            DateTime
+  endDate                                              DateTime
+
+  isActive                                             Boolean       @default(true)
+
+  // جشنواره می‌تونه روی محصولات خاص یا دسته‌های خاص اعمال بشه
+  products                                             Product[]    @relation("CampaignProducts")
+  categories                                           Category[]   @relation("CampaignCategories")
+
+  createdAt                                            DateTime      @default(now())
+  updatedAt                                            DateTime      @updatedAt
+
+  @@map("sale_campaigns")
+}
+
+model Cart {
+  id        String      @id @default(cuid())
+
+  userId    String      @unique // رابطه یک به یک با کاربر
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items     CartItem[]
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
   id        String    @id @default(cuid())
-  key       String    @unique
-  url       String
-  name      String?
-  size      Int?
-  type      String?
+
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+
+  quantity  Int       @default(1)
+
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  product   Product?  @relation("ProductFiles", fields: [productId], references: [id], onDelete: Cascade)
-  productId String?
-
-  @@index([productId])
+  // این خط خیلی مهمه: در هر سبد خرید، از هر محصول فقط یک رکورد باشه (تعدادش زیاد میشه)
+  @@unique([cartId, productId])
+  @@map("cart_items")
 }
 
 enum OrderStatus {
   PENDING
   PROCESSING
-  COMPLETED
+  SHIPPED     // ارسال شده
+  DELIVERED   // تحویل داده شده
   CANCELLED
+  REFUNDED    // مرجوع شده
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum PaymentMethod {
+  ONLINE
+  CASH_ON_DELIVERY
+  WALLET
+}
+
+enum DiscountType {
+  PERCENTAGE // درصدی (مثلا 10 درصد)
+  FIXED      // مبلغ ثابت (مثلا 50 هزار تومان)
 }
