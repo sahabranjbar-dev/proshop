@@ -55,12 +55,6 @@ const AdminSidebar = async () => {
                 side="top"
                 className="w-[--radix-popper-anchor-width] bg-white p-4"
               >
-                <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Billing</span>
-                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <SignoutButton />
                 </DropdownMenuItem>

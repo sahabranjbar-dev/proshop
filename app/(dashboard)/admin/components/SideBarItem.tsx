@@ -7,6 +7,7 @@ import {
 import {
   ChartColumnStacked,
   Home,
+  Settings,
   ShieldBan,
   ShoppingCart,
   Store,
@@ -44,6 +45,11 @@ const items = [
     title: "نقش‌ها و دسترسی‌ها",
     url: "/roles",
     icon: ShieldBan,
+  },
+  {
+    title: "تنظیمات",
+    url: "/settings",
+    icon: Settings,
   },
 ];
 const SideBarItem = () => {
