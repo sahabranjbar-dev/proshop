@@ -2,6 +2,7 @@ import { isRequestByAdmin, ServerError } from "@/utils/errors";
 import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
+import { getSlug } from "./utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -83,40 +84,113 @@ export async function GET(request: NextRequest) {
 }
 
 const productSchema = z.object({
-  title: z.string({
-    error: "نام محصول اجباری می‌باشد",
-  }),
-  price: z.number({
-    error: "ثیمت محصول اجباری می‌باشد",
-  }),
+  title: z
+    .string({
+      error: "نام محصول (Title) اجباری می‌باشد",
+    })
+    .min(3, "نام محصول حداقل باید ۳ کاراکتر باشد"),
+
+  slug: z.string().optional(),
+
+  description: z
+    .string()
+    .max(500, "توضیحات کوتاه حداکثر ۵۰۰ کاراکتر است")
+    .optional(),
+
+  content: z.string().optional(),
+
+  price: z
+    .number({
+      error: "قیمت فروش اجباری می‌باشد",
+    })
+    .positive("قیمت باید بزرگتر از صفر باشد"),
+
+  comparePrice: z.number().optional().nullable(), // قیمت خط خورده
+
+  stock: z.number().int().min(0, "موجودی نمی‌تواند منفی باشد").default(0),
+
+  sku: z.string().max(50, "SKU حداکثر ۵۰ کاراکتر است").optional(),
+
+  isPublished: z.boolean().default(true),
+
+  // روابط (IDs)
+  categoryIds: z.array(z.string()).optional(), // آرایه‌ای از ID دسته‌بندی‌ها
+  fileIds: z.array(z.string()).optional(), // آرایه‌ای از ID فایل‌های آپلود شده
 });
 
 export async function POST(request: NextRequest) {
   try {
+    // ۱. بررسی احراز هویت ادمین
     const isAdmin = await isRequestByAdmin();
-
     if (!isAdmin) {
       return NextResponse.json({ error: "Not allowed" }, { status: 403 });
     }
 
     const body = await request.json();
 
+    // ۲. اعتبارسنجی بدنه درخواست
     const parsedBody = productSchema.safeParse(body);
 
     if (!parsedBody.success) {
+      // ارسال خطاهای اعتبارسنجی به فرانت‌اند
+      const formattedErrors = parsedBody.error.issues.map((issue) => ({
+        path: issue.path.join("."),
+        message: issue.message,
+      }));
       return NextResponse.json(
-        { error: parsedBody.error.format() },
+        { error: JSON.stringify(formattedErrors) },
         { status: 400 }
       );
     }
 
-    const { title, price } = parsedBody.data;
+    const {
+      title,
+      price,
+      slug: inputSlug, // نام slug ورودی را تغییر می‌دهیم
+      categoryIds,
+      fileIds,
+      ...data
+    } = parsedBody.data;
 
-    // سپس محصول را ایجاد می‌کنیم و فایل‌ها را وصل می‌کنیم
+    // ۳. تولید Slug (اگر ارسال نشده باشد)
+    const finalSlug = inputSlug ? inputSlug : getSlug(title);
+
+    // ۴. بررسی یکتا بودن Slug
+    const existingProduct = await prisma.product.findUnique({
+      where: { slug: finalSlug },
+    });
+    if (existingProduct) {
+      return NextResponse.json(
+        {
+          error: JSON.stringify([
+            { message: `اسلاگ تکراری است. لطفاً اسلاگ دیگری انتخاب کنید.` },
+          ]),
+        },
+        { status: 409 } // Conflict
+      );
+    }
+
+    // ۵. ایجاد محصول و مدیریت روابط (Relations)
     const product = await prisma.product.create({
-      data: { price, title },
+      data: {
+        ...data, // شامل description, content, stock, sku, comparePrice, isPublished
+        title,
+        price,
+        slug: finalSlug,
+
+        // مدیریت رابطه Many-to-Many با دسته‌بندی‌ها
+        categories: {
+          connect: categoryIds?.map((id) => ({ id })) || [],
+        },
+
+        // مدیریت رابطه One-to-Many با فایل‌ها
+        files: {
+          connect: fileIds?.map((id) => ({ id })) || [],
+        },
+      },
     });
 
+    // ۶. پاسخ موفقیت‌آمیز
     return NextResponse.json(
       { success: true, product, message: "محصول با موفقیت ایجاد شد" },
       { status: 201 }

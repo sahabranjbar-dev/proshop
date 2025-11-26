@@ -1,16 +1,9 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER', 'EDITOR');
 
-  - The values [COMPLETED] on the enum `OrderStatus` will be removed. If these variants are still used in the database, this will fail.
-  - You are about to drop the `Category` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `File` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Order` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `OtpCode` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Product` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `_OrderProducts` table. If the table is not empty, all the data it contains will be lost.
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED', 'COMPLETED');
 
-*/
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCESS', 'FAILED');
 
@@ -19,58 +12,6 @@ CREATE TYPE "PaymentMethod" AS ENUM ('ONLINE', 'CASH_ON_DELIVERY', 'WALLET');
 
 -- CreateEnum
 CREATE TYPE "DiscountType" AS ENUM ('PERCENTAGE', 'FIXED');
-
--- AlterEnum
-BEGIN;
-CREATE TYPE "OrderStatus_new" AS ENUM ('PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED');
-ALTER TABLE "public"."Order" ALTER COLUMN "status" DROP DEFAULT;
-ALTER TABLE "orders" ALTER COLUMN "status" TYPE "OrderStatus_new" USING ("status"::text::"OrderStatus_new");
-ALTER TYPE "OrderStatus" RENAME TO "OrderStatus_old";
-ALTER TYPE "OrderStatus_new" RENAME TO "OrderStatus";
-DROP TYPE "public"."OrderStatus_old";
-COMMIT;
-
--- AlterEnum
-ALTER TYPE "Role" ADD VALUE 'EDITOR';
-
--- DropForeignKey
-ALTER TABLE "File" DROP CONSTRAINT "File_productId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Order" DROP CONSTRAINT "Order_userId_fkey";
-
--- DropForeignKey
-ALTER TABLE "_OrderProducts" DROP CONSTRAINT "_OrderProducts_A_fkey";
-
--- DropForeignKey
-ALTER TABLE "_OrderProducts" DROP CONSTRAINT "_OrderProducts_B_fkey";
-
--- DropForeignKey
-ALTER TABLE "_ProductCategories" DROP CONSTRAINT "_ProductCategories_A_fkey";
-
--- DropForeignKey
-ALTER TABLE "_ProductCategories" DROP CONSTRAINT "_ProductCategories_B_fkey";
-
--- DropTable
-DROP TABLE "Category";
-
--- DropTable
-DROP TABLE "File";
-
--- DropTable
-DROP TABLE "Order";
-
--- DropTable
-DROP TABLE "OtpCode";
-
--- DropTable
-DROP TABLE "Product";
-
--- DropTable
-DROP TABLE "User";
-
--- DropTable
-DROP TABLE "_OrderProducts";
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -192,6 +133,28 @@ CREATE TABLE "payments" (
 );
 
 -- CreateTable
+CREATE TABLE "carts" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "carts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "cart_items" (
+    "id" TEXT NOT NULL,
+    "cartId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cart_items_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "otp_codes" (
     "phone" TEXT NOT NULL,
     "code" TEXT NOT NULL,
@@ -251,33 +214,19 @@ CREATE TABLE "sale_campaigns" (
 );
 
 -- CreateTable
-CREATE TABLE "carts" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "carts_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "cart_items" (
-    "id" TEXT NOT NULL,
-    "cartId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL DEFAULT 1,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "cart_items_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "_CampaignProducts" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
     CONSTRAINT "_CampaignProducts_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
+CREATE TABLE "_ProductCategories" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_ProductCategories_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
@@ -316,19 +265,22 @@ CREATE UNIQUE INDEX "orders_orderNumber_key" ON "orders"("orderNumber");
 CREATE UNIQUE INDEX "payments_orderId_key" ON "payments"("orderId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "files_key_key" ON "files"("key");
-
--- CreateIndex
-CREATE UNIQUE INDEX "coupons_code_key" ON "coupons"("code");
-
--- CreateIndex
 CREATE UNIQUE INDEX "carts_userId_key" ON "carts"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "cart_items_cartId_productId_key" ON "cart_items"("cartId", "productId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "files_key_key" ON "files"("key");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "coupons_code_key" ON "coupons"("code");
+
+-- CreateIndex
 CREATE INDEX "_CampaignProducts_B_index" ON "_CampaignProducts"("B");
+
+-- CreateIndex
+CREATE INDEX "_ProductCategories_B_index" ON "_ProductCategories"("B");
 
 -- CreateIndex
 CREATE INDEX "_CampaignCategories_B_index" ON "_CampaignCategories"("B");
@@ -364,9 +316,6 @@ ALTER TABLE "order_items" ADD CONSTRAINT "order_items_productId_fkey" FOREIGN KE
 ALTER TABLE "payments" ADD CONSTRAINT "payments_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "files" ADD CONSTRAINT "files_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "carts" ADD CONSTRAINT "carts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -374,6 +323,9 @@ ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_cartId_fkey" FOREIGN KEY ("c
 
 -- AddForeignKey
 ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "files" ADD CONSTRAINT "files_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_CampaignProducts" ADD CONSTRAINT "_CampaignProducts_A_fkey" FOREIGN KEY ("A") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;

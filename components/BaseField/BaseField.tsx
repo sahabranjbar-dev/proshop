@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { Controller, useFormContext } from "react-hook-form";
 import { IBaseField } from "./meta/types";
 import { Input } from "../ui/input";
+import { ShieldAlert } from "lucide-react";
+import { ChangeEvent } from "react";
 
 const BaseField = ({
   name,
@@ -14,6 +16,7 @@ const BaseField = ({
   className,
   component: Compo = Input,
   defaultValue,
+  onChange,
   ...res
 }: IBaseField) => {
   const { control } = useFormContext();
@@ -28,7 +31,7 @@ const BaseField = ({
       }}
       render={({ field, formState }) => {
         return (
-          <div className="flex flex-col justify-between items-start gap-2">
+          <div className="flex flex-col justify-between items-start gap-2 relative">
             {label && (
               <label htmlFor={name}>
                 {label}{" "}
@@ -38,8 +41,13 @@ const BaseField = ({
             <Compo
               {...field}
               {...res}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                onChange?.(event);
+                field.onChange(event);
+              }}
               id={name}
               className={cn(
+                "disabled:cursor-not-allowed disabled:select-none",
                 {
                   "border-red-500": formState.errors[name],
                 },

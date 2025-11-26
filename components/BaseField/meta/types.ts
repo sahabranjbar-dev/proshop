@@ -1,5 +1,4 @@
-export interface IBaseField
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface IBaseField {
   name: string;
   label?: string;
   required?: boolean;
