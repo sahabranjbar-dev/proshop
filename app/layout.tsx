@@ -7,6 +7,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
+import { CartProvider } from "@/container/CartProvider/CartProvider";
 
 const iranSansFont = localFont({
   src: [
@@ -41,7 +44,13 @@ export default async function RootLayout({
         style={iranSansFont.style}
       >
         <SessionWrapper session={session}>
-          <QueryClientWrapper>{children}</QueryClientWrapper>
+          <QueryClientWrapper>
+            <CartProvider>
+              <Header />
+              {children}
+              <Footer />
+            </CartProvider>
+          </QueryClientWrapper>
         </SessionWrapper>
         <Toaster
           style={iranSansFont.style}
