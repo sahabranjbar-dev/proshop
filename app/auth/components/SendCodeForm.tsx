@@ -4,7 +4,7 @@ import Form from "@/components/Form/Form";
 import { Input } from "@/components/ui/input";
 import { mobileValidation } from "@/utils/common";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronRight, Loader2, Send, ShieldCheck } from "lucide-react";
+import { Loader2, Send, ShieldCheck } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { useSendOtp } from "../hooks/useSendOtp";
 import { LoginFormType } from "./LoginForm";
@@ -15,7 +15,7 @@ interface IFormValue {
 
 interface ISendCodeForm {
   setLoginFormType: Dispatch<SetStateAction<LoginFormType>>;
-  setMobile: Dispatch<SetStateAction<string | null>>;
+  setMobile: Dispatch<SetStateAction<string>>;
   mobile: string | null;
 }
 
@@ -51,9 +51,6 @@ const SendCodeForm = ({
           <>
             {/* هدر */}
             <div className="text-center mb-10">
-              <h2 className="text-xl font-bold text-gray-800 mb-2">
-                ورود به حساب کاربری
-              </h2>
               <p className="text-gray-500 text-sm leading-relaxed">
                 لطفا شماره موبایل خود را وارد کنید
               </p>

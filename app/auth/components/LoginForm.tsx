@@ -8,7 +8,7 @@ export type LoginFormType = "sendCode" | "verify";
 
 const LoginForm = (): JSX.Element => {
   const [loginFormType, setLoginFormType] = useState<LoginFormType>("sendCode");
-  const [mobile, setMobile] = useState<string | null>(null);
+  const [mobile, setMobile] = useState<string>("");
   return loginFormType === "sendCode" ? (
     <SendCodeForm
       setLoginFormType={setLoginFormType}

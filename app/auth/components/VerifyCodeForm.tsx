@@ -6,8 +6,8 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Loader2, RotateCcw, ShieldCheck } from "lucide-react";
-import { getSession, signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { getSession, signIn, SignInResponse } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -21,30 +21,35 @@ interface IVerifyForm {
 
 const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const signInOnSuccess = async (data: SignInResponse | undefined) => {
+    if (data?.ok) {
+      const session = await getSession();
+      toast.success("با موفقیت وارد شدید");
+      if (!pathname.startsWith("/auth")) return;
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin");
+      } else if (session?.user?.role === "USER") {
+        router.push("/customer");
+      }
+    } else {
+      toast.error(data?.error);
+    }
+  };
+
+  const signInFn = async (code: string) => {
+    const response = await signIn("credentials", {
+      redirect: false,
+      code,
+      phone: mobile,
+    });
+    return response;
+  };
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: async (code: string) => {
-      const response = await signIn("credentials", {
-        redirect: false,
-        code,
-        phone: mobile,
-      });
-      return response;
-    },
+    mutationFn: signInFn,
     mutationKey: ["verify-otp"],
-    async onSuccess(data) {
-      if (data?.ok) {
-        const session = await getSession();
-        toast("با موفقیت وارد شدید");
-        if (session?.user.role === "ADMIN") {
-          router.push("/admin");
-        } else if (session?.user.role === "USER") {
-          router.push("/customer");
-        }
-      } else {
-        toast(data?.error);
-      }
-    },
+    onSuccess: signInOnSuccess,
   });
 
   const { control, handleSubmit, watch, reset } = useForm<{ otp: string }>();

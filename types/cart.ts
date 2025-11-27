@@ -14,7 +14,6 @@ export type CartState = {
 export type CartActions = {
   addItem: (item: Omit<ICartItem, "quantity">) => void;
   removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
 };
 

@@ -80,19 +80,32 @@ export const createCartStore = (initState: CartState = defaultInitState) => {
         },
 
         removeItem: (productId) => {
-          set((state) => ({
-            items: state.items.filter((i) => i.productId !== productId),
-          }));
-        },
+          set((state) => {
+            // پیدا کردن آیتم مورد نظر
+            const existingItem = state.items.find(
+              (i) => i.productId === productId
+            );
 
-        updateQuantity: (productId, quantity) => {
-          if (quantity <= 0) return;
+            if (!existingItem) {
+              return state; // اگر آیتم وجود نداشت، state را تغییر نده
+            }
 
-          set((state) => ({
-            items: state.items.map((i) =>
-              i.productId === productId ? { ...i, quantity } : i
-            ),
-          }));
+            // اگر quantity برابر 1 باشد، آیتم را حذف کن
+            if (existingItem.quantity === 1) {
+              return {
+                items: state.items.filter((i) => i.productId !== productId),
+              };
+            }
+
+            // اگر quantity بیشتر از 1 باشد، یک عدد کم کن
+            return {
+              items: state.items.map((i) =>
+                i.productId === productId
+                  ? { ...i, quantity: i.quantity - 1 }
+                  : i
+              ),
+            };
+          });
         },
 
         clearCart: () => set({ items: [] }),

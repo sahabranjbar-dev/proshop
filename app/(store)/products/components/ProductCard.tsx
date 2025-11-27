@@ -1,6 +1,9 @@
-import React from "react";
-import AddToCartButtons from "./AddToCartButtons";
+"use client";
+import dynamic from "next/dynamic";
 
+const AddToCartButtonsContainer = dynamic(
+  () => import("./AddToCartButtonsContainer")
+);
 interface Props {
   productId: string;
   productTitle: string;
@@ -13,7 +16,7 @@ const ProductCard = ({ productId, productPrice, productTitle }: Props) => {
       <div>{productId}</div>
       <div>{productTitle}</div>
       <div>{productPrice}</div>
-      <AddToCartButtons
+      <AddToCartButtonsContainer
         price={productPrice}
         productId={productId}
         title={productTitle}

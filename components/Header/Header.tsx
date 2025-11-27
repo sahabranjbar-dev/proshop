@@ -1,18 +1,29 @@
 "use client";
-import { Menu, User } from "lucide-react";
+import { Menu } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import LoginButton from "../LoginButton/LoginButton";
 import { Skeleton } from "../ui/skeleton";
 
-const CartButton = dynamic(() => import("../CartButton/CartButton"), {
-  ssr: false,
-  loading: () => <Skeleton className="h-8 w-8" />,
-});
+const CartButtonContainer = dynamic(
+  () => import("../CartButton/CartButtonContainer"),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-8 w-8" />,
+  }
+);
 const Header = () => {
-  // این مقادیر باید از state سراسری (مثل Redux, Zustand, یا Context) یا hookهای Next.js واکشی شوند
+  const pathname = usePathname();
 
-  const isAuthenticated = true; // مثال برای وضعیت ورود کاربر
+  const isAuthenticated = true;
 
+  if (
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/customer") ||
+    pathname.startsWith("/admin")
+  )
+    return;
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -42,16 +53,10 @@ const Header = () => {
         {/* ۳. دکمه‌های کنترلی (Account, Cart, Menu) */}
         <div className="flex items-center justify-start space-x-4">
           {/* دکمه حساب کاربری / ورود */}
-          <Link
-            href={isAuthenticated ? "/account/profile" : "/account/login"}
-            className="text-gray-600 hover:text-indigo-600 relative p-2 rounded-full hover:bg-gray-100 transition duration-150"
-          >
-            <User size={20} />
-            {/* در حالت ورود، شاید نام کوچک کاربر نمایش داده شود */}
-          </Link>
+          <LoginButton />
 
           {/* دکمه سبد خرید */}
-          <CartButton />
+          <CartButtonContainer />
 
           {/* دکمه منوی همبرگری (فقط در صفحات کوچک) */}
           <button className="md:hidden text-gray-600 p-2 rounded-full hover:bg-gray-100 transition duration-150">
