@@ -6,6 +6,8 @@ import React, { useContext } from "react";
 import { AddToCartContext } from "../context/AddToCartContext";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { ICart } from "@/types/common";
+import { getCart } from "../../cart/meta/utils";
 
 const AddToCartButtonsLogin = () => {
   const session = useSession();
@@ -20,12 +22,9 @@ const AddToCartButtonsLogin = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: cartItems } = useQuery({
+  const { data } = useQuery({
     queryKey: ["cart", userId],
-    queryFn: async () => {
-      const result = await api("/cart");
-      return result.data?.userCart;
-    },
+    queryFn: getCart,
   });
 
   const { mutateAsync: addItem, isPending: addItemLoading } = useMutation({
@@ -61,7 +60,9 @@ const AddToCartButtonsLogin = () => {
     }
   );
 
-  const cartItem = cartItems?.find((item: any) => item.productId === productId);
+  const cartItem = data?.userCart?.items?.find(
+    (item: any) => item.productId === productId
+  );
   if (!cartItem) {
     return (
       <button

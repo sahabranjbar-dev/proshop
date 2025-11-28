@@ -20,12 +20,24 @@ export async function GET() {
         userId,
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
+
+    const totalPrice = userCart?.items.reduce(
+      (prev, cur) => prev + cur.quantity * Number(cur?.product?.price),
+      0 // مقدار اولیه 0 برای اطمینان از محاسبات صحیح
+    );
     return NextResponse.json({
       success: true,
-      userCart: userCart?.id ? userCart.items : [],
+      userCart: {
+        ...userCart,
+        totalPrice,
+      },
       message: "سبد خرید با موفقیت دریافت شد",
     });
   } catch (error) {
