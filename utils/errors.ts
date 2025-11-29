@@ -19,3 +19,14 @@ export const isRequestByAdmin = async (): Promise<boolean> => {
 
   return isAdmin;
 };
+
+export async function requireAuth() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return {
+      error: true,
+      res: NextResponse.json({ error: "نیاز به ورود دارید" }, { status: 401 }),
+    };
+  }
+  return { error: false, session };
+}

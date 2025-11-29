@@ -15,18 +15,24 @@ import { LoginFormType } from "./LoginForm";
 import ResendCode from "./ResendCode";
 
 interface IVerifyForm {
-  setLoginFormType: Dispatch<SetStateAction<LoginFormType>>;
+  setLoginFormType: Dispatch<SetStateAction<LoginFormType | null>>;
   mobile: string;
+  onLoginSuccess?: (data: SignInResponse | undefined) => void;
 }
 
-const VerifyCodeForm = ({ setLoginFormType, mobile }: IVerifyForm) => {
+const VerifyCodeForm = ({
+  setLoginFormType,
+  mobile,
+  onLoginSuccess,
+}: IVerifyForm) => {
   const router = useRouter();
   const pathname = usePathname();
   const signInOnSuccess = async (data: SignInResponse | undefined) => {
     if (data?.ok) {
-      const session = await getSession();
       toast.success("با موفقیت وارد شدید");
+      onLoginSuccess?.(data);
       if (!pathname.startsWith("/auth")) return;
+      const session = await getSession();
       if (session?.user?.role === "ADMIN") {
         router.push("/admin");
       } else if (session?.user?.role === "USER") {

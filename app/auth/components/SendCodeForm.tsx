@@ -14,7 +14,7 @@ interface IFormValue {
 }
 
 interface ISendCodeForm {
-  setLoginFormType: Dispatch<SetStateAction<LoginFormType>>;
+  setLoginFormType: Dispatch<SetStateAction<LoginFormType | null>>;
   setMobile: Dispatch<SetStateAction<string>>;
   mobile: string | null;
 }

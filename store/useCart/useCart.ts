@@ -13,12 +13,9 @@ export const initCartStore = (): CartState => {
   const initialData = getLocal<{
     state: { items: any[]; totalItems: number; totalPrice: number };
   }>("cart-storage");
-  if (!initialData)
-    return {
-      items: [],
-      totalItems: 0,
-      totalPrice: 0,
-    };
+
+  if (!initialData) return defaultInitState;
+
   return {
     items: initialData.state.items,
     totalItems: initialData.state.totalItems,
@@ -28,7 +25,6 @@ export const initCartStore = (): CartState => {
 
 const storageAdapter = createJSONStorage(() => ({
   getItem: (name: string): string | null => {
-    // فقط در سمت کلاینت اجازه دسترسی به localStorage را می‌دهیم
     if (typeof window !== "undefined") {
       return localStorage.getItem(name);
     }
@@ -45,70 +41,88 @@ const storageAdapter = createJSONStorage(() => ({
     }
   },
 }));
-// 💡 استفاده از persist در اطراف منطق store
+
 export const createCartStore = (initState: CartState = defaultInitState) => {
   return createStore<CartStore>()(
     persist(
-      // <--- اینجا از persist استفاده می‌کنیم
       (set, get) => ({
         ...initState,
 
         addItem: (newItem) => {
           set((state) => {
-            const exist = state.items.find(
+            const existingItem = state.items.find(
               (i) => i.productId === newItem.productId
             );
 
-            let updatedItems;
+            const updatedItems = existingItem
+              ? state.items.map((i) =>
+                  i.productId === newItem.productId
+                    ? { ...i, quantity: i.quantity + 1 }
+                    : i
+                )
+              : [...state.items, { ...newItem, quantity: 1 }];
 
-            if (exist) {
-              // محصول وجود دارد → فقط quantity را افزایش بده
-              updatedItems = state.items.map((i) =>
-                i.productId === newItem.productId
-                  ? { ...i, quantity: i.quantity + 1 }
-                  : i
-              );
-            } else {
-              // محصول جدید
-              updatedItems = [...state.items, { ...newItem, quantity: 1 }];
-            }
+            const totalItems = updatedItems.reduce(
+              (sum, i) => sum + i.quantity,
+              0
+            );
+            const totalPrice = updatedItems.reduce(
+              (sum, i) => sum + i.quantity * i.price,
+              0
+            );
 
-            // 💡 به روزرسانی totalItems و totalPrice لازم نیست، زیرا
-            // اینها با استفاده از geterها به صورت خودکار محاسبه می‌شوند.
-            return { items: updatedItems };
+            return {
+              items: updatedItems,
+              totalItems,
+              totalPrice,
+            };
           });
         },
 
         removeItem: (productId) => {
           set((state) => {
-            // پیدا کردن آیتم مورد نظر
             const existingItem = state.items.find(
               (i) => i.productId === productId
             );
 
-            if (!existingItem) {
-              return state; // اگر آیتم وجود نداشت، state را تغییر نده
-            }
+            if (!existingItem) return state;
 
-            // اگر quantity برابر 1 باشد، آیتم را حذف کن
+            let updatedItems;
             if (existingItem.quantity === 1) {
-              return {
-                items: state.items.filter((i) => i.productId !== productId),
-              };
-            }
-
-            // اگر quantity بیشتر از 1 باشد، یک عدد کم کن
-            return {
-              items: state.items.map((i) =>
+              updatedItems = state.items.filter(
+                (i) => i.productId !== productId
+              );
+            } else {
+              updatedItems = state.items.map((i) =>
                 i.productId === productId
                   ? { ...i, quantity: i.quantity - 1 }
                   : i
-              ),
+              );
+            }
+
+            const totalItems = updatedItems.reduce(
+              (sum, i) => sum + i.quantity,
+              0
+            );
+            const totalPrice = updatedItems.reduce(
+              (sum, i) => sum + i.quantity * i.price,
+              0
+            );
+
+            return {
+              items: updatedItems,
+              totalItems,
+              totalPrice,
             };
           });
         },
 
-        clearCart: () => set({ items: [] }),
+        clearCart: () =>
+          set({
+            items: [],
+            totalItems: 0,
+            totalPrice: 0,
+          }),
 
         get totalItems() {
           return get().items.reduce((sum, i) => sum + i.quantity, 0);

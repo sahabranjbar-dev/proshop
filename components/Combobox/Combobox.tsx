@@ -21,10 +21,13 @@ function Combobox({
   refetch,
   selectLabel,
   placeholder,
+  options,
+  selectValue,
   ...res
 }: ICombobox<{ resultList: { farsiTitle: string; englishTitle: string }[] }>) {
   // error and loading should handle
 
+  const resolvedOptions = options?.length ? options : data?.resultList;
   return (
     <Select
       dir="rtl"
@@ -34,14 +37,14 @@ function Combobox({
       value={res.value}
     >
       <SelectTrigger className="w-full">
-        <SelectValue placeholder={placeholder} />
+        {selectValue ? selectValue : <SelectValue placeholder={placeholder} />}
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>
             {selectLabel ? selectLabel : "آیتم"} را انتخاب کنید
           </SelectLabel>
-          {data?.resultList.map((item) => (
+          {resolvedOptions?.map((item) => (
             <SelectItem key={item.englishTitle} value={item.englishTitle}>
               {item.farsiTitle}
             </SelectItem>

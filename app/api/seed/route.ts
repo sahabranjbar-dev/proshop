@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import prisma from "@/utils/prisma";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   console.log("Start seeding...");
@@ -40,5 +41,10 @@ export async function GET() {
     data: products,
   });
 
-  console.log(`Seeded ${products.length} products.`);
+  console.log();
+
+  return NextResponse.json({
+    success: true,
+    message: `Seeded ${products.length} products.`,
+  });
 }

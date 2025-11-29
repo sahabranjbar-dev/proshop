@@ -44,9 +44,9 @@ const AdminSidebar = async () => {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <User2 />{" "}
-                  {session?.user.name ||
-                    session?.user.phone ||
-                    session?.user.email ||
+                  {session?.user?.name ||
+                    session?.user?.phone ||
+                    session?.user?.email ||
                     "کاربر میهمان"}
                   <ChevronUp className="mr-auto" />
                 </SidebarMenuButton>

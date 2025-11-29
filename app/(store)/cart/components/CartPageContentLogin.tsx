@@ -1,14 +1,13 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2, ShoppingCart } from "lucide-react"; // آیکون‌های پیشنهادی
 import { useSession } from "next-auth/react";
-import React from "react";
-import CartItemContent from "./CartItemContent";
-import api from "@/lib/axios";
-import { ICart } from "@/types/common";
-import { ShoppingCart, Loader2 } from "lucide-react"; // آیکون‌های پیشنهادی
 import { getCart } from "../meta/utils";
+import CartItemContent from "./CartItemContent";
+import { useRouter } from "next/navigation";
 
 const CartPageContentLogin = () => {
+  const { push } = useRouter();
   const session = useSession();
   const userId = session.data?.user?.id;
 
@@ -96,7 +95,12 @@ const CartPageContentLogin = () => {
                 {/* جایگزین با متغیر قیمت نهایی */}
               </div>
 
-              <button className="w-full mt-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300">
+              <button
+                onClick={() => {
+                  push("/shipping");
+                }}
+                className="text-center w-full mt-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300"
+              >
                 تأیید و تکمیل سفارش
               </button>
             </div>

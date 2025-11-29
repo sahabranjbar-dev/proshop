@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
-import React from "react";
-import { IResendCode } from "../meta/types";
 import { FilePenLine, MessageSquareText } from "lucide-react";
-import { useTimer } from "@/hooks/useTimer";
 import { useSendOtp } from "../hooks/useSendOtp";
+import { IResendCode } from "../meta/types";
+import { useTimer } from "@/hooks/useTimer";
 
 const ResendCode = ({
   setLoginFormType,

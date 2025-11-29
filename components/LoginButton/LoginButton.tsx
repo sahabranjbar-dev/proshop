@@ -1,11 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import { Button } from "../ui/button";
-import { User } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
-import { Modal } from "../Modal/Modal";
 import LoginForm from "@/app/auth/components/LoginForm";
-import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +9,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useQueryClient } from "@tanstack/react-query";
+import { User } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import { useState } from "react";
+import { Modal } from "../Modal/Modal";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 const LoginButton = () => {
   const session = useSession();
@@ -47,7 +47,15 @@ const LoginButton = () => {
                 "کاربر میهمان"}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>پروفایل کاربری</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link
+                href={
+                  session.data.user?.role === "ADMIN" ? "/admin" : "customer"
+                }
+              >
+                پروفایل کاربری
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem
               className="text-red-500"
               onClick={() => {

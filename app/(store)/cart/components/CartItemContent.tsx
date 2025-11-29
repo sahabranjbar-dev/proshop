@@ -5,8 +5,8 @@ import AddToCartButtonsContainer from "../../products/components/AddToCartButton
 
 interface Props {
   title: string;
-  description: string;
-  id: string;
+  description?: string;
+  id?: string;
   price: number;
 }
 
@@ -23,12 +23,13 @@ const CartItemContent = ({ description, title, price, id }: Props) => {
 
         <div className="flex-1">
           <h3>{title}</h3>
-          <p>{description}</p>
+          {!!description && <p>{description}</p>}
+          <p>{price}</p>
         </div>
 
         <div>
           <AddToCartButtonsContainer
-            productId={id}
+            productId={id ?? ""}
             price={price}
             title={title}
           />

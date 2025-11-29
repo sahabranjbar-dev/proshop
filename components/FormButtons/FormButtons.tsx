@@ -8,6 +8,7 @@ const FormButtons = ({
   submitLoading,
   cancelUrl,
   submitLabel,
+  onCancel,
 }: IFormButtons) => {
   const { replace } = useRouter();
   return (
@@ -18,7 +19,10 @@ const FormButtons = ({
       <Button
         type="button"
         onClick={() => {
-          replace(cancelUrl);
+          if (cancelUrl) {
+            replace(cancelUrl);
+          }
+          onCancel?.();
         }}
         variant={"destructive"}
       >

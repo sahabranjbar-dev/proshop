@@ -3,7 +3,7 @@ import { LoginFormType } from "../components/LoginForm";
 import { UseFormReset } from "react-hook-form";
 
 export interface IResendCode {
-  setLoginFormType: Dispatch<SetStateAction<LoginFormType>>;
+  setLoginFormType: Dispatch<SetStateAction<LoginFormType | null>>;
   mobile: string;
   resetOtpInputs: UseFormReset<{ otp: string }>;
 }

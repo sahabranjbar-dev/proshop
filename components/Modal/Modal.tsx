@@ -49,7 +49,7 @@ export function Modal({
 
       <DialogContent className={clsx(className, width)}>
         {(title || description) && (
-          <DialogHeader className="m-4">
+          <DialogHeader>
             {title && (
               <DialogTitle className="text-center">{title}</DialogTitle>
             )}

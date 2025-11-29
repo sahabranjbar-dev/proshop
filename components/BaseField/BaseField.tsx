@@ -1,10 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { Controller, useFormContext } from "react-hook-form";
-import { IBaseField } from "./meta/types";
-import { Input } from "../ui/input";
-import { ShieldAlert } from "lucide-react";
 import { ChangeEvent } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { Input } from "../ui/input";
+import { IBaseField } from "./meta/types";
 
 const BaseField = ({
   name,
