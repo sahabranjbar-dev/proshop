@@ -68,8 +68,13 @@ const LoginButton = () => {
         </DropdownMenu>
       ) : (
         <>
-          <Button type="button" onClick={loginClickHanlder} variant={"ghost"}>
-            <User />
+          <Button
+            type="button"
+            onClick={loginClickHanlder}
+            variant={"ghost"}
+            className="border border-primary/50 text-primary"
+          >
+            ورود / ثبت‌نام
           </Button>
 
           <Modal

@@ -7,7 +7,7 @@ const CartButtonContent = ({ cartItemCount }: { cartItemCount: number }) => {
       href="/cart"
       className="text-gray-600 hover:text-indigo-600 relative p-2 rounded-full hover:bg-gray-100 transition duration-150"
     >
-      <ShoppingCart size={20} />
+      <ShoppingCart size={20} className="text-primary" />
       {/* نشان تعداد آیتم‌ها */}
       <span className="h-5 w-5 absolute top-0 right-0 inline-flex items-center justify-center text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-blue-500 rounded-full">
         {cartItemCount}
