@@ -28,7 +28,7 @@ const Header = () => {
     return;
   return (
     <header className="sticky top-0 z-50 bg-white">
-      <div className="container mx-auto shadow rounded-lg mt-1 px-4 py-4 flex justify-between items-center">
+      <div className="container mx-auto shadow rounded-lg mt-1 px-10 py-2 flex justify-between items-center">
         <Logo />
 
         <HeaderSearchInput />

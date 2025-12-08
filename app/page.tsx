@@ -1,3 +1,5 @@
 export default async function Home() {
-  return <div>hello world</div>;
+  return (
+    <main className="min-h-screen container mx-auto m-2">hello world</main>
+  );
 }

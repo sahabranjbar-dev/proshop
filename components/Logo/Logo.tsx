@@ -1,11 +1,18 @@
 "use client";
+import clsx from "clsx";
 import Image from "next/image";
+import Link from "next/link";
 
-const Logo = () => {
+interface Props {
+  className?: string;
+  href?: string;
+}
+
+const Logo = ({ className, href = "/" }: Props) => {
   return (
-    <div className="bg-white">
+    <Link href={href} className={clsx("bg-white", className)}>
       <Image src={"/images/logo.png"} alt="logo" width={80} height={80} />
-    </div>
+    </Link>
   );
 };
 
