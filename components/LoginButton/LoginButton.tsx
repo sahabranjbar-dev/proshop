@@ -15,8 +15,14 @@ import { useState } from "react";
 import { Modal } from "../Modal/Modal";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import clsx from "clsx";
 
-const LoginButton = () => {
+interface Props {
+  className?: string;
+  isModal?: boolean;
+}
+
+const LoginButton = ({ className, isModal = true }: Props) => {
   const session = useSession();
 
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -68,23 +74,41 @@ const LoginButton = () => {
         </DropdownMenu>
       ) : (
         <>
-          <Button
-            type="button"
-            onClick={loginClickHanlder}
-            variant={"ghost"}
-            className="border border-primary/50 text-primary"
-          >
-            ورود / ثبت‌نام
-          </Button>
+          {isModal ? (
+            <>
+              <Button
+                type="button"
+                onClick={loginClickHanlder}
+                variant={"ghost"}
+                className={clsx(
+                  "border border-primary/50 text-primary",
+                  className
+                )}
+              >
+                ورود / ثبت‌نام
+              </Button>
 
-          <Modal
-            title="ورود به حساب کاربری"
-            onClose={() => setOpenModal(false)}
-            open={openModal}
-            hideActions
-          >
-            <LoginForm />
-          </Modal>
+              <Modal
+                title="ورود به حساب کاربری"
+                onClose={() => setOpenModal(false)}
+                open={openModal}
+                hideActions
+              >
+                <LoginForm />
+              </Modal>
+            </>
+          ) : (
+            <Link
+              className={clsx(
+                "border border-primary/50 text-primary text-center p-2 rounded-lg",
+                className
+              )}
+              href={"/auth"}
+            >
+              {" "}
+              ورود / ثبت‌نام
+            </Link>
+          )}
         </>
       )}
     </>

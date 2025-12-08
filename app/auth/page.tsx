@@ -1,3 +1,4 @@
+import Link from "next/link";
 import LoginForm from "./components/LoginForm";
 
 const LoginPage = () => {
@@ -8,7 +9,11 @@ const LoginPage = () => {
           <div className="bg-blue-500 text-white p-8 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-black opacity-10"></div>
             <div className="relative z-10">
-              <h1 className="text-3xl font-bold mb-2">فروشگاه</h1>
+              <Link href={"/"}>
+                <h1 className="text-3xl font-bold mb-2">
+                  فروشگاه شایان اسپارک پلاگ
+                </h1>
+              </Link>
             </div>
           </div>
 

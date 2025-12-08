@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import EmptyCart from "./EmptyCart";
 
 const CartPageContent = () => {
   const { push } = useRouter();
@@ -41,7 +42,7 @@ const CartPageContent = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
+      <div className="mb-4">
         <h2 className="text-3xl font-extrabold flex items-center text-gray-800 border-b pb-2">
           <ShoppingCart className="w-6 h-6 ml-2 text-blue-600" />
           سبد خرید شما
@@ -49,12 +50,7 @@ const CartPageContent = () => {
       </div>
 
       {isCartEmpty ? (
-        <div className="mt-10 p-10 text-center border-2 border-dashed border-gray-300 rounded-lg bg-white shadow-sm">
-          <p className="text-xl text-gray-600">سبد خرید شما خالی است.</p>
-          <p className="text-md text-gray-500 mt-2">
-            محصولات مورد علاقه خود را اضافه کنید!
-          </p>
-        </div>
+        <EmptyCart />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3 bg-white p-4 rounded-lg shadow-md divide-y divide-gray-200">

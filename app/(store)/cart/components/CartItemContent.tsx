@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import React from "react";
-import AddToCartButtonsContainer from "../../products/components/AddToCartButtonsContainer";
+import AddToCartButtonsContainer from "../../shop/components/AddToCartButtonsContainer";
 
 interface Props {
   title: string;

@@ -1,5 +1,5 @@
 "use client";
-import { Menu } from "lucide-react";
+
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -7,6 +7,8 @@ import LoginButton from "../LoginButton/LoginButton";
 import { Skeleton } from "../ui/skeleton";
 import Logo from "../Logo/Logo";
 import HeaderSearchInput from "../HeaderSearchInput/HeaderSearchInput";
+import Navbar from "../Navbar/Navbar";
+import Menu from "../Menu/Menu";
 
 const CartButtonContainer = dynamic(
   () => import("../CartButton/CartButtonContainer"),
@@ -28,21 +30,25 @@ const Header = () => {
     return;
   return (
     <header className="sticky top-0 z-50 bg-white">
-      <div className="container mx-auto shadow rounded-lg mt-1 px-10 py-2 flex justify-between items-center">
-        <Logo />
+      <div className="container mx-auto shadow rounded-lg px-10 py-2 ">
+        <div className="flex justify-between items-center">
+          <Logo />
 
-        <HeaderSearchInput />
+          <HeaderSearchInput />
 
-        <div className="hidden md:flex justify-center items-center gap-2 min-w-[10%] ">
-          <CartButtonContainer />
-          <div>
-            <LoginButton />
+          <div className="hidden md:flex justify-center items-center gap-2 min-w-[10%] ">
+            <CartButtonContainer />
+            <div>
+              <LoginButton />
+            </div>
           </div>
+
+          <Menu />
         </div>
 
-        <button className="md:hidden text-gray-600 p-2 rounded-full hover:bg-gray-100 transition duration-150">
-          <Menu size={20} />
-        </button>
+        <nav className="mt-2 hidden md:block">
+          <Navbar />
+        </nav>
       </div>
     </header>
   );
