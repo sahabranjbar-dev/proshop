@@ -1,8 +1,8 @@
 "use client";
 import { useCartStore } from "@/container/CartProvider/CartProvider";
+import { AddToCartContext } from "@/context/AddToCartContext";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useContext } from "react";
-import { AddToCartContext } from "../context/AddToCartContext";
 
 const AddToCartButtons = () => {
   const addItem = useCartStore((state) => state.addItem);

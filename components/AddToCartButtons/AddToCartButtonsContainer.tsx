@@ -3,8 +3,8 @@ import { useSession } from "next-auth/react";
 import React from "react";
 import AddToCartButtonsLogin from "./AddToCartButtonsLogin";
 import AddToCartButtons from "./AddToCartButtons";
-import { IAddToCartButtonsContainer } from "../meta/types";
-import { AddToCartContext } from "../context/AddToCartContext";
+import { IAddToCartButtonsContainer } from "@/types/cart";
+import { AddToCartContext } from "@/context/AddToCartContext";
 
 const AddToCartButtonsContainer = ({
   price,

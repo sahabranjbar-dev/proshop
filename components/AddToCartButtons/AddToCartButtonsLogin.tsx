@@ -1,13 +1,12 @@
 "use client";
+import { getCart } from "@/app/(store)/cart/meta/utils";
+import { AddToCartContext } from "@/context/AddToCartContext";
 import api from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
-import React, { useContext } from "react";
-import { AddToCartContext } from "../context/AddToCartContext";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useContext } from "react";
 import { toast } from "sonner";
-import { ICart } from "@/types/common";
-import { getCart } from "../../cart/meta/utils";
 
 const AddToCartButtonsLogin = () => {
   const session = useSession();

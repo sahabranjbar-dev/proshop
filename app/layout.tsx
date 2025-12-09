@@ -47,7 +47,7 @@ export default async function RootLayout({
           <QueryClientWrapper>
             <CartProvider>
               <Header />
-              {children}
+              <main className="min-h-screen">{children}</main>
               <Footer />
             </CartProvider>
           </QueryClientWrapper>
