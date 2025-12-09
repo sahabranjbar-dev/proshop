@@ -1,11 +1,10 @@
 "use client";
 
+import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
 import Logo from "../Logo/Logo";
-import { ChevronLeft, Heart } from "lucide-react";
 
 const footerData = [
   {

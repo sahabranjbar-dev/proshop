@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ICombobox } from "./meta/types";
+import clsx from "clsx";
 
 function Combobox({
   data,
@@ -23,6 +24,7 @@ function Combobox({
   placeholder,
   options,
   selectValue,
+  className,
   ...res
 }: ICombobox<{ resultList: { farsiTitle: string; englishTitle: string }[] }>) {
   // error and loading should handle
@@ -36,7 +38,7 @@ function Combobox({
       }}
       value={res.value}
     >
-      <SelectTrigger className="w-full">
+      <SelectTrigger className={clsx("w-full", className)}>
         {selectValue ? selectValue : <SelectValue placeholder={placeholder} />}
       </SelectTrigger>
       <SelectContent>

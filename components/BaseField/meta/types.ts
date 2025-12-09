@@ -7,5 +7,6 @@ export interface IBaseField {
   component: any;
   formatter?: boolean;
   onUploaded?: (publicUrl: string, fileId: string) => void;
+  containerClassName?: string;
   [key: string]: any;
 }

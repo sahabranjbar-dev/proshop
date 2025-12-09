@@ -4,6 +4,7 @@ import { ChangeEvent } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
 import { IBaseField } from "./meta/types";
+import clsx from "clsx";
 
 const BaseField = ({
   name,
@@ -16,6 +17,7 @@ const BaseField = ({
   component: Compo = Input,
   defaultValue,
   onChange,
+  containerClassName,
   ...res
 }: IBaseField) => {
   const { control } = useFormContext();
@@ -30,7 +32,12 @@ const BaseField = ({
       }}
       render={({ field, formState }) => {
         return (
-          <div className="flex flex-col justify-between items-start gap-2 relative">
+          <div
+            className={clsx(
+              "flex flex-col justify-between items-start gap-2 relative",
+              containerClassName
+            )}
+          >
             {label && (
               <label htmlFor={name}>
                 {label}{" "}

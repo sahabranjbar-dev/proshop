@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
   Menu as MenuIcon,
-  X,
   Home,
   ShoppingBag,
   TrendingUp,
@@ -16,7 +15,6 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -53,10 +51,10 @@ const Menu = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="md:hidden text-gray-600 p-3 rounded-lg hover:bg-gray-100 transition-all duration-300 active:scale-95 relative group">
+        <button className="md:hidden text-gray-600 p-3 rounded-lg bg-gray-100 transition-all duration-300 active:scale-95 relative group ml-10">
           <MenuIcon
             size={24}
-            className="group-hover:text-primary transition-colors duration-300"
+            className="text-primary transition-colors duration-300"
           />
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
         </button>

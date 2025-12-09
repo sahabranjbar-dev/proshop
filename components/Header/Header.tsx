@@ -29,16 +29,16 @@ const Header = () => {
   )
     return;
   return (
-    <header className="sticky top-0 z-50 bg-white">
-      <div className="container mx-auto shadow rounded-lg px-10 py-2 ">
+    <header className="sticky top-0 z-50 ">
+      <div className="container mx-auto shadow rounded-lg bg-white">
         <div className="flex justify-between items-center">
-          <Logo />
+          <Logo className="md:mr-20" />
 
           <HeaderSearchInput />
 
           <div className="hidden md:flex justify-center items-center gap-2 min-w-[10%] ">
             <CartButtonContainer />
-            <div>
+            <div className="ml-10">
               <LoginButton />
             </div>
           </div>
