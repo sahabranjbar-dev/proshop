@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LoginButton from "../LoginButton/LoginButton";
+import { Button } from "../ui/button";
 
 // محتوای منو
 const menuContent = [
@@ -51,13 +52,13 @@ const Menu = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="md:hidden text-gray-600 p-3 rounded-lg bg-gray-100 transition-all duration-300 active:scale-95 relative group ml-10">
+        <Button className="md:hidden text-gray-600 p-3 rounded-lg bg-gray-100 transition-all duration-300 active:scale-95 relative group ml-10">
           <MenuIcon
             size={24}
             className="text-primary transition-colors duration-300"
           />
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-        </button>
+        </Button>
       </SheetTrigger>
       <SheetContent
         side="right"
@@ -99,20 +100,6 @@ const Menu = () => {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div
-                      className={`p-2 rounded-lg ${
-                        isActive
-                          ? "bg-primary/20"
-                          : "bg-gray-100 group-hover:bg-primary/10"
-                      }`}
-                    >
-                      {React.cloneElement(item.icon, {
-                        className: isActive
-                          ? "text-primary"
-                          : "text-gray-600 group-hover:text-primary",
-                        size: 20,
-                      })}
-                    </div>
                     <span className="font-medium">{item.title}</span>
                   </div>
                   {isActive && (

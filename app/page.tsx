@@ -1,11 +1,20 @@
+import BrandsLogo from "@/components/BrandsLogo/BrandsLogo";
+import Festival from "@/components/Festival/Festival";
 import Hero from "@/components/Hero/Hero";
+import { Card } from "@/components/ui/card";
 
 export default async function Home() {
   return (
-    <section className="container mx-auto m-2">
-      <div className="shadow border rounded-md p-6">
+    <div className="container mx-auto m-2">
+      <Card className="p-4 my-2">
         <Hero />
-      </div>
-    </section>
+      </Card>
+
+      <Festival />
+
+      <Card>
+        <BrandsLogo />
+      </Card>
+    </div>
   );
 }

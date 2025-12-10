@@ -17,7 +17,11 @@ const ProductCard = ({
   productDescription,
 }: Props) => {
   return (
-    <Link target="_blank" href={`/shop/${productId}`} className="border p-2">
+    <Link
+      target="_blank"
+      href={`/shop/${productId}`}
+      className="border p-2 rounded bg-white"
+    >
       <Image
         src={"/images/placeholder.png"}
         alt={productTitle}
