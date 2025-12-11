@@ -1,25 +1,10 @@
-import prisma from "@/utils/prisma";
-import ProductCard from "../ProductCard/ProductCard";
-import { Card } from "../ui/card";
+import React from "react";
 import ProductCardContainer from "../ProductCardContainer/ProductCardContainer";
+import ProductCard from "../ProductCard/ProductCard";
 
-const Festival = async () => {
-  // const campaigns = await prisma.saleCampaign.findMany({
-  //   where: {
-  //     isActive: true,
-  //   },
-  //   include: {
-  //     products: true,
-  //   },
-  // });
-  // const products = campaigns.find(
-  //   (item) => item.startDate > new Date()
-  // )?.products;
-
-  // if (!products?.length) return null;
-
+const Bestsellers = () => {
   return (
-    <ProductCardContainer title="جشنواره‌ی فروش پاییزه">
+    <ProductCardContainer title="پرفروش‌ترین‌ها">
       <div className="flex justify-start items-center gap-2 overflow-scroll">
         {[...Array(20)].map((item: any, index) => (
           <ProductCard
@@ -35,4 +20,4 @@ const Festival = async () => {
   );
 };
 
-export default Festival;
+export default Bestsellers;

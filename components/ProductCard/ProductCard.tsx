@@ -20,7 +20,7 @@ const ProductCard = ({
     <Link
       target="_blank"
       href={`/shop/${productId}`}
-      className="border p-2 rounded bg-white"
+      className="border p-2 rounded bg-white max-h-[400px] min-w-xs"
     >
       <Image
         src={"/images/placeholder.png"}
@@ -29,7 +29,9 @@ const ProductCard = ({
         height={200}
         className="w-full"
       />
-      <h3 className="text-primary-500 font-semibold">{productTitle}</h3>
+      <h3 className="text-primary-700 font-semibold line-clamp-2">
+        {productTitle}
+      </h3>
       <h4 className="line-clamp-2 my-2 text-gray-400">
         {productDescription} {productDescription}
       </h4>
@@ -40,7 +42,7 @@ const ProductCard = ({
 
       <div className="flex justify-end items-center gap-2 ml-2 my-2 font-semibold">
         <span>{productPrice.toLocaleString("fa")}</span>
-        تومان
+        <span className="text-xs">تومان</span>
       </div>
     </Link>
   );

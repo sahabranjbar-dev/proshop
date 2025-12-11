@@ -8,13 +8,13 @@ const BrandsLogo = () => {
     <div>
       <SectionTitle title="برند‌ها" />
 
-      <div className="flex justify-evenly items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 justify-center items-center my-4 gap-4">
         {brands.map(({ id, src, title }) => (
           <Tooltip key={id}>
             <TooltipContent>{title}</TooltipContent>
             <TooltipTrigger>
               <Image
-                className="hover:-translate-y-1.5 transition-transform duration-300"
+                className="hover:-translate-y-1.5 transition-transform duration-300 justify-self-center m-4"
                 src={src}
                 alt={title}
                 width={100}

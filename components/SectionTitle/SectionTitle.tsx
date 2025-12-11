@@ -9,6 +9,16 @@ interface Props {
 const SectionTitle = ({ title }: Props) => {
   const titleRef = useRef<HTMLHeadingElement>(null);
 
+  const recalc = () => {
+    if (!titleRef.current) return;
+    const el = titleRef.current;
+    setState({
+      width: el.offsetWidth,
+      height: el.offsetHeight,
+      left: el.offsetLeft,
+    });
+  };
+
   const [state, setState] = useState({
     width: 0,
     height: 0,
@@ -16,19 +26,15 @@ const SectionTitle = ({ title }: Props) => {
   });
 
   useEffect(() => {
-    if (!titleRef.current) return;
+    recalc(); // محاسبه اولیه
 
-    const el = titleRef.current;
+    window.addEventListener("resize", recalc);
 
-    setState({
-      width: el.offsetWidth,
-      height: el.offsetHeight,
-      left: el.offsetLeft,
-    });
+    return () => window.removeEventListener("resize", recalc);
   }, []);
 
   return (
-    <div className="relative">
+    <div className="relative my-4">
       <div className="flex justify-center">
         <h3
           ref={titleRef}

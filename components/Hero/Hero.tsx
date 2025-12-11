@@ -15,7 +15,7 @@ const Hero = () => {
 
       <Form
         onSubmit={() => {}}
-        className="inline-flex justify-start items-center gap-4 w-full mt-4"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-start items-center gap-4 w-full mt-4"
       >
         <BaseField
           containerClassName="min-w-2xs"
