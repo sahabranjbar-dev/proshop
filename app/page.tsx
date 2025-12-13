@@ -1,6 +1,7 @@
 import Advantages from "@/components/Advantages/Advantages";
 import Banners from "@/components/Banners/Banners";
 import Bestsellers from "@/components/Bestsellers/Bestsellers";
+import Blogs from "@/components/Blogs/Blogs";
 import BrandsLogo from "@/components/BrandsLogo/BrandsLogo";
 import Festival from "@/components/Festival/Festival";
 import Hero from "@/components/Hero/Hero";
@@ -39,6 +40,12 @@ export default async function Home() {
       <section>
         <Card className="p-4 my-2">
           <Advantages />
+        </Card>
+      </section>
+
+      <section>
+        <Card className="p-4 my-2">
+          <Blogs />
         </Card>
       </section>
     </div>
