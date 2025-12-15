@@ -12,49 +12,49 @@ datasource db {
 // --------------------------------------
 
 model User {
-  id            String     @id @default(cuid())
-  email         String?    @unique
-  phone         String?    @unique
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  phone         String?   @unique
   firstName     String?
   lastName      String?
   password      String?
   avatar        String?
   emailVerified DateTime?
-  isActive      Boolean    @default(true)
-  role          Role       @default(USER)
+  isActive      Boolean   @default(true)
+  role          Role      @default(USER)
 
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  deletedAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  orders        Order[]
-  addresses     Address[]
-  reviews       Review[]
-  cart          Cart?
+  orders    Order[]
+  addresses Address[]
+  reviews   Review[]
+  cart      Cart?
 
   @@index([email, phone])
   @@map("users")
 }
 
 model Address {
-  id            String    @id @default(cuid())
+  id            String  @id @default(cuid())
   province      String
   city          String
-  address       String    @db.Text
+  address       String  @db.Text
   plaque        String?
   floor         String?
   postalCode    String
   phone         String?
   recipientName String?
-  isDefault     Boolean   @default(false)
-  title         String    @default("Home")
+  isDefault     Boolean @default(false)
+  title         String  @default("Home")
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  orders        Order[]
+  orders Order[]
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("addresses")
 }
@@ -70,64 +70,88 @@ enum Role {
 // --------------------------------------
 
 model Product {
-  id           String          @id @default(cuid())
+  id           String   @id @default(cuid())
   title        String
-  slug         String          @unique
-  description  String?         @db.Text
-  content      String?         @db.Text
-  price        Decimal         @db.Decimal(10, 2)
-  comparePrice Decimal?        @db.Decimal(10, 2)
+  slug         String   @unique
+  description  String?  @db.Text
+  content      String?  @db.Text
+  price        Decimal  @db.Decimal(10, 2)
+  comparePrice Decimal? @db.Decimal(10, 2)
 
-  stock        Int             @default(0)
-  sku          String?         @unique
-  isPublished  Boolean         @default(true)
+  stock       Int     @default(0)
+  sku         String? @unique
+  isPublished Boolean @default(true)
 
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  deletedAt    DateTime?
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
 
-  campaigns    SaleCampaign[] @relation("CampaignProducts")
-  files        File[]         @relation("ProductFiles")
-  categories   Category[]     @relation("ProductCategories")
-  orderItems   OrderItem[]
-  reviews      Review[]
-  cartItems    CartItem[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  campaigns  SaleCampaign[] @relation("CampaignProducts")
+  files      File[]         @relation("ProductFiles")
+  categories Category[]     @relation("ProductCategories")
+  orderItems OrderItem[]
+  reviews    Review[]
+  cartItems  CartItem[]
 
   @@index([slug, isPublished])
+  @@index([brandId])
   @@map("products")
 }
 
-model Category {
-  id          String          @id @default(cuid())
+model Brand {
+  id          String  @id @default(cuid())
   name        String
-  slug        String          @unique
+  slug        String  @unique
+  description String? @db.Text
+  logo        String? // URL یا fileId
+  website     String?
+
+  isActive Boolean @default(true)
+
+  products Product[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([slug, isActive])
+  @@map("brands")
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
   description String?
 
-  parentId    String?
-  parent      Category?      @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children    Category[]     @relation("CategoryHierarchy")
+  parentId String?
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
 
-  products    Product[]      @relation("ProductCategories")
-  campaigns   SaleCampaign[] @relation("CampaignCategories")
+  products  Product[]      @relation("ProductCategories")
+  campaigns SaleCampaign[] @relation("CampaignCategories")
 
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("categories")
 }
 
 model Review {
-  id        String    @id @default(cuid())
-  rating    Int       @default(5)
-  comment   String?   @db.Text
+  id      String  @id @default(cuid())
+  rating  Int     @default(5)
+  comment String? @db.Text
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@map("reviews")
 }
@@ -137,78 +161,78 @@ model Review {
 // --------------------------------------
 
 model Order {
-  id               String          @id @default(cuid())
-  orderNumber      String          @unique @default(cuid())
-  status           OrderStatus     @default(PENDING)
-  totalAmount      Decimal         @db.Decimal(10, 2)
-  discountAmount   Decimal         @default(0) @db.Decimal(10, 2)
+  id             String      @id @default(cuid())
+  orderNumber    String      @unique @default(cuid())
+  status         OrderStatus @default(PENDING)
+  totalAmount    Decimal     @db.Decimal(10, 2)
+  discountAmount Decimal     @default(0) @db.Decimal(10, 2)
 
   // فیلدهای روش ارسال
   shippingMethodId String?
   shippingMethod   SendingMethod? @relation(fields: [shippingMethodId], references: [id])
-  shippingCost     Decimal         @db.Decimal(10, 2)
+  shippingCost     Decimal        @db.Decimal(10, 2)
 
-  couponId         String?
-  coupon           Coupon?        @relation(fields: [couponId], references: [id])
+  couponId String?
+  coupon   Coupon? @relation(fields: [couponId], references: [id])
 
-  userId           String
-  user             User           @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  addressId        String?
-  address          Address?       @relation(fields: [addressId], references: [id])
+  addressId String?
+  address   Address? @relation(fields: [addressId], references: [id])
 
-  orderItems       OrderItem[]
-  payment          Payment?
+  orderItems OrderItem[]
+  payment    Payment?
 
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("orders")
 }
 
 model SendingMethod {
-  id           String    @id @default(cuid())
+  id           String  @id @default(cuid())
   farsiTitle   String
   englishTitle String
-  baseCost     Decimal   @db.Decimal(10, 2)
+  baseCost     Decimal @db.Decimal(10, 2)
 
-  orders       Order[]
+  orders Order[]
 
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("sending_methods")
 }
 
 model OrderItem {
-  id         String    @id @default(cuid())
-  orderId    String
-  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  productId  String?
-  product    Product? @relation(fields: [productId], references: [id])
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
 
   quantity   Int
-  price      Decimal   @db.Decimal(10, 2)
+  price      Decimal @db.Decimal(10, 2)
   // 💡 اضافه شدن: ذخیره هزینه نهایی محصول پس از تخفیف‌های احتمالی لحظه‌ای
-  finalPrice Decimal   @db.Decimal(10, 2)
+  finalPrice Decimal @db.Decimal(10, 2)
 
   @@map("order_items")
 }
 
 model Payment {
-  id        String         @id @default(cuid())
-  amount    Decimal        @db.Decimal(10, 2)
-  method    PaymentMethod  @default(ONLINE)
-  status    PaymentStatus  @default(PENDING)
+  id        String        @id @default(cuid())
+  amount    Decimal       @db.Decimal(10, 2)
+  method    PaymentMethod @default(ONLINE)
+  status    PaymentStatus @default(PENDING)
   authority String?
   refId     String?
 
-  orderId   String         @unique
-  order     Order         @relation(fields: [orderId], references: [id])
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
 
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("payments")
 }
@@ -218,30 +242,30 @@ model Payment {
 // --------------------------------------
 
 model Cart {
-  id        String      @id @default(cuid())
-  userId    String      @unique
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     CartItem[]
+  id     String     @id @default(cuid())
+  userId String     @unique
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items  CartItem[]
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("carts")
 }
 
 model CartItem {
-  id        String    @id @default(cuid())
+  id String @id @default(cuid())
 
-  cartId    String
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId String
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 
-  quantity  Int       @default(1)
+  quantity Int @default(1)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([cartId, productId])
   @@map("cart_items")
@@ -252,71 +276,71 @@ model CartItem {
 // --------------------------------------
 
 model OtpCode {
-  phone     String    @id
+  phone     String   @id
   code      String
   expiresAt DateTime
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@map("otp_codes")
 }
 
 model File {
-  id        String    @id @default(cuid())
-  key       String    @unique
-  url       String
-  name      String?
-  size      Int?
-  type      String?
+  id   String  @id @default(cuid())
+  key  String  @unique
+  url  String
+  name String?
+  size Int?
+  type String?
 
   productId String?
   product   Product? @relation("ProductFiles", fields: [productId], references: [id], onDelete: SetNull)
 
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@map("files")
 }
 
 model Coupon {
-  id             String        @id @default(cuid())
-  code           String        @unique
-  type           DiscountType
-  value          Decimal       @db.Decimal(10, 2)
+  id    String       @id @default(cuid())
+  code  String       @unique
+  type  DiscountType
+  value Decimal      @db.Decimal(10, 2)
 
-  startDate      DateTime?
-  endDate        DateTime?
+  startDate DateTime?
+  endDate   DateTime?
 
   usageLimit     Int?
-  usedCount      Int           @default(0)
-  minOrderAmount Decimal?      @db.Decimal(10, 2)
-  isActive       Boolean       @default(true)
+  usedCount      Int      @default(0)
+  minOrderAmount Decimal? @db.Decimal(10, 2)
+  isActive       Boolean  @default(true)
 
-  orders         Order[]
+  orders Order[]
 
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("coupons")
 }
 
 model SaleCampaign {
-  id          String        @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
   description String?
   bannerUrl   String?
 
-  type        DiscountType
-  value       Decimal       @db.Decimal(10, 2)
+  type  DiscountType
+  value Decimal      @db.Decimal(10, 2)
 
-  startDate   DateTime
-  endDate     DateTime
+  startDate DateTime
+  endDate   DateTime
 
-  isActive    Boolean       @default(true)
+  isActive Boolean @default(true)
 
-  products    Product[]    @relation("CampaignProducts")
-  categories  Category[]   @relation("CampaignCategories")
+  products   Product[]  @relation("CampaignProducts")
+  categories Category[] @relation("CampaignCategories")
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("sale_campaigns")
 }

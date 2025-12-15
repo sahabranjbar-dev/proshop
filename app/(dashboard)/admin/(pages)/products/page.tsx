@@ -1,7 +1,7 @@
 import ListContainer from "@/container/ListContainer/ListContainer";
 import React from "react";
-import ProductsHeader from "./components/ProductsHeader";
-import ProductsList from "./components/ProductsList";
+import ProductsHeader from "./_components/ProductsHeader";
+import ProductsList from "./_components/ProductsList";
 
 const ProductsPage = () => {
   return (

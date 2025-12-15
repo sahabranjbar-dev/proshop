@@ -20,15 +20,16 @@ const ProductCard = ({
     <Link
       target="_blank"
       href={`/shop/${productId}`}
-      className="border p-2 rounded bg-white max-h-[400px] min-w-xs"
+      className="border p-2 rounded bg-white max-h-[400px] min-w-[150px] hover:shadow-2xl duration-200"
     >
-      <Image
-        src={"/images/placeholder.png"}
-        alt={productTitle}
-        width={100}
-        height={200}
-        className="w-full"
-      />
+      <div className="relative flex justify-center items-center">
+        <Image
+          src={"/images/placeholder.png"}
+          alt={productTitle}
+          width={350}
+          height={350}
+        />
+      </div>
       <h3 className="text-primary-700 font-semibold line-clamp-2">
         {productTitle}
       </h3>

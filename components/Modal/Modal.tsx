@@ -8,13 +8,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import clsx from "clsx";
+import React from "react";
 
 interface ModalProps {
   open: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
   title?: string;
   description?: string;
   children: React.ReactNode;
@@ -23,31 +23,25 @@ interface ModalProps {
   onAction?: () => void;
   hideActions?: boolean;
   width?: string;
-  triggerElement?: React.ReactNode; // optional
   className?: string;
 }
 
 export function Modal({
   open,
-  onClose,
+  onOpenChange,
   title,
   description,
   children,
   actionLabel = "تایید",
-  actionLoading,
+  actionLoading = false,
   onAction,
-  hideActions,
+  hideActions = false,
   width = "max-w-lg",
-  triggerElement,
   className,
 }: ModalProps) {
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      {triggerElement && (
-        <DialogTrigger asChild>{triggerElement}</DialogTrigger>
-      )}
-
-      <DialogContent className={clsx(className, width)}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className={clsx(width, className)}>
         {(title || description) && (
           <DialogHeader>
             {title && (
@@ -59,16 +53,19 @@ export function Modal({
           </DialogHeader>
         )}
 
-        <div className="p-2">{children}</div>
+        <div className="py-2">{children}</div>
 
         {!hideActions && (
           <DialogFooter>
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
               انصراف
             </Button>
-            <Button onClick={onAction} loading={actionLoading}>
-              {actionLabel}
-            </Button>
+
+            {onAction && (
+              <Button onClick={onAction} loading={actionLoading}>
+                {actionLabel}
+              </Button>
+            )}
           </DialogFooter>
         )}
       </DialogContent>
