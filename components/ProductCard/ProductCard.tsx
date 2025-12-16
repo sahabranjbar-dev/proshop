@@ -8,6 +8,7 @@ interface Props {
   productTitle: string;
   productPrice: number;
   productDescription?: string;
+  productImageUrl?: string;
 }
 
 const ProductCard = ({
@@ -15,6 +16,7 @@ const ProductCard = ({
   productPrice,
   productTitle,
   productDescription,
+  productImageUrl,
 }: Props) => {
   return (
     <Link
@@ -24,10 +26,11 @@ const ProductCard = ({
     >
       <div className="relative flex justify-center items-center">
         <Image
-          src={"/images/placeholder.png"}
+          src={productImageUrl || "/images/placeholder.png"}
           alt={productTitle}
           width={350}
           height={350}
+          className="rounded my-2 max-h-48 h-48 object-cover border"
         />
       </div>
       <h3 className="text-primary-700 font-semibold line-clamp-2">

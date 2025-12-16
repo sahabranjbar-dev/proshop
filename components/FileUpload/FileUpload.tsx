@@ -1,67 +1,77 @@
 "use client";
 
 import React, { useMemo, useRef } from "react";
-import { X, Upload } from "lucide-react";
 import Image from "next/image";
 import clsx from "clsx";
-import { formatFileSize } from "@/utils/common";
-import { IFileUpload } from "./meta/types";
+import { Upload, X } from "lucide-react";
+
+import { formatFileSize, getFilePreview } from "@/utils/common";
 import { useUpload } from "@/hooks/useUpload";
+import { IFileUpload } from "./meta/types";
+
+type FileItem = {
+  file?: File;
+  fileId?: string;
+  url?: string;
+  key?: string;
+};
 
 const FileUpload = ({
   value,
   onChange,
   onUploaded,
+  multiple = false,
   savedFolderName = "products",
   ...rest
 }: IFileUpload) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { uploadFile, progress, loading, setProgress } = useUpload();
 
-  // const previewUrl = useMemo(() => {
-  //   if (!value) return "";
-  //   return getFilePreview(value?.file);
-  // }, [value]);
-
-  const fileSize = useMemo(() => {
-    if (!value) return "";
-    return formatFileSize(value?.file?.size);
+  const files: FileItem[] = useMemo(() => {
+    if (!value) return [];
+    return Array.isArray(value) ? value : [value];
   }, [value]);
 
-  const openPicker = (e: React.MouseEvent<HTMLDivElement>) => {
+  const openPicker = (e: React.MouseEvent) => {
     e.stopPropagation();
     fileInputRef.current?.click();
   };
 
-  const removeFile = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    onChange?.(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+  const removeFile = (index: number) => {
+    const newFiles = files.filter((_, i) => i !== index);
+    onChange?.(multiple ? newFiles : null);
     setProgress(0);
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const selectedFiles = Array.from(e.target.files || []);
+    if (!selectedFiles.length) return;
 
-    if (file) {
-      onChange?.({ file });
-
+    for (const file of selectedFiles) {
       try {
         const { publicUrl, fileId, key } = await uploadFile(
           file,
           savedFolderName
         );
 
+        const fileItem: FileItem = {
+          file,
+          fileId,
+          url: publicUrl,
+          key,
+        };
+
         onUploaded?.(publicUrl, fileId, key);
+
+        onChange?.(multiple ? [...files, fileItem] : fileItem);
       } catch (err) {
         console.error(err);
         alert("آپلود با خطا مواجه شد");
-      } finally {
-        // reset input so same file can be selected again if needed
-        if (fileInputRef.current) fileInputRef.current.value = "";
       }
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -69,88 +79,91 @@ const FileUpload = ({
     <div
       onClick={openPicker}
       className={clsx(
-        "border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 relative overflow-hidden min-h-[130px] w-full",
-        value
-          ? "border-green-500 bg-green-50 hover:bg-green-100"
+        "border-2 border-dashed rounded-xl p-4 cursor-pointer transition relative min-h-[130px]",
+        files.length
+          ? "border-green-500 bg-green-50"
           : "border-gray-300 bg-gray-50 hover:bg-gray-100"
       )}
     >
-      {/* Hidden Input */}
+      {/* Input */}
       <input
         {...rest}
         ref={fileInputRef}
         type="file"
+        multiple={multiple}
         className="hidden"
         onChange={handleFileChange}
       />
 
-      {/* Remove Button */}
-      {value && (
-        <button
-          type="button"
-          onClick={removeFile}
-          className="absolute top-2 left-2 p-1 rounded-full bg-white shadow hover:bg-gray-100 transition"
-        >
-          <X className="text-gray-600" size={18} />
-        </button>
-      )}
-
-      {/* Content */}
-      {!value ? (
+      {/* Empty State */}
+      {!files.length && (
         <div className="flex flex-col items-center gap-2 text-gray-600">
           <Upload size={28} />
-          <p className="text-sm">برای آپلود کلیک کنید</p>
-          {rest.accept && (
-            <p className="text-xs text-gray-400 mt-1">
-              فرمت‌های مجاز: {rest.accept}
-            </p>
-          )}
-        </div>
-      ) : (
-        <div className="flex justify-start items-center gap-2 w-full p-4">
-          {/* {previewUrl && (
-            <Image
-              src={previewUrl}
-              alt="preview"
-              width={70}
-              height={70}
-              className="rounded-md object-cover shadow max-h-20"
-            />
-          )} */}
-
-          <div>
-            <div className="text-sm text-gray-700" dir="ltr">
-              {value?.file?.name}
-            </div>
-            <p className="text-xs text-gray-500">{fileSize}</p>
-          </div>
+          <p className="text-sm">
+            {multiple
+              ? "برای آپلود تصاویر کلیک کنید"
+              : "برای آپلود تصویر کلیک کنید"}
+          </p>
         </div>
       )}
 
-      {/* use progress in shadcn */}
-      {progress > 0 && (
-        <>
-          <div
-            style={{
-              width: 200,
-              height: 8,
-              background: "#eee",
-              borderRadius: 4,
-              marginTop: 8,
-            }}
-          >
+      {/* Preview List */}
+      {!!files.length && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {files.map((item, index) => {
+            const previewUrl = getFilePreview(
+              item.file || { publicUrl: item.url }
+            );
+
+            return (
+              <div
+                key={item.key || index}
+                className="relative rounded-lg border bg-white p-2"
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeFile(index);
+                  }}
+                  className="absolute top-1 left-1 bg-white rounded-full shadow p-1"
+                >
+                  <X size={14} />
+                </button>
+
+                {previewUrl && (
+                  <Image
+                    src={previewUrl}
+                    alt="preview"
+                    width={120}
+                    height={120}
+                    className="rounded-md object-cover w-full h-24"
+                  />
+                )}
+
+                <div className="mt-1 text-xs truncate">{item.file?.name}</div>
+                {item.file && (
+                  <div className="text-[10px] text-gray-400">
+                    {formatFileSize(item.file.size)}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Progress */}
+      {loading && (
+        <div className="mt-3">
+          <div className="h-2 bg-gray-200 rounded">
             <div
-              style={{
-                width: `${progress}%`,
-                height: "100%",
-                background: "#3b82f6",
-                borderRadius: 4,
-                transition: "width .2s",
-              }}
+              className="h-full bg-blue-500 rounded transition-all"
+              style={{ width: `${progress}%` }}
             />
           </div>
-          <div>{loading ? `${progress}%` : ""}</div>
-        </>
+          <p className="text-xs text-center mt-1">{progress}%</p>
+        </div>
       )}
     </div>
   );

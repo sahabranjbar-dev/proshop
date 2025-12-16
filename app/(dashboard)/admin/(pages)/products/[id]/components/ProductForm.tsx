@@ -69,7 +69,7 @@ const ProductForm = ({
         });
 
         // در حالت ساخت محصول جدید، به صفحه ویرایش جدید ریدایرکت می‌کنیم
-        if (!id) replace(`/admin/products/${data.product.id}`);
+        // if (!id) replace(`/admin/products/${data.product.id}`);
       }
     },
   });
@@ -81,6 +81,7 @@ const ProductForm = ({
       price: parseFloat(data.price),
       comparePrice: data.comparePrice ? parseFloat(data.comparePrice) : null,
       stock: parseInt(data.stock, 10),
+      fileIds: data?.files?.map((file: any) => file.fileId) || [],
     };
 
     mutateAsync(processedData);
@@ -177,13 +178,13 @@ const ProductForm = ({
         <hr />
 
         {/* 10. categories (رابطه Many-to-Many) */}
-        <BaseField
+        {/* <BaseField
           component={Combobox}
           name="categoryIds" // نام فیلد را به صورت `categoryIds` برای ارسال آرایه‌ای از IDها تنظیم می‌کنیم
           label="دسته‌بندی‌ها"
-          // options={categoryOptions} // دیتای دسته‌بندی‌ها
+          options={categoryOptions} // دیتای دسته‌بندی‌ها
           placeholder="یک یا چند دسته‌بندی را انتخاب کنید"
-        />
+        /> */}
 
         <ComboboxItemDataGetter
           queryKey={["admin", "brand"]}
@@ -203,6 +204,7 @@ const ProductForm = ({
           component={FileUpload}
           name="files" // باید قابلیت آپلود چند فایل را داشته باشد
           label="تصاویر/فایل‌های محصول"
+          multiple
         />
 
         <hr />

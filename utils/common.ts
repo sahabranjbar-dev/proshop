@@ -53,7 +53,18 @@ export const formatFileSize = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 };
 
-export const getFilePreview = (file: File | any) => {
-  if (file?.publicUrl) return file?.publicUrl;
-  return URL?.createObjectURL(file);
+export const getFilePreview = (file?: File | Blob | { publicUrl?: string }) => {
+  if (!file) return null;
+
+  // اگر از بک‌اند اومده
+  if ("publicUrl" in file && file.publicUrl) {
+    return file.publicUrl;
+  }
+
+  // اگر واقعاً File یا Blob است
+  if (file instanceof File || file instanceof Blob) {
+    return URL.createObjectURL(file);
+  }
+
+  return null;
 };

@@ -122,88 +122,100 @@ const productSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // ۱. بررسی احراز هویت ادمین
+    // 1️⃣ بررسی ادمین
     const isAdmin = await isRequestByAdmin();
     if (!isAdmin) {
-      return NextResponse.json({ error: "Not allowed" }, { status: 403 });
+      return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 403 });
     }
 
     const body = await request.json();
 
-    // ۲. اعتبارسنجی بدنه درخواست
-    const parsedBody = productSchema.safeParse(body);
+    // 2️⃣ اعتبارسنجی
+    const parsed = productSchema.safeParse(body);
 
-    if (!parsedBody.success) {
-      // ارسال خطاهای اعتبارسنجی به فرانت‌اند
-      const formattedErrors = parsedBody.error.issues.map((issue) => ({
+    if (!parsed.success) {
+      const errors = parsed.error.issues.map((issue) => ({
         path: issue.path.join("."),
         message: issue.message,
       }));
-      return NextResponse.json(
-        { error: JSON.stringify(formattedErrors) },
-        { status: 400 }
-      );
+
+      return NextResponse.json({ errors }, { status: 400 });
     }
 
     const {
       title,
       price,
-      slug: inputSlug, // نام slug ورودی را تغییر می‌دهیم
-      categoryIds,
-      fileIds,
+      slug: inputSlug,
+      categoryIds = [],
+      fileIds = [],
       brandId,
-      ...data
-    } = parsedBody.data;
+      ...rest
+    } = parsed.data;
 
-    // ۳. تولید Slug (اگر ارسال نشده باشد)
-    const finalSlug = inputSlug ? inputSlug : getSlug(title);
+    // 3️⃣ ساخت slug
+    const slug = inputSlug || getSlug(title);
 
-    // ۴. بررسی یکتا بودن Slug
-    const existingProduct = await prisma.product.findUnique({
-      where: { slug: finalSlug },
+    // 4️⃣ بررسی تکراری بودن slug
+    const exists = await prisma.product.findUnique({
+      where: { slug },
     });
-    if (existingProduct) {
+
+    if (exists) {
       return NextResponse.json(
         {
-          error: JSON.stringify([
-            { message: `اسلاگ تکراری است. لطفاً اسلاگ دیگری انتخاب کنید.` },
-          ]),
+          errors: [
+            {
+              path: "slug",
+              message: "این اسلاگ قبلاً استفاده شده است",
+            },
+          ],
         },
-        { status: 409 } // Conflict
+        { status: 409 }
       );
     }
 
-    // ۵. ایجاد محصول و مدیریت روابط (Relations)
-    const product = await prisma.product.create({
-      data: {
-        ...data, // شامل description, content, stock, sku, comparePrice, isPublished
-        title,
-        price,
-        slug: finalSlug,
-        brand: {
-          connect: {
-            id: brandId,
+    // 5️⃣ ساخت محصول (Transaction برای امنیت)
+    const product = await prisma.$transaction(async (tx) => {
+      return tx.product.create({
+        data: {
+          title,
+          price,
+          slug,
+          ...rest,
+
+          brand: {
+            connect: { id: brandId },
+          },
+
+          // many-to-many categories
+          categories: {
+            connect: categoryIds.map((id) => ({ id })),
+          },
+
+          // one-to-many files (چند تصویر)
+          files: {
+            connect: fileIds.map((id) => ({ id })),
           },
         },
-        // مدیریت رابطه Many-to-Many با دسته‌بندی‌ها
-        categories: {
-          connect: categoryIds?.map((id) => ({ id })) || [],
+        include: {
+          files: true,
+          categories: true,
+          brand: true,
         },
-
-        // مدیریت رابطه One-to-Many با فایل‌ها
-        files: {
-          connect: fileIds?.map((id) => ({ id })) || [],
-        },
-      },
+      });
     });
 
-    // ۶. پاسخ موفقیت‌آمیز
+    // 6️⃣ پاسخ موفق
     return NextResponse.json(
-      { success: true, product, message: "محصول با موفقیت ایجاد شد" },
+      {
+        success: true,
+        product,
+        message: "محصول با موفقیت ایجاد شد",
+      },
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
+    console.error("[CREATE_PRODUCT_ERROR]", error);
     return ServerError();
   }
 }

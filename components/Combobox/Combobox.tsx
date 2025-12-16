@@ -39,7 +39,7 @@ function Combobox({
       onValueChange={(value) => {
         onChange?.(value);
       }}
-      value={res.value}
+      value={res?.value}
     >
       <SelectTrigger className={clsx("w-full", className)}>
         {selectValue ? selectValue : <SelectValue placeholder={placeholder} />}

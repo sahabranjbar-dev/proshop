@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
       where: Object.keys(where).length ? where : undefined,
       include: {
         brand: true,
+        files: true,
       },
       orderBy: {
         createdAt: "desc",

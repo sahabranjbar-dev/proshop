@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 
 export interface IFileUpload {
   maxSize?: number;
-  multi?: boolean;
+  multiple?: boolean;
   onChange?: (...args: any) => void;
   value?: any;
   accept?: string;
