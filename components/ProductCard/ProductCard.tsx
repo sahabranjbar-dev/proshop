@@ -42,7 +42,7 @@ const ProductCard = ({
       </div>
 
       <div className="flex justify-end items-center gap-2 ml-2 my-2 font-semibold">
-        <span>{productPrice.toLocaleString("fa")}</span>
+        <span>{Number(productPrice).toLocaleString("fa")}</span>
         <span className="text-xs">تومان</span>
       </div>
     </Link>

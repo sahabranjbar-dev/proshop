@@ -11,6 +11,7 @@ import {
   ShieldBan,
   ShoppingCart,
   Store,
+  Tag,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -32,6 +33,11 @@ const items = [
     icon: Store,
   },
   {
+    title: "برند‌ها",
+    url: "/brands",
+    icon: Tag,
+  },
+  {
     title: "دسته‌بندی‌ها",
     url: "/categories",
     icon: ChartColumnStacked,
@@ -41,6 +47,7 @@ const items = [
     url: "/orders",
     icon: ShoppingCart,
   },
+
   {
     title: "نقش‌ها و دسترسی‌ها",
     url: "/roles",

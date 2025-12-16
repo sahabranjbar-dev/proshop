@@ -47,7 +47,6 @@ const AddressForm = ({ onSuccess }: Props) => {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const provinceId = +watch("province");
-  console.log(searchByName(watch("province")));
 
   const filteredCities = useMemo(
     () => citiesOfProvince(provinceId),

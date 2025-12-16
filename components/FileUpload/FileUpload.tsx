@@ -4,7 +4,7 @@ import React, { useMemo, useRef } from "react";
 import { X, Upload } from "lucide-react";
 import Image from "next/image";
 import clsx from "clsx";
-import { formatFileSize, getFilePreview } from "@/utils/common";
+import { formatFileSize } from "@/utils/common";
 import { IFileUpload } from "./meta/types";
 import { useUpload } from "@/hooks/useUpload";
 
@@ -18,10 +18,10 @@ const FileUpload = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { uploadFile, progress, loading, setProgress } = useUpload();
 
-  const previewUrl = useMemo(() => {
-    if (!value) return "";
-    return getFilePreview(value?.file);
-  }, [value]);
+  // const previewUrl = useMemo(() => {
+  //   if (!value) return "";
+  //   return getFilePreview(value?.file);
+  // }, [value]);
 
   const fileSize = useMemo(() => {
     if (!value) return "";
@@ -108,7 +108,7 @@ const FileUpload = ({
         </div>
       ) : (
         <div className="flex justify-start items-center gap-2 w-full p-4">
-          {previewUrl && (
+          {/* {previewUrl && (
             <Image
               src={previewUrl}
               alt="preview"
@@ -116,7 +116,7 @@ const FileUpload = ({
               height={70}
               className="rounded-md object-cover shadow max-h-20"
             />
-          )}
+          )} */}
 
           <div>
             <div className="text-sm text-gray-700" dir="ltr">

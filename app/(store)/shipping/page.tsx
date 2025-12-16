@@ -123,7 +123,6 @@ export default function ShippingPage() {
               <button
                 onClick={() => {
                   mutateAsync().then((data) => {
-                    console.log({ data });
                     push("/checkout");
                   });
                 }}
@@ -154,7 +153,7 @@ export default function ShippingPage() {
       {/* مودال فرم آدرس */}
       <Modal
         title={editingAddress ? "ویرایش آدرس" : "افزودن آدرس جدید"}
-        onClose={() => {
+        onOpenChange={() => {
           setOpenModal(false);
           setEditingAddress(null);
         }}
@@ -164,7 +163,6 @@ export default function ShippingPage() {
       >
         <AddressForm
           onSuccess={(data) => {
-            console.log({ data });
             setOpenModal(false);
             queryClient.invalidateQueries({
               queryKey: ["address", userId],

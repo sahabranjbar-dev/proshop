@@ -7,4 +7,5 @@ export interface IListHeader {
   title?: string;
   hasExport?: boolean;
   exportUrl?: string;
+  createButton?: ReactElement;
 }

@@ -1,7 +1,7 @@
 import React from "react";
-import { UsersTable } from "./components/UsersTable";
-import { ProductsTable } from "./components/ProductsTable";
-import { OrdersTable } from "./components/OrdersTable";
+import { UsersTable } from "./_components/UsersTable";
+import { ProductsTable } from "./_components/ProductsTable";
+import { OrdersTable } from "./_components/OrdersTable";
 
 const dummyUsers = [
   { id: "1", phone: "09123456789", role: "ADMIN" },

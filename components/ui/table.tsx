@@ -1,28 +1,53 @@
 "use client";
 
-import { ITable, ITableColumns } from "@/types/Table";
+import * as React from "react";
+import clsx from "clsx";
 import {
   AlertTriangle,
   ArrowDownNarrowWide,
   ArrowDownWideNarrow,
 } from "lucide-react";
-import * as React from "react";
+
+import { ITable, ITableColumns } from "@/types/Table";
+import { cn } from "@/lib/utils";
 import { useList } from "../../container/ListContainer/ListContainer";
-import { cn } from "../../lib/utils";
 import PaginationWrapper from "../Pagination/Pagination";
 import { Skeleton } from "./skeleton";
-import clsx from "clsx";
 
+/* ---------------------------------- */
+/* Media Query Hook                   */
+/* ---------------------------------- */
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = React.useState(false);
+
+  React.useEffect(() => {
+    const media = window.matchMedia(query);
+    setMatches(media.matches);
+
+    const listener = () => setMatches(media.matches);
+    media.addEventListener("change", listener);
+
+    return () => media.removeEventListener("change", listener);
+  }, [query]);
+
+  return matches;
+}
+
+/* ---------------------------------- */
+/* Table Component                    */
+/* ---------------------------------- */
 function Table({
   className,
   columns,
 }: ITable & Omit<React.ComponentProps<"table">, "loading">) {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const [sort, setSort] = React.useState<{
     sortField?: string;
     sortDirection?: "asc" | "desc";
   }>({});
-  const { data, loading, error, setSearchParams } = useList();
 
+  const { data, loading, error, setSearchParams } = useList();
   const listData = data?.resultList;
 
   React.useEffect(() => {
@@ -49,8 +74,8 @@ function Table({
       try {
         return column.render(value, item, { index: rowIndex });
       } catch (e) {
-        console.error("render error in column:", column.field, e);
-        return "خطا در رندر";
+        console.error("render error:", column.field, e);
+        return "خطا";
       }
     }
 
@@ -62,60 +87,80 @@ function Table({
       }
     }
 
-    return value ? value : "---";
+    return value ?? "---";
   };
 
-  const renderLoadingState = () => (
-    <TableRow>
-      {columns.map((column, i) => (
-        <TableCell
-          key={i}
-          style={{
-            width: column.width || "auto",
-            minWidth: column.width || "100px",
-          }}
-        >
-          <Skeleton className="h-5 w-full bg-gray-300/50 rounded" />
-        </TableCell>
-      ))}
-    </TableRow>
-  );
-
-  const renderDataRows = () =>
-    listData && listData.length > 0 ? (
-      listData.map((item: any, index: number) => (
-        <TableRow key={index}>
-          {columns.map((column) => (
-            <TableCell
-              key={column.field}
-              className="text-center truncate px-2 py-3"
-              style={{
-                width: column.width || "auto",
-                minWidth: column.width || "100px",
-              }}
+  /* ---------------------------------- */
+  /* Mobile View (Card)                 */
+  /* ---------------------------------- */
+  if (isMobile) {
+    return (
+      <div className="space-y-3">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="border rounded-lg p-4 space-y-3 animate-pulse"
             >
-              {renderCellContent(column, item, index)}
-            </TableCell>
-          ))}
-        </TableRow>
-      ))
-    ) : (
-      <TableRow>
-        <TableCell colSpan={columns.length} className=" py-6">
-          <p className="text-gray-500 text-center">
-            هیچ داده‌ای برای نمایش وجود ندارد.
+              <div className="h-4 bg-gray-200 rounded w-1/2" />
+              <div className="h-4 bg-gray-200 rounded w-full" />
+              <div className="h-4 bg-gray-200 rounded w-2/3" />
+            </div>
+          ))
+        ) : error ? (
+          <div className="flex flex-col items-center gap-2 text-red-600 py-6">
+            <AlertTriangle className="w-8 h-8" />
+            <p>خطا در دریافت اطلاعات</p>
+          </div>
+        ) : listData?.length ? (
+          listData.map((item: any, rowIndex: number) => (
+            <div
+              key={rowIndex}
+              className="border rounded-lg p-4 space-y-3 shadow-sm"
+            >
+              {columns.map((column) => (
+                <div
+                  key={column.field}
+                  className="flex justify-between gap-4 text-sm"
+                >
+                  <span className="text-gray-500 font-medium">
+                    {column.title}
+                  </span>
+                  <span className="text-gray-900 max-w-[60%] truncate">
+                    {renderCellContent(column, item, rowIndex)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500">
+            هیچ داده‌ای برای نمایش وجود ندارد
           </p>
-        </TableCell>
-      </TableRow>
-    );
+        )}
 
+        {!error && (
+          <PaginationWrapper
+            loading={loading ?? true}
+            currentPage={data?.page}
+            totalCount={data?.totalItems}
+            totalPages={data?.totalPages}
+            onPageChange={(page) => setSearchParams?.({ page: String(page) })}
+          />
+        )}
+      </div>
+    );
+  }
+
+  /* ---------------------------------- */
+  /* Desktop Table View                 */
+  /* ---------------------------------- */
   return (
-    <div className="relative w-full border rounded-md shadow-sm mb-32">
-      {/* Container برای اسکرول افقی */}
-      <div className="overflow-x-auto w-full">
+    <div className="relative w-full border rounded-md shadow-sm">
+      <div className="overflow-x-auto">
         <table
           className={cn(
-            "w-full text-sm caption-bottom min-w-full", // مهم: min-w-full
+            "min-w-[900px] w-full text-sm caption-bottom",
             className
           )}
         >
@@ -124,28 +169,26 @@ function Table({
               {columns.map(({ field, title, sortable = true, width }) => (
                 <TableHead
                   key={field}
-                  className="text-center px-2 py-3 whitespace-nowrap font-semibold text-gray-800"
                   style={{
                     width: width || "auto",
-                    minWidth: width || "100px", // مهم: minWidth
+                    minWidth: width || "100px",
                   }}
                   onClick={() => sortable && handleSort(field)}
+                  className={clsx(
+                    "text-center whitespace-nowrap",
+                    sortable && "cursor-pointer"
+                  )}
                 >
-                  <div
-                    className={clsx(
-                      "inline-flex justify-center items-center gap-2 select-none",
-                      { "cursor-pointer": sortable }
-                    )}
-                  >
+                  <div className="inline-flex items-center gap-2">
                     {title}
                     {sortable && sort.sortField === field && (
-                      <span>
+                      <>
                         {sort.sortDirection === "asc" ? (
                           <ArrowDownNarrowWide size={16} />
                         ) : (
                           <ArrowDownWideNarrow size={16} />
                         )}
-                      </span>
+                      </>
                     )}
                   </div>
                 </TableHead>
@@ -156,97 +199,77 @@ function Table({
           <TableBody>
             {loading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <React.Fragment key={i}>{renderLoadingState()}</React.Fragment>
+                <TableRow key={i}>
+                  {columns.map((col, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-5 w-full bg-gray-300/50 rounded" />
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))
             ) : error ? (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center py-6"
-                >
+                <TableCell colSpan={columns.length} className="py-6">
                   <div className="flex flex-col items-center gap-2 text-red-600">
                     <AlertTriangle className="w-8 h-8" />
-                    <p className="text-sm font-medium">
-                      متاسفانه مشکلی در دریافت اطلاعات رخ داده است.
-                    </p>
+                    <p>مشکلی رخ داده است</p>
                   </div>
                 </TableCell>
               </TableRow>
+            ) : listData?.length ? (
+              listData.map((item: any, index: number) => (
+                <TableRow key={index}>
+                  {columns.map((column) => (
+                    <TableCell key={column.field} className="text-center">
+                      {renderCellContent(column, item, index)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : (
-              renderDataRows()
-            )}
-          </TableBody>
-
-          {!error && (
-            <TableFooter>
-              <TableRow className="max-w-full min-h-32 absolute right-0 left-0 ">
+              <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="flex justify-between items-center"
+                  className="py-6 text-center"
                 >
-                  <PaginationWrapper
-                    loading={loading ?? true}
-                    currentPage={data?.page}
-                    totalCount={data?.totalItems}
-                    totalPages={data?.totalPages}
-                    onPageChange={(page) => {
-                      setSearchParams?.({
-                        page: String(page),
-                      });
-                    }}
-                  />
+                  داده‌ای وجود ندارد
                 </TableCell>
               </TableRow>
-            </TableFooter>
-          )}
+            )}
+          </TableBody>
         </table>
       </div>
+
+      {!error && (
+        <div className="border-t p-4">
+          <PaginationWrapper
+            loading={loading ?? true}
+            currentPage={data?.page}
+            totalCount={data?.totalItems}
+            totalPages={data?.totalPages}
+            onPageChange={(page) => setSearchParams?.({ page: String(page) })}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
-// بقیه کامپوننت‌ها بدون تغییر...
-function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
-  return (
-    <thead
-      data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
-      {...props}
-    />
-  );
+/* ---------------------------------- */
+/* UI Primitives (بدون تغییر منطقی)   */
+/* ---------------------------------- */
+function TableHeader(props: React.ComponentProps<"thead">) {
+  return <thead {...props} />;
 }
 
-function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
-  return (
-    <tbody
-      data-slot="table-body"
-      className={cn("[&_tr:last-child]:border-0", className)}
-      {...props}
-    />
-  );
-}
-
-function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
-  return (
-    <tfoot
-      data-slot="table-footer"
-      className={cn(
-        "bg-muted/50 border-t font-medium [&>tr]:last:border-b-0",
-        className
-      )}
-      {...props}
-    />
-  );
+function TableBody(props: React.ComponentProps<"tbody">) {
+  return <tbody {...props} />;
 }
 
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
-      data-slot="table-row"
-      className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
-        className
-      )}
+      className={cn("border-b hover:bg-muted/50 transition-colors", className)}
       {...props}
     />
   );
@@ -255,9 +278,8 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
 function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
     <th
-      data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "h-10 px-2 font-medium text-foreground text-left",
         className
       )}
       {...props}
@@ -268,36 +290,10 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
-      data-slot="table-cell"
-      className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-        className
-      )}
+      className={cn("p-2 align-middle whitespace-nowrap", className)}
       {...props}
     />
   );
 }
 
-function TableCaption({
-  className,
-  ...props
-}: React.ComponentProps<"caption">) {
-  return (
-    <caption
-      data-slot="table-caption"
-      className={cn("text-muted-foreground mt-4 text-sm", className)}
-      {...props}
-    />
-  );
-}
-
-export {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-};
+export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell };

@@ -8,6 +8,7 @@ export interface ICombobox<T = any, D = any> {
   selectLabel?: string;
   placeholder?: string;
   className?: string;
+  keyField?: string;
   selectValue?: any;
-  options?: { farsiTitle: string; englishTitle: string }[];
+  options?: { farsiTitle: string; englishTitle: string; id: string }[];
 }

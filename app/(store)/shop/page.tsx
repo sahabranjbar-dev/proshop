@@ -1,28 +1,37 @@
 "use client";
+
 import { useQuery } from "@tanstack/react-query";
-import ProductCard from "../../../components/ProductCard/ProductCard";
-import api from "@/lib/axios";
-import LoadingPage from "@/components/LoadingPage/LoadingPage";
-import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import { useSearchParams } from "next/navigation";
 
-const ProoductsPage = () => {
+import api from "@/lib/axios";
+import ProductCard from "@/components/ProductCard/ProductCard";
+import LoadingPage from "@/components/LoadingPage/LoadingPage";
+import ErrorPage from "@/components/ErrorPage/ErrorPage";
+
+const ProductsPage = () => {
   const searchParams = useSearchParams();
-  const brand = searchParams.get("brand");
-  const { data, isLoading, isPending, isError, error } = useQuery({
-    queryKey: ["products"],
+
+  // ✅ پایدار و sync با API
+  const brands = searchParams.getAll("brand");
+  const brandParam = brands.length ? brands.join(",") : undefined;
+  const minPrice = searchParams.get("minPrice");
+  const maxPrice = searchParams.get("maxPrice");
+
+  const { data, isLoading, isFetching, isError, error } = useQuery({
+    queryKey: ["products", brandParam, minPrice, maxPrice], // ✅ stable key
     queryFn: async () => {
-      const reponse = await api.get("/products", {
+      const response = await api.get("/products", {
         params: {
-          brand,
+          brand: brandParam, // nike,adidas
+          minPrice,
+          maxPrice,
         },
       });
-
-      return reponse.data;
+      return response.data;
     },
   });
 
-  if (isLoading || isPending)
+  if (isLoading)
     return <LoadingPage className="border rounded bg-primary-50" />;
 
   if (isError) {
@@ -30,9 +39,15 @@ const ProoductsPage = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
-      {data?.products?.map((product: any) => {
-        return (
+    <>
+      {isFetching && (
+        <div className="text-sm text-gray-500 mb-2">
+          در حال بروزرسانی نتایج...
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
+        {data?.products?.map((product: any) => (
           <ProductCard
             key={product.id}
             productId={product.id}
@@ -40,10 +55,10 @@ const ProoductsPage = () => {
             productPrice={product.price}
             productDescription={product?.description ?? ""}
           />
-        );
-      })}
-    </div>
+        ))}
+      </div>
+    </>
   );
 };
 
-export default ProoductsPage;
+export default ProductsPage;

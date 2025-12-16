@@ -28,11 +28,9 @@ const CartPageContent = () => {
         })),
       });
 
-      console.log({ result });
       return result.data;
     },
     onSuccess(data) {
-      console.log({ data });
       clearCart();
     },
   });

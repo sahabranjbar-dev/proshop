@@ -1,10 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { ChangeEvent } from "react";
+import clsx from "clsx";
 import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
 import { IBaseField } from "./meta/types";
-import clsx from "clsx";
 
 const BaseField = ({
   name,
@@ -16,7 +15,7 @@ const BaseField = ({
   className,
   component: Compo = Input,
   defaultValue,
-  onChange,
+  onChange: inputOnchange,
   containerClassName,
   ...res
 }: IBaseField) => {
@@ -45,11 +44,21 @@ const BaseField = ({
               </label>
             )}
             <Compo
-              {...field}
               {...res}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                onChange?.(event);
-                field.onChange(event);
+              {...field}
+              value={field.value}
+              checked={
+                typeof field.value === "boolean" ? field.value : undefined
+              }
+              onChange={(value: any) => {
+                inputOnchange?.(value);
+
+                // اگر boolean بود (مثل Switch)
+                if (typeof value === "boolean") {
+                  field.onChange(value);
+                } else {
+                  field.onChange(value?.target?.value ?? value);
+                }
               }}
               id={name}
               className={cn(
@@ -59,12 +68,7 @@ const BaseField = ({
                 },
                 className
               )}
-              disabled={
-                (typeof disabled === "boolean"
-                  ? disabled
-                  : Boolean(disabled)) || loading
-              }
-              data-loading={loading ? true : false}
+              disabled={Boolean(disabled || loading)}
             />
             <span className="text-red-500 text-xs">
               {formState.errors[name] && (

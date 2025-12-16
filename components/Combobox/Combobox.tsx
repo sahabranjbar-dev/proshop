@@ -24,9 +24,12 @@ function Combobox({
   placeholder,
   options,
   selectValue,
+  keyField = "id",
   className,
   ...res
-}: ICombobox<{ resultList: { farsiTitle: string; englishTitle: string }[] }>) {
+}: ICombobox<{
+  resultList: { farsiTitle: string; englishTitle: string; id: string }[];
+}>) {
   // error and loading should handle
 
   const resolvedOptions = options?.length ? options : data?.resultList;
@@ -47,7 +50,10 @@ function Combobox({
             {selectLabel ? selectLabel : "آیتم"} را انتخاب کنید
           </SelectLabel>
           {resolvedOptions?.map((item) => (
-            <SelectItem key={item.englishTitle} value={item.englishTitle}>
+            <SelectItem
+              key={item.englishTitle}
+              value={keyField === "id" ? item.id : item.englishTitle}
+            >
               {item.farsiTitle}
             </SelectItem>
           ))}

@@ -42,7 +42,7 @@ const LoginButton = ({ className, isModal = true }: Props) => {
       {isAuthenticated ? (
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <User size={20} />
+            <User className="text-primary mt-2" size={20} />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>
@@ -53,11 +53,12 @@ const LoginButton = ({ className, isModal = true }: Props) => {
                 "کاربر میهمان"}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem dir="rtl">
               <Link
                 href={
                   session.data.user?.role === "ADMIN" ? "/admin" : "customer"
                 }
+                target="_blank"
               >
                 پروفایل کاربری
               </Link>
@@ -90,7 +91,7 @@ const LoginButton = ({ className, isModal = true }: Props) => {
 
               <Modal
                 title="ورود به حساب کاربری"
-                onClose={() => setOpenModal(false)}
+                onOpenChange={setOpenModal}
                 open={openModal}
                 hideActions
               >

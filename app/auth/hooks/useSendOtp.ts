@@ -10,9 +10,8 @@ export function useSendOtp() {
       const response = await authApi.post("/send-otp", { phone });
       return response.data;
     },
-    onError: (error: AxiosError<{ error: string }>) => {
-      console.log({ error });
-      toast.error(error.response?.data.error);
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error.response?.data.message);
     },
   });
 }

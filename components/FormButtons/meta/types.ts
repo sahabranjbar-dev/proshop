@@ -4,4 +4,5 @@ export interface IFormButtons {
   cancelUrl?: string;
   submitLabel?: string;
   onCancel?: () => void;
+  className?: string;
 }

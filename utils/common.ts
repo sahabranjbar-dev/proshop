@@ -54,6 +54,6 @@ export const formatFileSize = (bytes: number) => {
 };
 
 export const getFilePreview = (file: File | any) => {
-  if (file.publicUrl) return file.publicUrl;
-  return URL.createObjectURL(file);
+  if (file?.publicUrl) return file?.publicUrl;
+  return URL?.createObjectURL(file);
 };

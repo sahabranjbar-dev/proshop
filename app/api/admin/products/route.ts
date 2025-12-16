@@ -91,7 +91,9 @@ const productSchema = z.object({
     .min(3, "نام محصول حداقل باید ۳ کاراکتر باشد"),
 
   slug: z.string().optional(),
-
+  brandId: z.string({
+    error: "آیدی برند اجباری می‌باشد",
+  }),
   description: z
     .string()
     .max(500, "توضیحات کوتاه حداکثر ۵۰۰ کاراکتر است")
@@ -149,6 +151,7 @@ export async function POST(request: NextRequest) {
       slug: inputSlug, // نام slug ورودی را تغییر می‌دهیم
       categoryIds,
       fileIds,
+      brandId,
       ...data
     } = parsedBody.data;
 
@@ -177,7 +180,11 @@ export async function POST(request: NextRequest) {
         title,
         price,
         slug: finalSlug,
-
+        brand: {
+          connect: {
+            id: brandId,
+          },
+        },
         // مدیریت رابطه Many-to-Many با دسته‌بندی‌ها
         categories: {
           connect: categoryIds?.map((id) => ({ id })) || [],

@@ -16,7 +16,6 @@ const CheckoutPendingPage = () => {
       api
         .post("/api/confirm-payment", { token })
         .then((res) => {
-          console.log("ConfirmPayment Response:", res.data);
           // اگر Confirm موفق بود، هدایت کاربر به صفحه موفقیت
           router.push("/checkout/success");
         })

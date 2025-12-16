@@ -102,12 +102,13 @@ model Product {
 }
 
 model Brand {
-  id          String  @id @default(cuid())
-  name        String
-  slug        String  @unique
-  description String? @db.Text
-  logo        String? // URL یا fileId
-  website     String?
+  id           String  @id @default(cuid())
+  farsiTitle   String
+  englishTitle String
+  slug         String  @unique
+  description  String? @db.Text
+  logo         String? // URL یا fileId
+  website      String?
 
   isActive Boolean @default(true)
 

@@ -25,7 +25,7 @@ function Textarea({
         )}
         maxLength={maxLength}
         onChange={onChangeHandler}
-        value={value}
+        value={value ?? ""}
         {...props}
       />
 

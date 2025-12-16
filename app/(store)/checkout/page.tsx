@@ -15,7 +15,6 @@ const CheckoutPage = () => {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(result.data, "text/xml");
       const token = xmlDoc.getElementsByTagName("Token")[0]?.textContent;
-      console.log({ token });
 
       if (token) {
         window.location.href = `https://pec.shaparak.ir/NewIPG/?Token=${token}`;

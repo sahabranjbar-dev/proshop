@@ -10,6 +10,7 @@ import { useList } from "@/container/ListContainer/ListContainer";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
+import { Button } from "../ui/button";
 
 function ListAcionButtons({
   editHref,
@@ -55,25 +56,26 @@ function ListAcionButtons({
       </Link>
 
       {showDelete && (
-        <Modal
-          open={openDeleteModal}
-          onClose={() => {
-            setOpenDeleteModal((prev) => !prev);
-          }}
-          actionLoading={isPending}
-          title="آیا از حذف این آیتم مطمئن هستید؟"
-          triggerElement={
-            <Trash2
-              className="cursor-pointer hover:bg-gray-300 p-1 text-red-500"
-              size={30}
-            />
-          }
-          onAction={() => {
-            mutateAsync();
-          }}
-        >
-          {modalContent}
-        </Modal>
+        <>
+          <Trash2
+            className="cursor-pointer hover:bg-gray-300 p-1 text-red-500"
+            size={30}
+            onClick={() => {
+              setOpenDeleteModal(true);
+            }}
+          />
+          <Modal
+            open={openDeleteModal}
+            onOpenChange={setOpenDeleteModal}
+            actionLoading={isPending}
+            title="آیا از حذف این آیتم مطمئن هستید؟"
+            onAction={() => {
+              mutateAsync();
+            }}
+          >
+            {modalContent}
+          </Modal>
+        </>
       )}
     </div>
   );

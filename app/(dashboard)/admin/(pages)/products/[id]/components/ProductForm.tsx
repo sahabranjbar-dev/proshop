@@ -1,9 +1,12 @@
 "use client";
 import BaseField from "@/components/BaseField/BaseField";
+import Combobox from "@/components/Combobox/Combobox";
+import FileUpload from "@/components/FileUpload/FileUpload";
 import Form from "@/components/Form/Form";
 import FormButtons from "@/components/FormButtons/FormButtons";
 import { TextCore } from "@/components/TextCore/TextCore";
 import { Textarea } from "@/components/ui/textarea";
+import ComboboxItemDataGetter from "@/container/ComboboxItemDataGetter/ComboboxItemDataGetter";
 import api from "@/lib/axios";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -174,20 +177,33 @@ const ProductForm = ({
         <hr />
 
         {/* 10. categories (رابطه Many-to-Many) */}
-        {/* <BaseField
+        <BaseField
           component={Combobox}
           name="categoryIds" // نام فیلد را به صورت `categoryIds` برای ارسال آرایه‌ای از IDها تنظیم می‌کنیم
           label="دسته‌بندی‌ها"
           // options={categoryOptions} // دیتای دسته‌بندی‌ها
           placeholder="یک یا چند دسته‌بندی را انتخاب کنید"
-        /> */}
+        />
+
+        <ComboboxItemDataGetter
+          queryKey={["admin", "brand"]}
+          url="/admin/brands"
+        >
+          <BaseField
+            component={Combobox}
+            name="brandId"
+            label="برندها"
+            placeholder="یک برند را انتخاب کنید"
+            keyField="id"
+          />
+        </ComboboxItemDataGetter>
 
         {/* 11. files (رابطه File[]) */}
-        {/* <BaseField
+        <BaseField
           component={FileUpload}
           name="files" // باید قابلیت آپلود چند فایل را داشته باشد
           label="تصاویر/فایل‌های محصول"
-        /> */}
+        />
 
         <hr />
 
