@@ -11,6 +11,8 @@ export interface ICombobox<T = any, D = any> {
   label?: string;
   loading?: boolean;
   keyField?: string;
+  getLabel?: (data: any) => any;
+  getKey?: (data: any) => any;
   selectValue?: any;
   options?: { farsiTitle: string; englishTitle: string; id: string }[];
 }

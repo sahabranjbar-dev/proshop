@@ -19,6 +19,10 @@ export async function GET(
   }
 ) {
   try {
+    const isAdmin = await isRequestByAdmin();
+    if (!isAdmin) {
+      return NextResponse.json({ message: "دسترسی غیرمجاز" }, { status: 403 });
+    }
     const params = await context.params;
 
     const { id } = params;

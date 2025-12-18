@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 export interface IListContainer {
   url: string;
   params?: any;
-  queryKey: string[];
+  queryKey: readonly unknown[];
 }
 
 export interface IListContainerContext<TData = any, TError = any> {

@@ -49,7 +49,6 @@ const CategoryForm = ({ id, onCancel, onSuccess, initialData }: Props) => {
       return response.data;
     },
     onSuccess: (data: { success: boolean; message: string }) => {
-      console.log({ data });
       if (data?.success) {
         toast.success(data?.message);
         onSuccess?.(data);
@@ -60,8 +59,6 @@ const CategoryForm = ({ id, onCancel, onSuccess, initialData }: Props) => {
     },
   });
   const onSubmit = (data: IForm) => {
-    console.log({ data });
-
     mutateAsync(data);
   };
   return (

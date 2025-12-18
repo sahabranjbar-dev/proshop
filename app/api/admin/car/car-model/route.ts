@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 export const carModelSchema = z.object({
   name: z.string().min(1, "نام مدل اجباری است"),
   slug: z.string().min(1, "slug اجباری است"),
-  year: z.number().int().optional(),
-  engineType: z.string().optional(),
+  year: z.number().int().optional().nullable(),
+  engineType: z.string().optional().nullable(),
   carBrandId: z.string().min(1, "برند خودرو اجباری است"),
 });
 
@@ -33,7 +33,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(carModel, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "مدل خودرو با موفقیت ایجاد شد",
+        carModel,
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message ?? "Server error" },
@@ -49,6 +56,8 @@ export async function GET(request: NextRequest) {
     const brandId = searchParams.get("brandId");
     const slug = searchParams.get("slug");
 
+    const page = Number(searchParams.get("page")) || 1;
+    const pageSize = Number(searchParams.get("pageSize")) || 10;
     const carModels = await prisma.carModel.findMany({
       where: {
         ...(brandId && { carBrandId: brandId }),
@@ -61,8 +70,23 @@ export async function GET(request: NextRequest) {
         createdAt: "desc",
       },
     });
+    const totalItems = await prisma.carModel.count();
 
-    return NextResponse.json(carModels);
+    const resultList = carModels.map((carModel, index) => ({
+      ...carModel,
+      rowNumber: (page - 1) * pageSize + index + 1,
+    }));
+
+    return NextResponse.json(
+      {
+        resultList,
+        totalItems,
+        page,
+        pageSize,
+        totalPages: Math.ceil(totalItems / pageSize),
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -103,7 +127,11 @@ export async function PUT(request: NextRequest) {
       data: updateData,
     });
 
-    return NextResponse.json(updated);
+    return NextResponse.json({
+      success: true,
+      message: "مدل خودرو با موفقیت ویرایش شد",
+      result: updated,
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message ?? "Update failed" },

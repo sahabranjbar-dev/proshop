@@ -1,119 +1,137 @@
 "use client";
-import { useList } from "@/container/ListContainer/ListContainer";
+
 import { api } from "@/lib/axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Edit, Loader2, Trash2 } from "lucide-react";
 import { ReactElement, useState } from "react";
 import { toast } from "sonner";
 import { Modal } from "../Modal/Modal";
+import { AxiosError } from "axios";
+import { useList } from "@/container/ListContainer/ListContainer";
 
-interface IActionsButtons<T = any> {
-  editForm: (initialData: T) => ReactElement;
-  title: string;
+interface ActionsButtonsProps<T = any> {
   id: string;
   url: string;
+  title: string;
   queryKey: readonly unknown[];
+  editForm: (initialData: T) => ReactElement;
 }
 
-const ActionsButtons = ({
+const ActionsButtons = <T,>({
+  id,
   url,
-  editForm: Form,
   title,
   queryKey,
-  id,
-}: IActionsButtons) => {
+  editForm: Form,
+}: ActionsButtonsProps<any>) => {
   const queryClient = useQueryClient();
-  const [editModal, setEditModal] = useState<boolean>(false);
-  const [deleteModal, setDeleteModal] = useState<boolean>(false);
-
   const { fetch } = useList();
 
-  const { data: initialData, isLoading } = useQuery({
-    queryKey: [queryKey, id],
-    queryFn: async () => {
-      const response = await api.get(url + `/${id}`);
-      return response.data;
-    },
-    enabled: editModal,
-  });
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const onEditClick = () => {
-    setEditModal(true);
-  };
-  const onDeleteClick = () => {
-    setDeleteModal(true);
-  };
-
-  const { mutateAsync, isPending } = useMutation({
+  /**
+   * =========================
+   * Fetch initial data (Lazy)
+   * =========================
+   */
+  const {
+    mutateAsync: fetchInitialData,
+    data: initialData,
+    isPending: isEditLoading,
+    reset: resetEditData,
+  } = useMutation({
     mutationFn: async () => {
-      const response = await api.delete(url, {
-        params: {
-          id,
-        },
-      });
-      return response.data;
+      const res = await api.get(`${url}/${id}`);
+      return res.data as T;
     },
     onError(error: AxiosError<{ message: string }>) {
-      const message = error.response?.data.message;
-      toast.error(message);
-    },
-    onSuccess: (data: { success: boolean; message: string }) => {
-      if (!data.success) return;
-      toast.success(data.message || "آیتم با موفقیت حذف شد");
-      fetch();
+      toast.error(error.response?.data?.message || "خطا در دریافت اطلاعات");
     },
   });
-  const onDeleteHandler = async () => {
-    await mutateAsync();
-    setDeleteModal(false);
+
+  const onEditClick = async () => {
+    setEditOpen(true);
+    await fetchInitialData();
   };
 
+  const onEditClose = () => {
+    resetEditData();
+    setEditOpen(false);
+  };
+
+  /**
+   * =========================
+   * Delete mutation
+   * =========================
+   */
+  const { mutateAsync: deleteItem, isPending: isDeleteLoading } = useMutation({
+    mutationFn: async () => {
+      const res = await api.delete(url, {
+        params: { id },
+      });
+      return res.data;
+    },
+    onError(error: AxiosError<{ message: string }>) {
+      toast.error(error.response?.data?.message || "خطا در حذف آیتم");
+    },
+    onSuccess(data: { success: boolean; message?: string }) {
+      if (!data?.success) return;
+      toast.success(data.message || "آیتم با موفقیت حذف شد");
+      fetch();
+      setDeleteOpen(false);
+    },
+  });
+
   return (
-    <div className="flex justify-center items-center gap-2">
+    <div className="flex items-center justify-center gap-2">
+      {/* ================= Edit ================= */}
       <Edit
-        className="cursor-pointer text-blue-500 hover:bg-blue-100 rounded p-2"
         size={40}
         onClick={onEditClick}
+        className="cursor-pointer rounded p-2 text-blue-500 hover:bg-blue-100"
       />
+
       <Modal
         title={title}
+        open={editOpen}
         hideActions
-        onOpenChange={setEditModal}
-        open={editModal}
+        onOpenChange={(open) => {
+          if (!open) onEditClose();
+        }}
       >
-        {isLoading ? (
-          <div className="p-4 flex justify-center items-center">
-            <Loader2 className="animate-spin" />
+        {isEditLoading || !initialData ? (
+          <div className="flex min-h-40 items-center justify-center">
+            <Loader2 className="animate-spin text-primary" />
           </div>
         ) : (
           <Form
             initialData={initialData}
-            onCancel={() => setEditModal(false)}
+            onCancel={onEditClose}
             onSuccess={() => {
-              queryClient.invalidateQueries({
-                queryKey: queryKey,
-              });
-              setEditModal(false);
+              queryClient.invalidateQueries({ queryKey });
+              onEditClose();
             }}
           />
         )}
       </Modal>
 
+      {/* ================= Delete ================= */}
       <Trash2
-        className="cursor-pointer text-red-500 hover:bg-red-100 rounded p-2"
         size={40}
-        onClick={onDeleteClick}
+        onClick={() => setDeleteOpen(true)}
+        className="cursor-pointer rounded p-2 text-red-500 hover:bg-red-100"
       />
+
       <Modal
-        onOpenChange={setDeleteModal}
-        open={deleteModal}
         title={title || "حذف آیتم"}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
         actionLabel="حذف"
-        onAction={onDeleteHandler}
-        actionLoading={isPending}
+        actionLoading={isDeleteLoading}
+        onAction={deleteItem}
       >
-        <div>{`آیا از حذف این ${title || "آیتم"} اطمینان دارید؟`}</div>
+        <p>{`آیا از حذف این ${title || "آیتم"} اطمینان دارید؟`}</p>
       </Modal>
     </div>
   );

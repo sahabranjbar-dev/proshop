@@ -12,12 +12,12 @@ const ListContainer = ({
   params,
   queryKey,
 }: PropsWithChildren<IListContainer>) => {
-  const [searchParams, setSearchParams] = useState<any>({});
+  const [searchParams, setSearchParams] = useState<any>();
 
   const resolvedParams = { ...params, ...searchParams };
 
   const { data, error, refetch, isFetching, isLoading } = useQuery({
-    queryKey: [...queryKey, searchParams],
+    queryKey: queryKey,
     queryFn: async () => {
       const response = await api.get(url, {
         params: resolvedParams,

@@ -35,7 +35,7 @@ const CarBrandForm = ({ initialData, onSuccess, onCancel }: Props) => {
     onSuccess: (data: { message: string }) => {
       onSuccess?.(data);
       toast.success(data?.message);
-      queryClient.invalidateQueries({ queryKey: ["car-brand"] });
+      queryClient.invalidateQueries({ queryKey: ["car-brand", id] });
     },
     onError: (error) => {
       toast.error(error.message);

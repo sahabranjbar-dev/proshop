@@ -3,9 +3,14 @@ import { Modal } from "@/components/Modal/Modal";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";
+import CarModelForm from "./CarModelForm";
 
 const CarModelCreateButton = () => {
   const [openModelModal, setOpenModelModal] = useState<boolean>(false);
+
+  const closeModal = () => {
+    setOpenModelModal(false);
+  };
   return (
     <div>
       <Button
@@ -23,7 +28,14 @@ const CarModelCreateButton = () => {
         onOpenChange={setOpenModelModal}
         open={openModelModal}
       >
-        salam
+        <CarModelForm
+          onSuccess={() => {
+            closeModal();
+          }}
+          onCancel={() => {
+            closeModal();
+          }}
+        />
       </Modal>
     </div>
   );
