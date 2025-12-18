@@ -17,6 +17,7 @@ const BaseField = ({
   defaultValue,
   onChange: inputOnchange,
   containerClassName,
+  description,
   ...res
 }: IBaseField) => {
   const { control } = useFormContext();
@@ -26,7 +27,7 @@ const BaseField = ({
       control={control}
       defaultValue={defaultValue}
       rules={{
-        required: required ? "فیلد اجباری است" : false,
+        required: required ? `${label} اجباری است` : false,
         validate: validate ? validate : undefined,
       }}
       render={({ field, formState }) => {
@@ -69,7 +70,12 @@ const BaseField = ({
                 className
               )}
               disabled={Boolean(disabled || loading)}
+              loading={loading}
+              label={label}
             />
+            {!!description && (
+              <span className="text-xs text-primary">{description}</span>
+            )}
             <span className="text-red-500 text-xs">
               {formState.errors[name] && (
                 <>

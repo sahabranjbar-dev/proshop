@@ -2,7 +2,7 @@ import { authOptions } from "@/lib/authOptions";
 import { Role } from "@/types/common";
 import prisma from "@/utils/prisma";
 import { getServerSession } from "next-auth";
-import ProductForm from "./components/ProductForm";
+import ProductForm from "./_components/ProductForm";
 import { notFound } from "next/navigation";
 
 const serializePrismaData = (product: any) => {
@@ -42,19 +42,10 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   const { id } = resolvedParams;
 
-  // ۲. Fetch کردن تمام دسته‌بندی‌ها (برای فیلد Select در فُرم)
-  const allCategories = await prisma.category.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-    // اگر از سلسله مراتبی استفاده می‌کنید، می‌توانید آن را هم در اینجا فچ کنید
-  });
-
   // ۳. حالت ایجاد محصول جدید
   if (id === "new-product") {
     // در حالت ایجاد، فقط لیست کامل دسته‌بندی‌ها را می‌فرستیم
-    return <ProductForm categoriesData={allCategories} />;
+    return <ProductForm />;
   }
 
   // ۴. حالت ویرایش محصول موجود
@@ -105,7 +96,6 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     <ProductForm
       id={product.id}
       initialData={initialData} // شامل اطلاعات محصول و دسته‌بندی‌های انتخاب شده
-      categoriesData={allCategories} // شامل لیست کامل دسته‌بندی‌ها
     />
   );
 };

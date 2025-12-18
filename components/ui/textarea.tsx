@@ -29,7 +29,9 @@ function Textarea({
         {...props}
       />
 
-      <span className="text-xs text-gray-500">{`${maxLength}/${length}`}</span>
+      <span className="text-xs text-gray-500">{`${maxLength.toLocaleString(
+        "fa"
+      )}/${length.toLocaleString("fa")}`}</span>
     </>
   );
 }

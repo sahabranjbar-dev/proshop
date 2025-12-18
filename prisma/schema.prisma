@@ -1,57 +1,58 @@
 generator client {
   provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  output   = "./generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-// --------------------------------------
-// USER & AUTH
-// --------------------------------------
+// ==============================================
+// 1. USER & AUTHENTICATION MODELS
+// ==============================================
 
 model User {
-  id            String    @id @default(cuid())
-  email         String?   @unique
-  phone         String?   @unique
-  firstName     String?
-  lastName      String?
-  password      String?
-  avatar        String?
-  emailVerified DateTime?
-  isActive      Boolean   @default(true)
-  role          Role      @default(USER)
+  id            String    @id @default(cuid()) // شناسه یکتا
+  email         String?   @unique // ایمیل (اختیاری)
+  phone         String?   @unique // شماره تلفن (اختیاری)
+  firstName     String? // نام
+  lastName      String? // نام خانوادگی
+  password      String? // رمز عبور
+  avatar        String? // آواتار کاربر
+  emailVerified DateTime? // تایید ایمیل
+  isActive      Boolean   @default(true) // فعال بودن کاربر
+  role          Role      @default(USER) // نقش کاربر (ادمین، کاربر معمولی، ویرایشگر)
+  createdAt     DateTime  @default(now()) // تاریخ ایجاد
+  updatedAt     DateTime  @updatedAt // تاریخ آخرین ویرایش
+  deletedAt     DateTime? // تاریخ حذف (سافت دیلیت)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  orders    Order[] // سفارش‌های کاربر
+  addresses Address[] // آدرس‌های کاربر
+  reviews   Review[] // نظرات کاربر
+  cart      Cart? // سبد خرید کاربر
 
-  orders    Order[]
-  addresses Address[]
-  reviews   Review[]
-  cart      Cart?
+  vehicleSearches VehicleSearchHistory[] // تاریخچه جستجوهای خودرو
 
-  @@index([email, phone])
-  @@map("users")
+  @@index([email, phone]) // ایندکس برای ایمیل و تلفن
+  @@map("users") // نام جدول در دیتابیس
 }
 
 model Address {
-  id            String  @id @default(cuid())
-  province      String
-  city          String
-  address       String  @db.Text
-  plaque        String?
-  floor         String?
-  postalCode    String
-  phone         String?
-  recipientName String?
-  isDefault     Boolean @default(false)
-  title         String  @default("Home")
-  userId        String
+  id            String  @id @default(cuid()) // شناسه یکتا
+  province      String // استان
+  city          String // شهر
+  address       String  @db.Text // آدرس کامل
+  plaque        String? // پلاک
+  floor         String? // طبقه
+  postalCode    String // کد پستی
+  phone         String? // تلفن آدرس
+  recipientName String? // نام گیرنده
+  isDefault     Boolean @default(false) // آدرس پیش‌فرض
+  title         String  @default("Home") // عنوان آدرس (مثلا خانه، محل کار)
+  userId        String // شناسه کاربر مالک
   user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  orders Order[]
+  orders Order[] // سفارش‌های این آدرس
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -59,42 +60,53 @@ model Address {
   @@map("addresses")
 }
 
-enum Role {
-  ADMIN
-  USER
-  EDITOR
-}
-
-// --------------------------------------
-// PRODUCT & CATALOG
-// --------------------------------------
+// ==============================================
+// 2. PRODUCT MODELS
+// ==============================================
 
 model Product {
   id           String   @id @default(cuid())
-  title        String
-  slug         String   @unique
-  description  String?  @db.Text
-  content      String?  @db.Text
-  price        Decimal  @db.Decimal(10, 2)
-  comparePrice Decimal? @db.Decimal(10, 2)
+  title        String // عنوان محصول
+  slug         String   @unique // آدرس محصول (برای SEO)
+  description  String?  @db.Text // توضیحات کوتاه
+  content      String?  @db.Text // محتوای کامل (مشخصات فنی)
+  price        Decimal  @db.Decimal(10, 2) // قیمت
+  comparePrice Decimal? @db.Decimal(10, 2) // قیمت مقایسه‌ای (قیمت قبل از تخفیف)
+  stock        Int      @default(0) // موجودی انبار
+  sku          String?  @unique // کد کالا (Stock Keeping Unit)
+  isPublished  Boolean  @default(true) // وضعیت انتشار محصول
 
-  stock       Int     @default(0)
-  sku         String? @unique
-  isPublished Boolean @default(true)
+  // فیلدهای مخصوص شمع خودرو
+  sparkPlugType SparkPlugType? // نوع شمع (مس، ایریدیوم، پلاتینیوم)
+  isOEM         Boolean?       @default(false) // آیا قطعه اصلی کارخانه است؟
+  oemNumber     String? // شماره اصلی قطعه (OEM Number)
 
-  brandId String?
+  brandId String? // شناسه برند محصول
   brand   Brand?  @relation(fields: [brandId], references: [id])
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  campaigns  SaleCampaign[] @relation("CampaignProducts")
-  files      File[]         @relation("ProductFiles")
-  categories Category[]     @relation("ProductCategories")
-  orderItems OrderItem[]
-  reviews    Review[]
-  cartItems  CartItem[]
+  tags         String[] // آرایه‌ای از تگ‌ها
+  isOriginal   Boolean  @default(true) // آیا محصول اصل است؟
+  isBestSeller Boolean  @default(false) // پرفروش؟
+  isFeatured   Boolean  @default(false) // محصول ویژه؟
+
+  // روابط
+  campaigns  SaleCampaign[] @relation("CampaignProducts") // کمپین‌های فروش این محصول
+  files      File[]         @relation("ProductFiles") // فایل‌های محصول (عکس‌ها)
+  categories Category[]     @relation("ProductCategories") // دسته‌بندی‌های محصول
+  orderItems OrderItem[] // آیتم‌های سفارش شامل این محصول
+  reviews    Review[] // نظرات محصول
+  cartItems  CartItem[] // آیتم‌های سبد خرید شامل این محصول
+
+  // روابط مخصوص سیستم تطبیق خودرو
+  vehicleCompatibility    VehicleSparkPlugCompatibility[] // لیست خودروهای سازگار
+  specifications          SparkPlugSpecification? // مشخصات فنی شمع
+  oemNumbers              OEMNumber[] // شماره‌های OEM مختلف
+  crossReferencesAsSource CrossReference[]                @relation("SourceProduct") // محصولات ارجاع داده‌شده از این محصول
+  crossReferencesAsTarget CrossReference[]                @relation("TargetProduct") // محصولات ارجاع‌دهنده به این محصول
 
   @@index([slug, isPublished])
   @@index([brandId])
@@ -103,16 +115,15 @@ model Product {
 
 model Brand {
   id           String  @id @default(cuid())
-  farsiTitle   String
-  englishTitle String
-  slug         String  @unique
-  description  String? @db.Text
-  logo         String? // URL یا fileId
-  website      String?
+  farsiTitle   String // عنوان فارسی
+  englishTitle String // عنوان انگلیسی
+  slug         String  @unique // آدرس برند
+  description  String? @db.Text // توضیحات
+  logo         String? // لوگو برند
+  website      String? // وبسایت
+  isActive     Boolean @default(true) // فعال/غیرفعال
 
-  isActive Boolean @default(true)
-
-  products Product[]
+  products Product[] // محصولات این برند
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -124,16 +135,16 @@ model Brand {
 
 model Category {
   id          String  @id @default(cuid())
-  name        String
-  slug        String  @unique
-  description String?
+  name        String // نام دسته‌بندی
+  slug        String  @unique // آدرس دسته‌بندی
+  description String? // توضیحات
 
-  parentId String?
+  parentId String? // شناسه دسته‌بندی والد
   parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children Category[] @relation("CategoryHierarchy")
 
-  products  Product[]      @relation("ProductCategories")
-  campaigns SaleCampaign[] @relation("CampaignCategories")
+  products  Product[]      @relation("ProductCategories") // محصولات این دسته
+  campaigns SaleCampaign[] @relation("CampaignCategories") // کمپین‌های این دسته
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -142,48 +153,44 @@ model Category {
 }
 
 model Review {
-  id      String  @id @default(cuid())
-  rating  Int     @default(5)
-  comment String? @db.Text
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-
+  id        String   @id @default(cuid())
+  rating    Int      @default(5) // امتیاز (۱ تا ۵)
+  comment   String?  @db.Text // نظر کاربر
+  userId    String // شناسه کاربر
+  user      User     @relation(fields: [userId], references: [id])
+  productId String // شناسه محصول
+  product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
 
   @@map("reviews")
 }
 
-// --------------------------------------
-// ORDER & SALES
-// --------------------------------------
+// ==============================================
+// 3. ORDER & CHECKOUT MODELS
+// ==============================================
 
 model Order {
   id             String      @id @default(cuid())
-  orderNumber    String      @unique @default(cuid())
-  status         OrderStatus @default(PENDING)
-  totalAmount    Decimal     @db.Decimal(10, 2)
-  discountAmount Decimal     @default(0) @db.Decimal(10, 2)
+  orderNumber    String      @unique @default(cuid()) // شماره سفارش
+  status         OrderStatus @default(PENDING) // وضعیت سفارش
+  totalAmount    Decimal     @db.Decimal(10, 2) // مبلغ کل
+  discountAmount Decimal     @default(0) @db.Decimal(10, 2) // مبلغ تخفیف
 
-  // فیلدهای روش ارسال
-  shippingMethodId String?
+  shippingMethodId String? // شناسه روش ارسال
   shippingMethod   SendingMethod? @relation(fields: [shippingMethodId], references: [id])
-  shippingCost     Decimal        @db.Decimal(10, 2)
+  shippingCost     Decimal        @db.Decimal(10, 2) // هزینه ارسال
 
-  couponId String?
+  couponId String? // شناسه کوپن
   coupon   Coupon? @relation(fields: [couponId], references: [id])
 
-  userId String
+  userId String // شناسه کاربر
   user   User   @relation(fields: [userId], references: [id])
 
-  addressId String?
+  addressId String? // شناسه آدرس
   address   Address? @relation(fields: [addressId], references: [id])
 
-  orderItems OrderItem[]
-  payment    Payment?
+  orderItems OrderItem[] // آیتم‌های سفارش
+  payment    Payment? // اطلاعات پرداخت
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -193,9 +200,9 @@ model Order {
 
 model SendingMethod {
   id           String  @id @default(cuid())
-  farsiTitle   String
-  englishTitle String
-  baseCost     Decimal @db.Decimal(10, 2)
+  farsiTitle   String // عنوان فارسی روش ارسال
+  englishTitle String // عنوان انگلیسی
+  baseCost     Decimal @db.Decimal(10, 2) // هزینه پایه
 
   orders Order[]
 
@@ -207,29 +214,28 @@ model SendingMethod {
 
 model OrderItem {
   id      String @id @default(cuid())
-  orderId String
+  orderId String // شناسه سفارش
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  productId String?
+  productId String? // شناسه محصول
   product   Product? @relation(fields: [productId], references: [id])
 
-  quantity   Int
-  price      Decimal @db.Decimal(10, 2)
-  // 💡 اضافه شدن: ذخیره هزینه نهایی محصول پس از تخفیف‌های احتمالی لحظه‌ای
-  finalPrice Decimal @db.Decimal(10, 2)
+  quantity   Int // تعداد
+  price      Decimal @db.Decimal(10, 2) // قیمت واحد
+  finalPrice Decimal @db.Decimal(10, 2) // قیمت نهایی (بعد از تخفیف)
 
   @@map("order_items")
 }
 
 model Payment {
   id        String        @id @default(cuid())
-  amount    Decimal       @db.Decimal(10, 2)
-  method    PaymentMethod @default(ONLINE)
-  status    PaymentStatus @default(PENDING)
-  authority String?
-  refId     String?
+  amount    Decimal       @db.Decimal(10, 2) // مبلغ پرداخت
+  method    PaymentMethod @default(ONLINE) // روش پرداخت
+  status    PaymentStatus @default(PENDING) // وضعیت پرداخت
+  authority String? // کد درگاه پرداخت
+  refId     String? // شماره پیگیری
 
-  orderId String @unique
+  orderId String @unique // شناسه سفارش
   order   Order  @relation(fields: [orderId], references: [id])
 
   createdAt DateTime @default(now())
@@ -238,15 +244,15 @@ model Payment {
   @@map("payments")
 }
 
-// --------------------------------------
-// CART (SYSTEM)
-// --------------------------------------
+// ==============================================
+// 4. CART MODELS
+// ==============================================
 
 model Cart {
   id     String     @id @default(cuid())
-  userId String     @unique
+  userId String     @unique // شناسه کاربر (هر کاربر یک سبد خرید)
   user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items  CartItem[]
+  items  CartItem[] // آیتم‌های سبد خرید
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -255,31 +261,27 @@ model Cart {
 }
 
 model CartItem {
-  id String @id @default(cuid())
-
-  cartId String
-  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
-
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-
-  quantity Int @default(1)
-
+  id        String   @id @default(cuid())
+  cartId    String // شناسه سبد خرید
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String // شناسه محصول
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1) // تعداد
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([cartId, productId])
+  @@unique([cartId, productId]) // هر محصول فقط یک بار در سبد
   @@map("cart_items")
 }
 
-// --------------------------------------
-// MARKETING & SYSTEM
-// --------------------------------------
+// ==============================================
+// 5. AUTHENTICATION & UTILITY MODELS
+// ==============================================
 
 model OtpCode {
-  phone     String   @id
-  code      String
-  expiresAt DateTime
+  phone     String   @id // شماره تلفن
+  code      String // کد OTP
+  expiresAt DateTime // تاریخ انقضا
   createdAt DateTime @default(now())
 
   @@map("otp_codes")
@@ -287,13 +289,13 @@ model OtpCode {
 
 model File {
   id   String  @id @default(cuid())
-  key  String  @unique
-  url  String
-  name String?
-  size Int?
-  type String?
+  key  String  @unique // کلید فایل در ذخیره‌سازی
+  url  String // آدرس فایل
+  name String? // نام فایل
+  size Int? // حجم فایل
+  type String? // نوع فایل
 
-  productId String?
+  productId String? // شناسه محصول (اگر متعلق به محصول باشد)
   product   Product? @relation("ProductFiles", fields: [productId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
@@ -301,21 +303,23 @@ model File {
   @@map("files")
 }
 
+// ==============================================
+// 6. MARKETING & PROMOTION MODELS
+// ==============================================
+
 model Coupon {
-  id    String       @id @default(cuid())
-  code  String       @unique
-  type  DiscountType
-  value Decimal      @db.Decimal(10, 2)
+  id             String       @id @default(cuid())
+  code           String       @unique // کد تخفیف
+  type           DiscountType // نوع تخفیف (درصدی یا مبلغی)
+  value          Decimal      @db.Decimal(10, 2) // مقدار تخفیف
+  startDate      DateTime? // تاریخ شروع
+  endDate        DateTime? // تاریخ پایان
+  usageLimit     Int? // محدودیت تعداد استفاده
+  usedCount      Int          @default(0) // تعداد استفاده شده
+  minOrderAmount Decimal?     @db.Decimal(10, 2) // حداقل مبلغ سفارش
+  isActive       Boolean      @default(true) // فعال/غیرفعال
 
-  startDate DateTime?
-  endDate   DateTime?
-
-  usageLimit     Int?
-  usedCount      Int      @default(0)
-  minOrderAmount Decimal? @db.Decimal(10, 2)
-  isActive       Boolean  @default(true)
-
-  orders Order[]
+  orders Order[] // سفارش‌های استفاده‌کننده
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -324,21 +328,18 @@ model Coupon {
 }
 
 model SaleCampaign {
-  id          String  @id @default(cuid())
-  title       String
-  description String?
-  bannerUrl   String?
+  id          String       @id @default(cuid())
+  title       String // عنوان کمپین
+  description String? // توضیحات
+  bannerUrl   String? // آدرس بنر
+  type        DiscountType // نوع تخفیف
+  value       Decimal      @db.Decimal(10, 2) // مقدار تخفیف
+  startDate   DateTime // تاریخ شروع
+  endDate     DateTime // تاریخ پایان
+  isActive    Boolean      @default(true) // فعال/غیرفعال
 
-  type  DiscountType
-  value Decimal      @db.Decimal(10, 2)
-
-  startDate DateTime
-  endDate   DateTime
-
-  isActive Boolean @default(true)
-
-  products   Product[]  @relation("CampaignProducts")
-  categories Category[] @relation("CampaignCategories")
+  products   Product[]  @relation("CampaignProducts") // محصولات کمپین
+  categories Category[] @relation("CampaignCategories") // دسته‌بندی‌های کمپین
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -346,33 +347,176 @@ model SaleCampaign {
   @@map("sale_campaigns")
 }
 
-// --------------------------------------
-// ENUMS
-// --------------------------------------
+// ==============================================
+// 7. VEHICLE MATCHING SYSTEM MODELS
+// ==============================================
+
+model CarModel {
+  id         String  @id @default(cuid())
+  name       String // نام مدل (مثلا: پژو ۲۰۶، پراید ۱۱۱)
+  slug       String  @unique // آدرس مدل
+  year       Int? // سال تولید
+  engineType String? // نوع موتور
+
+  carBrandId String // شناسه برند خودرو
+  carBrand   CarBrand @relation(fields: [carBrandId], references: [id])
+
+  compatibleSparkPlugs VehicleSparkPlugCompatibility[] // شمع‌های سازگار با این مدل
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug, carBrandId])
+  @@map("car_models")
+}
+
+model CarBrand {
+  id   String  @id @default(cuid())
+  name String // نام برند (ایران خودرو، سایپا، ...)
+  slug String  @unique // آدرس برند
+  logo String? // لوگو برند خودرو
+
+  models     CarModel[] // مدل‌های این برند
+  oemNumbers OEMNumber[] // شماره‌های OEM مرتبط با این برند
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@map("car_brands")
+}
+
+model VehicleSparkPlugCompatibility {
+  id              String   @id @default(cuid())
+  carModelId      String // شناسه مدل خودرو
+  carModel        CarModel @relation(fields: [carModelId], references: [id])
+  productId       String // شناسه محصول (شمع)
+  product         Product  @relation(fields: [productId], references: [id])
+  engineCode      String? // کد موتور (برای تطبیق دقیق‌تر)
+  productionYears String? // محدوده سال تولید سازگار
+  notes           String? // نکات فنی اضافی
+  isExactMatch    Boolean  @default(true) // آیا تطبیق دقیق است؟
+
+  createdAt DateTime @default(now())
+
+  @@unique([carModelId, productId]) // جلوگیری از ثبت تکراری
+  @@index([carModelId, productId])
+  @@map("vehicle_spark_plug_compatibility")
+}
+
+model SparkPlugSpecification {
+  id                String   @id @default(cuid())
+  productId         String   @unique // شناسه محصول (هر محصول یک مشخصات فنی)
+  product           Product  @relation(fields: [productId], references: [id])
+  threadDiameter    String? // قطر رزوه (مثال: M14x1.25)
+  threadLength      String? // طول رزوه
+  hexSize           String? // سایز آچار (مثال: 16mm)
+  electrodeGap      Decimal? @db.Decimal(3, 2) // فاصله الکترود (میلی‌متر)
+  heatRange         String? // رنج حرارتی
+  electrodeMaterial String? // جنس الکترود (مس، ایریدیوم، ...)
+  resistorType      String? // مقاومت دار یا بدون مقاومت
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("spark_plug_specifications")
+}
+
+model VehicleSearchHistory {
+  id              String  @id @default(cuid())
+  userId          String? // شناسه کاربر (اگر لاگین کرده باشد)
+  user            User?   @relation(fields: [userId], references: [id])
+  carBrand        String? // برند خودرو جستجو شده
+  carModel        String? // مدل خودرو جستجو شده
+  year            Int? // سال تولید
+  engineType      String? // نوع موتور
+  matchedProducts Json? // لیست ID محصولات سازگار (ذخیره به صورت JSON)
+  sessionId       String? // شناسه نشست
+  ipAddress       String? // آی‌پی کاربر
+  userAgent       String? // مرورگر کاربر
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt]) // ایندکس برای گزارش‌گیری
+  @@map("vehicle_search_history")
+}
+
+// ==============================================
+// 8. OEM & CROSS REFERENCE MODELS
+// ==============================================
+
+model OEMNumber {
+  id          String    @id @default(cuid())
+  number      String // شماره OEM
+  description String? // توضیحات شماره
+  productId   String // شناسه محصول
+  product     Product   @relation(fields: [productId], references: [id])
+  carBrandId  String? // شناسه برند خودرو (اختیاری)
+  carBrand    CarBrand? @relation(fields: [carBrandId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([number, productId]) // جلوگیری از ثبت تکراری
+  @@index([number]) // ایندکس برای جستجوی سریع
+  @@map("oem_numbers")
+}
+
+model CrossReference {
+  id                 String  @id @default(cuid())
+  sourceProductId    String // شناسه محصول اصلی
+  sourceProduct      Product @relation("SourceProduct", fields: [sourceProductId], references: [id])
+  targetProductId    String // شناسه محصول جایگزین/مشابه
+  targetProduct      Product @relation("TargetProduct", fields: [targetProductId], references: [id])
+  referenceType      String // نوع ارجاع (معادل، جایگزین، بهتر، ...)
+  compatibilityLevel Int     @default(80) // درصد سازگاری (۰-۱۰۰)
+
+  createdAt DateTime @default(now())
+
+  @@unique([sourceProductId, targetProductId]) // جلوگیری از ثبت تکراری
+  @@map("cross_references")
+}
+
+// ==============================================
+// ENUM DEFINITIONS
+// ==============================================
+
+enum Role {
+  ADMIN // مدیر سیستم
+  USER // کاربر عادی
+  EDITOR // ویرایشگر محتوا
+}
 
 enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  REFUNDED
-  COMPLETED
+  PENDING // در انتظار پرداخت
+  PROCESSING // در حال پردازش
+  SHIPPED // ارسال شده
+  DELIVERED // تحویل داده شده
+  CANCELLED // لغو شده
+  REFUNDED // بازپرداخت شده
+  COMPLETED // تکمیل شده
 }
 
 enum PaymentStatus {
-  PENDING
-  SUCCESS
-  FAILED
+  PENDING // در انتظار
+  SUCCESS // موفق
+  FAILED // ناموفق
 }
 
 enum PaymentMethod {
-  ONLINE
-  CASH_ON_DELIVERY
-  WALLET
+  ONLINE // پرداخت آنلاین
+  CASH_ON_DELIVERY // پرداخت در محل
+  WALLET // پرداخت از کیف پول
 }
 
 enum DiscountType {
-  PERCENTAGE
-  FIXED
+  PERCENTAGE // تخفیف درصدی
+  FIXED // تخفیف مبلغی
+}
+
+enum SparkPlugType {
+  COPPER // شمع مس
+  IRIDIUM // شمع ایریدیوم
+  PLATINUM // شمع پلاتینیوم
+  DOUBLE_PLATINUM // شمع دو پلاتینیوم
+  SILVER // شمع نقره
 }

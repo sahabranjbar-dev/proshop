@@ -68,3 +68,18 @@ export const getFilePreview = (file?: File | Blob | { publicUrl?: string }) => {
 
   return null;
 };
+
+export const mustBetween = (
+  min: number,
+  max: number,
+  fieldName = "این مقدار"
+) => {
+  return (value: number) => {
+    if (value < min || value > max) {
+      return `${fieldName} باید بین ${Number(min).toLocaleString(
+        "fa"
+      )} و ${Number(max).toLocaleString("fa")} باشد.`;
+    }
+    return true;
+  };
+};

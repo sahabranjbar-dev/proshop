@@ -1,7 +1,7 @@
 "use server";
 
 import { authOptions } from "@/lib/authOptions";
-import { Role } from "@/lib/generated/prisma/enums";
+import { Role } from "@/types/common";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 

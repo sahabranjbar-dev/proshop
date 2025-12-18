@@ -47,10 +47,14 @@ const items = [
     url: "/orders",
     icon: ShoppingCart,
   },
-
   {
     title: "نقش‌ها و دسترسی‌ها",
     url: "/roles",
+    icon: ShieldBan,
+  },
+  {
+    title: "خودرو",
+    url: "/car",
     icon: ShieldBan,
   },
   {

@@ -13,6 +13,9 @@ CREATE TYPE "PaymentMethod" AS ENUM ('ONLINE', 'CASH_ON_DELIVERY', 'WALLET');
 -- CreateEnum
 CREATE TYPE "DiscountType" AS ENUM ('PERCENTAGE', 'FIXED');
 
+-- CreateEnum
+CREATE TYPE "SparkPlugType" AS ENUM ('COPPER', 'IRIDIUM', 'PLATINUM', 'DOUBLE_PLATINUM', 'SILVER');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -64,10 +67,17 @@ CREATE TABLE "products" (
     "stock" INTEGER NOT NULL DEFAULT 0,
     "sku" TEXT,
     "isPublished" BOOLEAN NOT NULL DEFAULT true,
+    "sparkPlugType" "SparkPlugType",
+    "isOEM" BOOLEAN DEFAULT false,
+    "oemNumber" TEXT,
     "brandId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
+    "tags" TEXT[],
+    "isOriginal" BOOLEAN NOT NULL DEFAULT true,
+    "isBestSeller" BOOLEAN NOT NULL DEFAULT false,
+    "isFeatured" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
@@ -75,7 +85,8 @@ CREATE TABLE "products" (
 -- CreateTable
 CREATE TABLE "brands" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "farsiTitle" TEXT NOT NULL,
+    "englishTitle" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "description" TEXT,
     "logo" TEXT,
@@ -252,6 +263,104 @@ CREATE TABLE "sale_campaigns" (
 );
 
 -- CreateTable
+CREATE TABLE "car_models" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "year" INTEGER,
+    "engineType" TEXT,
+    "carBrandId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "car_models_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "car_brands" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "logo" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "car_brands_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "vehicle_spark_plug_compatibility" (
+    "id" TEXT NOT NULL,
+    "carModelId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "engineCode" TEXT,
+    "productionYears" TEXT,
+    "notes" TEXT,
+    "isExactMatch" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "vehicle_spark_plug_compatibility_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "spark_plug_specifications" (
+    "id" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "threadDiameter" TEXT,
+    "threadLength" TEXT,
+    "hexSize" TEXT,
+    "electrodeGap" DECIMAL(3,2),
+    "heatRange" TEXT,
+    "electrodeMaterial" TEXT,
+    "resistorType" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "spark_plug_specifications_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "vehicle_search_history" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "carBrand" TEXT,
+    "carModel" TEXT,
+    "year" INTEGER,
+    "engineType" TEXT,
+    "matchedProducts" JSONB,
+    "sessionId" TEXT,
+    "ipAddress" TEXT,
+    "userAgent" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "vehicle_search_history_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "oem_numbers" (
+    "id" TEXT NOT NULL,
+    "number" TEXT NOT NULL,
+    "description" TEXT,
+    "productId" TEXT NOT NULL,
+    "carBrandId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "oem_numbers_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "cross_references" (
+    "id" TEXT NOT NULL,
+    "sourceProductId" TEXT NOT NULL,
+    "targetProductId" TEXT NOT NULL,
+    "referenceType" TEXT NOT NULL,
+    "compatibilityLevel" INTEGER NOT NULL DEFAULT 80,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "cross_references_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_CampaignProducts" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -324,6 +433,39 @@ CREATE UNIQUE INDEX "files_key_key" ON "files"("key");
 CREATE UNIQUE INDEX "coupons_code_key" ON "coupons"("code");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "car_models_slug_key" ON "car_models"("slug");
+
+-- CreateIndex
+CREATE INDEX "car_models_slug_carBrandId_idx" ON "car_models"("slug", "carBrandId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "car_brands_slug_key" ON "car_brands"("slug");
+
+-- CreateIndex
+CREATE INDEX "car_brands_slug_idx" ON "car_brands"("slug");
+
+-- CreateIndex
+CREATE INDEX "vehicle_spark_plug_compatibility_carModelId_productId_idx" ON "vehicle_spark_plug_compatibility"("carModelId", "productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "vehicle_spark_plug_compatibility_carModelId_productId_key" ON "vehicle_spark_plug_compatibility"("carModelId", "productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "spark_plug_specifications_productId_key" ON "spark_plug_specifications"("productId");
+
+-- CreateIndex
+CREATE INDEX "vehicle_search_history_userId_createdAt_idx" ON "vehicle_search_history"("userId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "oem_numbers_number_idx" ON "oem_numbers"("number");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "oem_numbers_number_productId_key" ON "oem_numbers"("number", "productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "cross_references_sourceProductId_targetProductId_key" ON "cross_references"("sourceProductId", "targetProductId");
+
+-- CreateIndex
 CREATE INDEX "_CampaignProducts_B_index" ON "_CampaignProducts"("B");
 
 -- CreateIndex
@@ -379,6 +521,33 @@ ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_productId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "files" ADD CONSTRAINT "files_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "car_models" ADD CONSTRAINT "car_models_carBrandId_fkey" FOREIGN KEY ("carBrandId") REFERENCES "car_brands"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "vehicle_spark_plug_compatibility" ADD CONSTRAINT "vehicle_spark_plug_compatibility_carModelId_fkey" FOREIGN KEY ("carModelId") REFERENCES "car_models"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "vehicle_spark_plug_compatibility" ADD CONSTRAINT "vehicle_spark_plug_compatibility_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "spark_plug_specifications" ADD CONSTRAINT "spark_plug_specifications_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "vehicle_search_history" ADD CONSTRAINT "vehicle_search_history_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "oem_numbers" ADD CONSTRAINT "oem_numbers_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "oem_numbers" ADD CONSTRAINT "oem_numbers_carBrandId_fkey" FOREIGN KEY ("carBrandId") REFERENCES "car_brands"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "cross_references" ADD CONSTRAINT "cross_references_sourceProductId_fkey" FOREIGN KEY ("sourceProductId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "cross_references" ADD CONSTRAINT "cross_references_targetProductId_fkey" FOREIGN KEY ("targetProductId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_CampaignProducts" ADD CONSTRAINT "_CampaignProducts_A_fkey" FOREIGN KEY ("A") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;

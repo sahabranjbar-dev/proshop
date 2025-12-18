@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    const isAdmin = session?.user.role === Role.ADMIN;
+    const isAdmin = session?.user?.role === Role.ADMIN;
 
     if (!isAdmin) {
       return NextResponse.json({ error: "Not allowed" }, { status: 403 });
@@ -18,6 +18,7 @@ export async function GET() {
       {
         [Role.ADMIN]: { englishTitle: "ADMIN", farsiTitle: "ادمین" },
         [Role.USER]: { englishTitle: "USER", farsiTitle: "کاربر" },
+        [Role.EDITOR]: { englishTitle: "EDITOR", farsiTitle: "ویرایشگر محتوا" },
       };
 
     const resultList = Object.values(Role).map((role) => ({

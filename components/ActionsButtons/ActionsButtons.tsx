@@ -1,7 +1,7 @@
 "use client";
 import { useList } from "@/container/ListContainer/ListContainer";
 import { api } from "@/lib/axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { Edit, Loader2, Trash2 } from "lucide-react";
 import { ReactElement, useState } from "react";
@@ -13,7 +13,7 @@ interface IActionsButtons<T = any> {
   title: string;
   id: string;
   url: string;
-  queryKey: string;
+  queryKey: readonly unknown[];
 }
 
 const ActionsButtons = ({
@@ -23,6 +23,7 @@ const ActionsButtons = ({
   queryKey,
   id,
 }: IActionsButtons) => {
+  const queryClient = useQueryClient();
   const [editModal, setEditModal] = useState<boolean>(false);
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
 
@@ -89,6 +90,12 @@ const ActionsButtons = ({
           <Form
             initialData={initialData}
             onCancel={() => setEditModal(false)}
+            onSuccess={() => {
+              queryClient.invalidateQueries({
+                queryKey: queryKey,
+              });
+              setEditModal(false);
+            }}
           />
         )}
       </Modal>
@@ -105,7 +112,6 @@ const ActionsButtons = ({
         actionLabel="حذف"
         onAction={onDeleteHandler}
         actionLoading={isPending}
-        hideActions
       >
         <div>{`آیا از حذف این ${title || "آیتم"} اطمینان دارید؟`}</div>
       </Modal>

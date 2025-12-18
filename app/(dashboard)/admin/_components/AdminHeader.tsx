@@ -2,7 +2,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function AdminHeader() {
   return (
-    <header className="h-16 border-b flex items-center justify-between px-4 bg-gray-200 sticky top-0">
+    <header className="h-16 border-b flex items-center justify-between px-4 bg-gray-200 sticky top-0 z-50">
       <SidebarTrigger />
     </header>
   );
