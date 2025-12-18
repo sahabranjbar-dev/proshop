@@ -1,4 +1,5 @@
 import BaseField from "@/components/BaseField/BaseField";
+import SwitchComponent from "@/components/SwitchComponent/SwitchComponent";
 import { TextCore } from "@/components/TextCore/TextCore";
 import { mustBetween } from "@/utils/common";
 import React from "react";
@@ -22,15 +23,9 @@ const PricingFields = () => {
         number
         formatter
       />
+
       <BaseField
-        name="costPrice"
-        component={TextCore}
-        label="قیمت تمام شده (برای محاسبه سود)"
-        number
-        formatter
-      />
-      <BaseField
-        name="stockQuantity"
+        name="stock"
         component={TextCore}
         label="موجودی انبار"
         required
@@ -40,29 +35,17 @@ const PricingFields = () => {
       />
 
       <BaseField
-        name="lowStockThreshold"
-        component={TextCore}
-        label="آستانه هشدار کمبود موجودی"
-        number
-        formatter
-        validate={mustBetween(1, 100, "آستانه هشدار کمبود موجودی")}
-      />
-
-      <BaseField
         name="sku"
         component={TextCore}
         label="کد کالا (منحصربفرد)"
         required
       />
-      <BaseField name="barcode" component={TextCore} label="بارکد محصول" />
 
       <BaseField
-        name="taxRate"
-        component={TextCore}
-        label="درصد مالیات بر ارزش افزوده"
-        number
-        formatter
-        validate={mustBetween(0, 100, "درصد مالیات بر ارزش افزوده")}
+        component={SwitchComponent}
+        name="isPublished"
+        text="وضعیت انتشار"
+        defaultValue={true}
       />
     </div>
   );

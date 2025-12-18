@@ -6,8 +6,9 @@ function Input({
   className,
   type,
   maxLength = 20,
+  formatter,
   ...props
-}: React.ComponentProps<"input">) {
+}: React.ComponentProps<"input"> & { formatter?: boolean }) {
   return (
     <input
       type={type}

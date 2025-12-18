@@ -11,7 +11,7 @@ interface Props
     "onChange" | "name" | "value"
   > {
   name: string;
-  value?: string;
+  value?: string[];
   onChange?: (value: string) => void;
 }
 
@@ -21,15 +21,15 @@ const TagInput = ({
   className,
   name,
   onChange,
-  value = "",
+  value = [],
   ...rest
 }: Props) => {
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(value);
   const [inputValue, setInputValue] = useState<string>("");
   const { setValue } = useFormContext();
 
   const addTag = () => {
-    const tag = value.trim();
+    const tag = inputValue.trim();
     if (!tag || tags.includes(tag)) return;
 
     const nextTags = [...tags, tag];

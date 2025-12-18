@@ -79,7 +79,7 @@ function Table({
       }
     }
 
-    if (column.hasDateFormatter && value) {
+    if (column?.hasDateFormatter && value) {
       try {
         return new Date(value).toLocaleDateString("fa");
       } catch {

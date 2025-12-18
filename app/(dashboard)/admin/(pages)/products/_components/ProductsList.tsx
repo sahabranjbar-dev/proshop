@@ -20,7 +20,8 @@ const ProductsList = () => {
       {
         field: "price",
         title: "قیمت محصول",
-        render: (value: number) => value.toLocaleString("fa"),
+        render: (value: string) =>
+          isNaN(Number(value)) ? "خطا" : Number(value).toLocaleString("fa"),
       },
       {
         field: "createdAt",

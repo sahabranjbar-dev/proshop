@@ -79,7 +79,7 @@ const FileUpload = ({
     <div
       onClick={openPicker}
       className={clsx(
-        "border-2 border-dashed rounded-xl p-4 cursor-pointer transition relative min-h-[130px]",
+        "border-2 border-dashed rounded-xl p-4 cursor-pointer transition relative min-h-[130px] w-full",
         files.length
           ? "border-green-500 bg-green-50"
           : "border-gray-300 bg-gray-50 hover:bg-gray-100"
@@ -96,16 +96,15 @@ const FileUpload = ({
       />
 
       {/* Empty State */}
-      {!files.length && (
-        <div className="flex flex-col items-center gap-2 text-gray-600">
-          <Upload size={28} />
-          <p className="text-sm">
-            {multiple
-              ? "برای آپلود تصاویر کلیک کنید"
-              : "برای آپلود تصویر کلیک کنید"}
-          </p>
-        </div>
-      )}
+
+      <div className="flex flex-col items-center gap-2 text-gray-600">
+        <Upload size={28} />
+        <p className="text-sm">
+          {multiple
+            ? "برای آپلود تصاویر کلیک کنید"
+            : "برای آپلود تصویر کلیک کنید"}
+        </p>
+      </div>
 
       {/* Preview List */}
       {!!files.length && (
@@ -131,18 +130,18 @@ const FileUpload = ({
                   <X size={14} />
                 </button>
 
-                {previewUrl && (
-                  <Image
-                    src={previewUrl}
-                    alt="preview"
-                    width={120}
-                    height={120}
-                    className="rounded-md object-cover w-full h-24"
-                  />
-                )}
+                <Image
+                  src={previewUrl ?? item?.url ?? "/images/placeholder.png"}
+                  alt="preview"
+                  width={120}
+                  height={120}
+                  className="rounded-md object-cover w-full h-24"
+                />
 
-                <div className="mt-1 text-xs truncate">{item.file?.name}</div>
-                {item.file && (
+                <div className="mt-1 text-xs truncate">
+                  {item?.file?.name ?? item.key?.split("products/")[1]}
+                </div>
+                {item.file?.size && (
                   <div className="text-[10px] text-gray-400">
                     {formatFileSize(item.file.size)}
                   </div>

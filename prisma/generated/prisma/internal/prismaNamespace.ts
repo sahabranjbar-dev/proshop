@@ -406,7 +406,8 @@ export const ModelName = {
   SparkPlugSpecification: 'SparkPlugSpecification',
   VehicleSearchHistory: 'VehicleSearchHistory',
   OEMNumber: 'OEMNumber',
-  CrossReference: 'CrossReference'
+  CrossReference: 'CrossReference',
+  ProductDraft: 'ProductDraft'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "address" | "product" | "brand" | "category" | "review" | "order" | "sendingMethod" | "orderItem" | "payment" | "cart" | "cartItem" | "otpCode" | "file" | "coupon" | "saleCampaign" | "carModel" | "carBrand" | "vehicleSparkPlugCompatibility" | "sparkPlugSpecification" | "vehicleSearchHistory" | "oEMNumber" | "crossReference"
+    modelProps: "user" | "address" | "product" | "brand" | "category" | "review" | "order" | "sendingMethod" | "orderItem" | "payment" | "cart" | "cartItem" | "otpCode" | "file" | "coupon" | "saleCampaign" | "carModel" | "carBrand" | "vehicleSparkPlugCompatibility" | "sparkPlugSpecification" | "vehicleSearchHistory" | "oEMNumber" | "crossReference" | "productDraft"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2128,6 +2129,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProductDraft: {
+      payload: Prisma.$ProductDraftPayload<ExtArgs>
+      fields: Prisma.ProductDraftFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductDraftFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductDraftFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductDraftFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductDraftFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>
+        }
+        findMany: {
+          args: Prisma.ProductDraftFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>[]
+        }
+        create: {
+          args: Prisma.ProductDraftCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>
+        }
+        createMany: {
+          args: Prisma.ProductDraftCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductDraftCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductDraftDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>
+        }
+        update: {
+          args: Prisma.ProductDraftUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductDraftDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductDraftUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductDraftUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductDraftUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductDraftPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductDraftAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductDraft>
+        }
+        groupBy: {
+          args: Prisma.ProductDraftGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductDraftGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductDraftCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductDraftCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2511,6 +2586,22 @@ export const CrossReferenceScalarFieldEnum = {
 export type CrossReferenceScalarFieldEnum = (typeof CrossReferenceScalarFieldEnum)[keyof typeof CrossReferenceScalarFieldEnum]
 
 
+export const ProductDraftScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  step: 'step',
+  data: 'data',
+  status: 'status',
+  saveType: 'saveType',
+  version: 'version',
+  productId: 'productId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductDraftScalarFieldEnum = (typeof ProductDraftScalarFieldEnum)[keyof typeof ProductDraftScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2525,6 +2616,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -2720,6 +2818,34 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'DraftStatus'
+ */
+export type EnumDraftStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DraftStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DraftStatus[]'
+ */
+export type ListEnumDraftStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DraftStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DraftSaveType'
+ */
+export type EnumDraftSaveTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DraftSaveType'>
+    
+
+
+/**
+ * Reference to a field of type 'DraftSaveType[]'
+ */
+export type ListEnumDraftSaveTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DraftSaveType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -2850,6 +2976,7 @@ export type GlobalOmitConfig = {
   vehicleSearchHistory?: Prisma.VehicleSearchHistoryOmit
   oEMNumber?: Prisma.OEMNumberOmit
   crossReference?: Prisma.CrossReferenceOmit
+  productDraft?: Prisma.ProductDraftOmit
 }
 
 /* Types for Logging */

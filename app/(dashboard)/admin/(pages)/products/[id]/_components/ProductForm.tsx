@@ -1,26 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import Form from "@/components/Form/Form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
+import api from "@/lib/axios";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { ArrowBigLeft, ArrowBigRight, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import ClassificationFields from "./ClassificationFields";
 import MainFields from "./MainFields";
 import PricingFields from "./PricingFields";
-import ClassificationFields from "./ClassificationFields";
+import ProductFiles from "./ProductFiles";
 import TechnicalSpecifications from "./TechnicalSpecifications";
 import VehicleCompatibility from "./VehicleCompatibility";
 
 interface ProductFormProps {
   id?: string;
   initialData?: Record<string, any>;
+  step?: number;
 }
 
 type FormStep = {
@@ -29,59 +35,141 @@ type FormStep = {
   description: string;
   component: React.ReactNode;
 };
+const formSteps: FormStep[] = [
+  {
+    id: 1,
+    title: "اطلاعات اصلی محصول",
+    description: "لطفا اطلاعات پایه و مشخصات کلیدی محصول را وارد نمایید.",
+    component: <MainFields />,
+  },
+  {
+    id: 2,
+    title: "آپلود تصاویر",
+    description: "",
+    component: <ProductFiles />,
+  },
+  {
+    id: 3,
+    title: "قیمت‌گذاری و موجودی",
+    description: "تعیین قیمت، تخفیف‌ها و تنظیمات مرتبط با موجودی انبار.",
+    component: <PricingFields />,
+  },
+  {
+    id: 4,
+    title: "طبقه‌بندی محصول",
+    description:
+      "انتخاب دسته‌بندی‌ها، برچسب‌ها و ویژگی‌های محصول برای سازماندهی بهتر.",
+    component: <ClassificationFields />,
+  },
+  {
+    id: 5,
+    title: "مشخصات فنی",
+    description: "",
+    component: <TechnicalSpecifications />,
+  },
+  {
+    id: 6,
+    title: "سازگاری خودرو",
+    description: "",
+    component: <VehicleCompatibility />,
+  },
+];
 
-const ProductForm = ({ id, initialData }: ProductFormProps) => {
-  const [currentStep, setCurrentStep] = useState<number>(0);
+const ProductForm = ({
+  id,
+  initialData,
+  step: draftStep = 1,
+}: ProductFormProps) => {
+  const { push, replace } = useRouter();
+  const searchParams = useSearchParams();
+  const currentStep = searchParams.get("step")
+    ? Number(searchParams.get("step"))
+    : 1;
 
-  const formSteps: FormStep[] = [
-    {
-      id: 1,
-      title: "اطلاعات اصلی محصول",
-      description: "لطفا اطلاعات پایه و مشخصات کلیدی محصول را وارد نمایید.",
-      component: <MainFields />,
-    },
-    {
-      id: 2,
-      title: "قیمت‌گذاری و موجودی",
-      description: "تعیین قیمت، تخفیف‌ها و تنظیمات مرتبط با موجودی انبار.",
-      component: <PricingFields />,
-    },
-    {
-      id: 3,
-      title: "طبقه‌بندی محصول",
-      description:
-        "انتخاب دسته‌بندی‌ها، برچسب‌ها و ویژگی‌های محصول برای سازماندهی بهتر.",
-      component: <ClassificationFields />,
-    },
-    {
-      id: 4,
-      title: "مشخصات فنی",
-      description: "",
-      component: <TechnicalSpecifications />,
-    },
-    {
-      id: 5,
-      title: "سازگاری خودرو",
-      description: "",
-      component: <VehicleCompatibility />,
-    },
-  ];
+  // const [currentStep, setCurrentStep] = useState<number>(initialStep);
 
-  const isLastStep = currentStep === formSteps.length - 1;
-  const currentStepConfig = formSteps[currentStep];
+  const isLastStep = currentStep === formSteps.length;
+  const currentStepConfig = formSteps[currentStep - 1];
 
-  const handleFormSubmit = (formData: Record<string, any>) => {
+  const { mutateAsync: setDraft, isPending: draftLoading } = useMutation({
+    mutationFn: async (data: Record<string, any>) => {
+      const res = await api.put("/admin/products/draft", data);
+
+      return res.data;
+    },
+    onError: (error: AxiosError<any>) => {
+      error.response?.data.errors.forEach((error: any) => {
+        if (error.message) {
+          toast.error(error.message);
+        } else {
+          toast.error(error);
+        }
+      });
+    },
+  });
+
+  const { mutateAsync } = useMutation({
+    mutationFn: async (data: Record<string, any>) => {
+      const res = await api({
+        url: "/admin/products",
+        method: id ? "PUT" : "POST",
+        data,
+      });
+
+      return res.data;
+    },
+  });
+
+  const createDraft = async (formData: Record<string, any>) => {
+    if (id) return;
+    await setDraft({
+      data: JSON.stringify(formData),
+      step: draftStep >= formSteps.length ? draftStep : draftStep + 1,
+    }).then(async (data) => {
+      if (data?.success) {
+        if (!isLastStep) {
+          push(`?step=${currentStep + 1}`);
+
+          return;
+        }
+      }
+    });
+  };
+
+  const handleFormSubmit = async (formData: Record<string, any>) => {
+    await createDraft(formData);
+
     if (!isLastStep) {
-      setCurrentStep((prev) => prev + 1);
-    } else {
-      // ارسال نهایی داده‌های فرم
-      console.log("فرم نهایی:", formData);
-      // TODO: ارسال به API یا پردازش نهایی
+      push(`?step=${currentStep + 1}`);
+      return;
     }
+    await mutateAsync({
+      ...formData,
+      price: +formData?.price,
+      comparePrice: +formData?.comparePrice,
+      tags: Array.isArray(formData?.tags) ? formData?.tags : [],
+      files: Array.isArray(formData?.files)
+        ? formData?.files?.map((item: { fileId: string }) => item.fileId)
+        : [],
+    })
+      .then((data) => {
+        if (!data?.success) return;
+
+        toast.success(data?.message);
+
+        replace(`/admin/products/${data?.product?.id}?step=${currentStep}`);
+      })
+      .catch((error: AxiosError<{ errors: { message: string }[] }>) => {
+        const errorData = error.response?.data;
+
+        errorData?.errors.forEach((err) => {
+          toast.error(err.message);
+        });
+      });
   };
 
   const handlePreviousStep = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    push(`?step=${currentStep - 1}`);
   };
 
   return (
@@ -93,7 +181,7 @@ const ProductForm = ({ id, initialData }: ProductFormProps) => {
               {currentStepConfig.title}
             </CardTitle>
             <div className="text-sm font-medium text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
-              مرحله {currentStep + 1} از {formSteps.length}
+              مرحله {currentStep} از {formSteps.length}
             </div>
           </div>
           <CardDescription className="text-base leading-relaxed">
@@ -106,27 +194,38 @@ const ProductForm = ({ id, initialData }: ProductFormProps) => {
         </CardContent>
 
         <CardFooter className="border-t pt-6 flex justify-between items-center">
-          <div className="flex-1">
+          <div className="flex-1 flex justify-start items-center gap-2">
             {currentStep > 0 && (
               <Button
                 type="button"
                 variant="outline"
                 onClick={handlePreviousStep}
-                className="gap-2 font-semibold hover:bg-secondary/80 transition-all"
+                rightIcon={<ArrowBigRight />}
+                className="hover:bg-secondary/80 transition-all"
               >
-                <ArrowBigRight className="h-5 w-5" />
                 بازگشت
               </Button>
             )}
+
+            <Button
+              onClick={() => {
+                push("/admin/products");
+              }}
+              variant={"destructive"}
+              type="button"
+              rightIcon={<X />}
+            >
+              انصراف
+            </Button>
           </div>
 
           <Button
             type="submit"
             size="lg"
-            className="px-8 font-bold min-w-[120px] transition-all hover:scale-[1.02]"
-            leftIcon={isLastStep ? null : <ArrowBigLeft className="h-5 w-5" />}
+            leftIcon={isLastStep ? null : <ArrowBigLeft />}
+            loading={draftLoading}
           >
-            {isLastStep ? "تکمیل و ثبت محصول" : "ادامه"}
+            {isLastStep ? `تکمیل و ${id ? "ویرایش" : "ثبت"} محصول` : "ادامه"}
           </Button>
         </CardFooter>
       </Card>

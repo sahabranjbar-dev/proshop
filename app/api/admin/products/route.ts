@@ -1,8 +1,9 @@
-import { isRequestByAdmin, ServerError } from "@/utils/errors";
+import { isRequestByAdmin, requireAuth, ServerError } from "@/utils/errors";
 import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import z from "zod";
+import z, { string } from "zod";
 import { getSlug } from "./utils";
+import { SparkPlugType } from "@/constants/spark-plug";
 
 export async function GET(request: NextRequest) {
   try {
@@ -90,10 +91,10 @@ const productSchema = z.object({
     })
     .min(3, "نام محصول حداقل باید ۳ کاراکتر باشد"),
 
-  slug: z.string().optional(),
-  brandId: z.string({
-    error: "آیدی برند اجباری می‌باشد",
+  slug: z.string({
+    error: "اسلاگ الزامی است",
   }),
+
   description: z
     .string()
     .max(500, "توضیحات کوتاه حداکثر ۵۰۰ کاراکتر است")
@@ -107,7 +108,7 @@ const productSchema = z.object({
     })
     .positive("قیمت باید بزرگتر از صفر باشد"),
 
-  comparePrice: z.number().optional().nullable(), // قیمت خط خورده
+  comparePrice: z.number().optional().nullable(),
 
   stock: z.number().int().min(0, "موجودی نمی‌تواند منفی باشد").default(0),
 
@@ -115,9 +116,45 @@ const productSchema = z.object({
 
   isPublished: z.boolean().default(true),
 
-  // روابط (IDs)
-  categoryIds: z.array(z.string()).optional(), // آرایه‌ای از ID دسته‌بندی‌ها
-  fileIds: z.array(z.string()).optional(), // آرایه‌ای از ID فایل‌های آپلود شده
+  sparkPlugType: z.enum(SparkPlugType),
+
+  isOEM: z.boolean().default(true),
+
+  oemNumber: z.string().nullable().optional(),
+
+  brandId: z.string({
+    error: "آیدی برند اجباری می‌باشد",
+  }),
+
+  tags: z.array(z.string()),
+
+  isOriginal: z.boolean().optional(),
+
+  isBestSeller: z.boolean().optional(),
+
+  isFeatured: z.boolean().optional(),
+
+  categoryIds: z.array(z.string()).optional(),
+
+  files: z.array(z.string()).optional(),
+
+  electrodeGap: z.number().nullable().optional(),
+
+  heatRange: z.string().nullable().optional(),
+
+  hexSize: z.string().nullable().optional(),
+
+  threadDiameter: z.string().nullable().optional(),
+
+  threadLength: z.string().nullable().optional(),
+
+  centerElectrodeMaterial: z.string().nullable().optional(),
+
+  carModelIds: z.array(
+    z.string({
+      error: "مدل خودرو الزامی است",
+    })
+  ),
 });
 
 export async function POST(request: NextRequest) {
@@ -127,6 +164,8 @@ export async function POST(request: NextRequest) {
     if (!isAdmin) {
       return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 403 });
     }
+
+    const { session } = await requireAuth();
 
     const body = await request.json();
 
@@ -147,20 +186,39 @@ export async function POST(request: NextRequest) {
       price,
       slug: inputSlug,
       categoryIds = [],
-      fileIds = [],
+      files = [],
       brandId,
-      ...rest
+      isOEM,
+      isPublished,
+      sparkPlugType,
+      stock,
+      tags,
+      comparePrice,
+      content,
+      description,
+      isBestSeller,
+      isFeatured,
+      isOriginal,
+      oemNumber,
+      sku,
+      electrodeGap,
+      heatRange,
+      hexSize,
+      threadDiameter,
+      threadLength,
+      centerElectrodeMaterial,
+      carModelIds,
     } = parsed.data;
 
     // 3️⃣ ساخت slug
     const slug = inputSlug || getSlug(title);
 
     // 4️⃣ بررسی تکراری بودن slug
-    const exists = await prisma.product.findUnique({
+    const existsSlug = await prisma.product.findUnique({
       where: { slug },
     });
 
-    if (exists) {
+    if (existsSlug) {
       return NextResponse.json(
         {
           errors: [
@@ -173,36 +231,86 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
+    const existsSku = await prisma.product.findUnique({
+      where: { sku },
+    });
+
+    if (existsSku) {
+      return NextResponse.json(
+        {
+          errors: [
+            {
+              path: "slug",
+              message: "این کد کالا قبلاً استفاده شده است",
+            },
+          ],
+        },
+        { status: 409 }
+      );
+    }
 
     // 5️⃣ ساخت محصول (Transaction برای امنیت)
-    const product = await prisma.$transaction(async (tx) => {
-      return tx.product.create({
-        data: {
-          title,
-          price,
-          slug,
-          ...rest,
-
-          brand: {
-            connect: { id: brandId },
-          },
-
-          // many-to-many categories
-          categories: {
-            connect: categoryIds.map((id) => ({ id })),
-          },
-
-          // one-to-many files (چند تصویر)
-          files: {
-            connect: fileIds.map((id) => ({ id })),
+    const product = await prisma.product.create({
+      data: {
+        price,
+        slug,
+        title,
+        files: {
+          connect: files.map((id) => ({ id })),
+        },
+        brandId,
+        comparePrice,
+        categories: {
+          connect: categoryIds.map((id) => ({ id })),
+        },
+        content,
+        description,
+        isBestSeller,
+        isFeatured,
+        isOEM,
+        isOriginal,
+        isPublished,
+        oemNumber,
+        sku,
+        stock,
+        tags,
+        sparkPlugType,
+        specifications: {
+          create: {
+            electrodeGap,
+            electrodeMaterial: centerElectrodeMaterial,
+            heatRange,
+            hexSize,
+            threadDiameter,
+            threadLength,
           },
         },
-        include: {
-          files: true,
-          categories: true,
-          brand: true,
+        vehicleCompatibility: {
+          create: carModelIds.map((carModelId) => ({
+            carModelId,
+          })),
         },
-      });
+      },
+    });
+
+    const userDraftProduct = await prisma.productDraft.findFirst({
+      where: {
+        userId: session?.user?.userId,
+      },
+    });
+
+    await prisma.productDraft.update({
+      data: {
+        status: "SUBMITTED",
+        product: {
+          connect: {
+            id: product.id,
+          },
+        },
+      },
+      where: {
+        id: userDraftProduct?.id,
+      },
     });
 
     // 6️⃣ پاسخ موفق
@@ -220,40 +328,126 @@ export async function POST(request: NextRequest) {
   }
 }
 
-const productUpdateSchema = z.object({
-  id: z.string({
-    error: "آیدی اجباری می‌باشد",
-  }),
-});
 export async function PUT(request: NextRequest) {
   try {
     const isAdmin = await isRequestByAdmin();
-
     if (!isAdmin) {
       return NextResponse.json({ error: "Not allowed" }, { status: 403 });
     }
 
-    const body = await request.json();
+    const { id, ...body } = await request.json();
 
-    const parsedBody = productUpdateSchema.safeParse(body);
-
-    if (!parsedBody.success) {
+    if (!id) {
       return NextResponse.json(
-        { error: parsedBody.error.message },
+        { error: "شناسه محصول الزامی است" },
         { status: 400 }
       );
     }
 
-    const { id } = parsedBody.data;
+    const parsedBody = productSchema.safeParse(body);
+    if (!parsedBody.success) {
+      const errors = parsedBody.error.issues.map((issue) => ({
+        path: issue.path.join("."),
+        message: issue.message,
+      }));
+      return NextResponse.json({ errors }, { status: 400 });
+    }
+
+    const {
+      title,
+      price,
+      slug,
+      categoryIds = [],
+      files = [],
+      brandId,
+      isOEM,
+      isPublished,
+      sparkPlugType,
+      stock,
+      tags,
+      comparePrice,
+      content,
+      description,
+      isBestSeller,
+      isFeatured,
+      isOriginal,
+      oemNumber,
+      sku,
+      electrodeGap,
+      heatRange,
+      hexSize,
+      threadDiameter,
+      threadLength,
+      centerElectrodeMaterial,
+      carModelIds,
+    } = parsedBody.data;
+
     const product = await prisma.product.update({
-      data: {},
-      where: {
-        id,
+      where: { id },
+      data: {
+        title,
+        price,
+        slug,
+        brandId,
+        comparePrice,
+        content,
+        description,
+        isBestSeller,
+        isFeatured,
+        isOEM,
+        isOriginal,
+        isPublished,
+        oemNumber,
+        sku,
+        stock,
+        tags,
+        sparkPlugType,
+
+        // روابط چندبه‌چند (جایگزینی کامل)
+        files: {
+          set: files.map((id) => ({ id })),
+        },
+        categories: {
+          set: categoryIds.map((id) => ({ id })),
+        },
+
+        // one-to-one → upsert
+        specifications: {
+          upsert: {
+            create: {
+              electrodeGap,
+              electrodeMaterial: centerElectrodeMaterial,
+              heatRange,
+              hexSize,
+              threadDiameter,
+              threadLength,
+            },
+            update: {
+              electrodeGap,
+              electrodeMaterial: centerElectrodeMaterial,
+              heatRange,
+              hexSize,
+              threadDiameter,
+              threadLength,
+            },
+          },
+        },
+
+        vehicleCompatibility: {
+          deleteMany: {}, // حذف همه قبلی‌ها
+          create: carModelIds.map((carModelId) => ({
+            carModelId,
+          })),
+        },
       },
     });
 
     return NextResponse.json(
-      { success: true, product, message: "محصول با موفقیت ویرایش شد" },
+      {
+        success: true,
+        product,
+        message: "محصول با موفقیت ویرایش شد",
+      },
       { status: 200 }
     );
   } catch (error) {

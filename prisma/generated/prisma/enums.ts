@@ -9,6 +9,23 @@
 * 🟢 You can import this file directly.
 */
 
+export const DraftStatus = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type DraftStatus = (typeof DraftStatus)[keyof typeof DraftStatus]
+
+
+export const DraftSaveType = {
+  AUTO: 'AUTO',
+  MANUAL: 'MANUAL'
+} as const
+
+export type DraftSaveType = (typeof DraftSaveType)[keyof typeof DraftSaveType]
+
+
 export const Role = {
   ADMIN: 'ADMIN',
   USER: 'USER',

@@ -5,31 +5,6 @@ import { getServerSession } from "next-auth";
 import ProductForm from "./_components/ProductForm";
 import { notFound } from "next/navigation";
 
-const serializePrismaData = (product: any) => {
-  if (!product) return null;
-
-  const serializedProduct = { ...product };
-
-  // 1. تبدیل قیمت‌ها به رشته (برای حفظ دقت مالی)
-  if (serializedProduct.price) {
-    serializedProduct.price = serializedProduct.price.toString();
-  }
-  if (serializedProduct.comparePrice) {
-    // comparePrice اختیاری (Nullable) است
-    serializedProduct.comparePrice = serializedProduct.comparePrice.toString();
-  }
-
-  // 2. آماده‌سازی روابط Many-to-Many برای فُرم (اختیاری اما مفید)
-  // تبدیل لیست آبجکت‌های دسته‌بندی به آرایه‌ای از IDها
-  if (serializedProduct.categories) {
-    serializedProduct.categoryIds = serializedProduct.categories.map(
-      (cat: { id: string }) => cat.id
-    );
-  }
-
-  return serializedProduct;
-};
-
 const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const session = await getServerSession(authOptions);
 
@@ -41,11 +16,20 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const resolvedParams = await params;
 
   const { id } = resolvedParams;
-
+  const draftData = await prisma.productDraft.findFirst({
+    where: {
+      userId: session.user.userId,
+    },
+  });
   // ۳. حالت ایجاد محصول جدید
   if (id === "new-product") {
     // در حالت ایجاد، فقط لیست کامل دسته‌بندی‌ها را می‌فرستیم
-    return <ProductForm />;
+    return (
+      <ProductForm
+        initialData={draftData?.data as Record<string, any> | undefined}
+        step={draftData?.step}
+      />
+    );
   }
 
   // ۴. حالت ویرایش محصول موجود
@@ -90,7 +74,7 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     return notFound();
   }
 
-  const initialData = serializePrismaData(product);
+  const initialData = product;
   // ۵. پاس دادن داده‌ها به فُرم
   return (
     <ProductForm

@@ -49,7 +49,6 @@ const CarModelForm = ({ initialData, onCancel, onSuccess }: Props<IForm>) => {
     },
   });
   const onSubmit = async (data: IForm) => {
-    console.log({ data });
     await mutateAsync(data);
   };
   return (

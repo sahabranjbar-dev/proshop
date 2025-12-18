@@ -132,3 +132,8 @@ export type OEMNumber = Prisma.OEMNumberModel
  * 
  */
 export type CrossReference = Prisma.CrossReferenceModel
+/**
+ * Model ProductDraft
+ * 
+ */
+export type ProductDraft = Prisma.ProductDraftModel

@@ -355,6 +355,7 @@ export type ProductWhereInput = {
   orderItems?: Prisma.OrderItemListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
   cartItems?: Prisma.CartItemListRelationFilter
+  draft?: Prisma.ProductDraftListRelationFilter
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityListRelationFilter
   specifications?: Prisma.XOR<Prisma.SparkPlugSpecificationNullableScalarRelationFilter, Prisma.SparkPlugSpecificationWhereInput> | null
   oemNumbers?: Prisma.OEMNumberListRelationFilter
@@ -391,6 +392,7 @@ export type ProductOrderByWithRelationInput = {
   orderItems?: Prisma.OrderItemOrderByRelationAggregateInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
   cartItems?: Prisma.CartItemOrderByRelationAggregateInput
+  draft?: Prisma.ProductDraftOrderByRelationAggregateInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityOrderByRelationAggregateInput
   specifications?: Prisma.SparkPlugSpecificationOrderByWithRelationInput
   oemNumbers?: Prisma.OEMNumberOrderByRelationAggregateInput
@@ -430,6 +432,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   orderItems?: Prisma.OrderItemListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
   cartItems?: Prisma.CartItemListRelationFilter
+  draft?: Prisma.ProductDraftListRelationFilter
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityListRelationFilter
   specifications?: Prisma.XOR<Prisma.SparkPlugSpecificationNullableScalarRelationFilter, Prisma.SparkPlugSpecificationWhereInput> | null
   oemNumbers?: Prisma.OEMNumberListRelationFilter
@@ -521,6 +524,7 @@ export type ProductCreateInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -556,6 +560,7 @@ export type ProductUncheckedCreateInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -591,6 +596,7 @@ export type ProductUpdateInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -626,6 +632,7 @@ export type ProductUncheckedUpdateInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -1103,6 +1110,22 @@ export type ProductUpdateOneRequiredWithoutCrossReferencesAsTargetNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutCrossReferencesAsTargetInput, Prisma.ProductUpdateWithoutCrossReferencesAsTargetInput>, Prisma.ProductUncheckedUpdateWithoutCrossReferencesAsTargetInput>
 }
 
+export type ProductCreateNestedOneWithoutDraftInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutDraftInput, Prisma.ProductUncheckedCreateWithoutDraftInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutDraftInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneWithoutDraftNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutDraftInput, Prisma.ProductUncheckedCreateWithoutDraftInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutDraftInput
+  upsert?: Prisma.ProductUpsertWithoutDraftInput
+  disconnect?: Prisma.ProductWhereInput | boolean
+  delete?: Prisma.ProductWhereInput | boolean
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutDraftInput, Prisma.ProductUpdateWithoutDraftInput>, Prisma.ProductUncheckedUpdateWithoutDraftInput>
+}
+
 export type ProductCreateWithoutBrandInput = {
   id?: string
   title: string
@@ -1130,6 +1153,7 @@ export type ProductCreateWithoutBrandInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -1164,6 +1188,7 @@ export type ProductUncheckedCreateWithoutBrandInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -1251,6 +1276,7 @@ export type ProductCreateWithoutCategoriesInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -1285,6 +1311,7 @@ export type ProductUncheckedCreateWithoutCategoriesInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -1340,6 +1367,7 @@ export type ProductCreateWithoutReviewsInput = {
   categories?: Prisma.CategoryCreateNestedManyWithoutProductsInput
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -1374,6 +1402,7 @@ export type ProductUncheckedCreateWithoutReviewsInput = {
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutProductsInput
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -1424,6 +1453,7 @@ export type ProductUpdateWithoutReviewsInput = {
   categories?: Prisma.CategoryUpdateManyWithoutProductsNestedInput
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -1458,6 +1488,7 @@ export type ProductUncheckedUpdateWithoutReviewsInput = {
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutProductsNestedInput
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -1492,6 +1523,7 @@ export type ProductCreateWithoutOrderItemsInput = {
   categories?: Prisma.CategoryCreateNestedManyWithoutProductsInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -1526,6 +1558,7 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutProductsInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -1576,6 +1609,7 @@ export type ProductUpdateWithoutOrderItemsInput = {
   categories?: Prisma.CategoryUpdateManyWithoutProductsNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -1610,6 +1644,7 @@ export type ProductUncheckedUpdateWithoutOrderItemsInput = {
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutProductsNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -1644,6 +1679,7 @@ export type ProductCreateWithoutCartItemsInput = {
   categories?: Prisma.CategoryCreateNestedManyWithoutProductsInput
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -1678,6 +1714,7 @@ export type ProductUncheckedCreateWithoutCartItemsInput = {
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutProductsInput
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -1728,6 +1765,7 @@ export type ProductUpdateWithoutCartItemsInput = {
   categories?: Prisma.CategoryUpdateManyWithoutProductsNestedInput
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -1762,6 +1800,7 @@ export type ProductUncheckedUpdateWithoutCartItemsInput = {
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutProductsNestedInput
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -1796,6 +1835,7 @@ export type ProductCreateWithoutFilesInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -1830,6 +1870,7 @@ export type ProductUncheckedCreateWithoutFilesInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -1880,6 +1921,7 @@ export type ProductUpdateWithoutFilesInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -1914,6 +1956,7 @@ export type ProductUncheckedUpdateWithoutFilesInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -1948,6 +1991,7 @@ export type ProductCreateWithoutCampaignsInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -1982,6 +2026,7 @@ export type ProductUncheckedCreateWithoutCampaignsInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -2038,6 +2083,7 @@ export type ProductCreateWithoutVehicleCompatibilityInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
   crossReferencesAsSource?: Prisma.CrossReferenceCreateNestedManyWithoutSourceProductInput
@@ -2072,6 +2118,7 @@ export type ProductUncheckedCreateWithoutVehicleCompatibilityInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
   crossReferencesAsSource?: Prisma.CrossReferenceUncheckedCreateNestedManyWithoutSourceProductInput
@@ -2122,6 +2169,7 @@ export type ProductUpdateWithoutVehicleCompatibilityInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
   crossReferencesAsSource?: Prisma.CrossReferenceUpdateManyWithoutSourceProductNestedInput
@@ -2156,6 +2204,7 @@ export type ProductUncheckedUpdateWithoutVehicleCompatibilityInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
   crossReferencesAsSource?: Prisma.CrossReferenceUncheckedUpdateManyWithoutSourceProductNestedInput
@@ -2190,6 +2239,7 @@ export type ProductCreateWithoutSpecificationsInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
   crossReferencesAsSource?: Prisma.CrossReferenceCreateNestedManyWithoutSourceProductInput
@@ -2224,6 +2274,7 @@ export type ProductUncheckedCreateWithoutSpecificationsInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
   crossReferencesAsSource?: Prisma.CrossReferenceUncheckedCreateNestedManyWithoutSourceProductInput
@@ -2274,6 +2325,7 @@ export type ProductUpdateWithoutSpecificationsInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
   crossReferencesAsSource?: Prisma.CrossReferenceUpdateManyWithoutSourceProductNestedInput
@@ -2308,6 +2360,7 @@ export type ProductUncheckedUpdateWithoutSpecificationsInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
   crossReferencesAsSource?: Prisma.CrossReferenceUncheckedUpdateManyWithoutSourceProductNestedInput
@@ -2342,6 +2395,7 @@ export type ProductCreateWithoutOemNumbersInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   crossReferencesAsSource?: Prisma.CrossReferenceCreateNestedManyWithoutSourceProductInput
@@ -2376,6 +2430,7 @@ export type ProductUncheckedCreateWithoutOemNumbersInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   crossReferencesAsSource?: Prisma.CrossReferenceUncheckedCreateNestedManyWithoutSourceProductInput
@@ -2426,6 +2481,7 @@ export type ProductUpdateWithoutOemNumbersInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   crossReferencesAsSource?: Prisma.CrossReferenceUpdateManyWithoutSourceProductNestedInput
@@ -2460,6 +2516,7 @@ export type ProductUncheckedUpdateWithoutOemNumbersInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   crossReferencesAsSource?: Prisma.CrossReferenceUncheckedUpdateManyWithoutSourceProductNestedInput
@@ -2494,6 +2551,7 @@ export type ProductCreateWithoutCrossReferencesAsSourceInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -2528,6 +2586,7 @@ export type ProductUncheckedCreateWithoutCrossReferencesAsSourceInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -2567,6 +2626,7 @@ export type ProductCreateWithoutCrossReferencesAsTargetInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
@@ -2601,6 +2661,7 @@ export type ProductUncheckedCreateWithoutCrossReferencesAsTargetInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  draft?: Prisma.ProductDraftUncheckedCreateNestedManyWithoutProductInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
   oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
@@ -2651,6 +2712,7 @@ export type ProductUpdateWithoutCrossReferencesAsSourceInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -2685,6 +2747,7 @@ export type ProductUncheckedUpdateWithoutCrossReferencesAsSourceInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -2730,6 +2793,7 @@ export type ProductUpdateWithoutCrossReferencesAsTargetInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -2764,10 +2828,167 @@ export type ProductUncheckedUpdateWithoutCrossReferencesAsTargetInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
   crossReferencesAsSource?: Prisma.CrossReferenceUncheckedUpdateManyWithoutSourceProductNestedInput
+}
+
+export type ProductCreateWithoutDraftInput = {
+  id?: string
+  title: string
+  slug: string
+  description?: string | null
+  content?: string | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  comparePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  stock?: number
+  sku?: string | null
+  isPublished?: boolean
+  sparkPlugType?: $Enums.SparkPlugType | null
+  isOEM?: boolean | null
+  oemNumber?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  tags?: Prisma.ProductCreatetagsInput | string[]
+  isOriginal?: boolean
+  isBestSeller?: boolean
+  isFeatured?: boolean
+  brand?: Prisma.BrandCreateNestedOneWithoutProductsInput
+  campaigns?: Prisma.SaleCampaignCreateNestedManyWithoutProductsInput
+  files?: Prisma.FileCreateNestedManyWithoutProductInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutProductsInput
+  orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutProductInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutProductInput
+  vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityCreateNestedManyWithoutProductInput
+  specifications?: Prisma.SparkPlugSpecificationCreateNestedOneWithoutProductInput
+  oemNumbers?: Prisma.OEMNumberCreateNestedManyWithoutProductInput
+  crossReferencesAsSource?: Prisma.CrossReferenceCreateNestedManyWithoutSourceProductInput
+  crossReferencesAsTarget?: Prisma.CrossReferenceCreateNestedManyWithoutTargetProductInput
+}
+
+export type ProductUncheckedCreateWithoutDraftInput = {
+  id?: string
+  title: string
+  slug: string
+  description?: string | null
+  content?: string | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  comparePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  stock?: number
+  sku?: string | null
+  isPublished?: boolean
+  sparkPlugType?: $Enums.SparkPlugType | null
+  isOEM?: boolean | null
+  oemNumber?: string | null
+  brandId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  tags?: Prisma.ProductCreatetagsInput | string[]
+  isOriginal?: boolean
+  isBestSeller?: boolean
+  isFeatured?: boolean
+  campaigns?: Prisma.SaleCampaignUncheckedCreateNestedManyWithoutProductsInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutProductInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutProductsInput
+  orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutProductInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutProductInput
+  vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedCreateNestedManyWithoutProductInput
+  specifications?: Prisma.SparkPlugSpecificationUncheckedCreateNestedOneWithoutProductInput
+  oemNumbers?: Prisma.OEMNumberUncheckedCreateNestedManyWithoutProductInput
+  crossReferencesAsSource?: Prisma.CrossReferenceUncheckedCreateNestedManyWithoutSourceProductInput
+  crossReferencesAsTarget?: Prisma.CrossReferenceUncheckedCreateNestedManyWithoutTargetProductInput
+}
+
+export type ProductCreateOrConnectWithoutDraftInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutDraftInput, Prisma.ProductUncheckedCreateWithoutDraftInput>
+}
+
+export type ProductUpsertWithoutDraftInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutDraftInput, Prisma.ProductUncheckedUpdateWithoutDraftInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutDraftInput, Prisma.ProductUncheckedCreateWithoutDraftInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutDraftInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutDraftInput, Prisma.ProductUncheckedUpdateWithoutDraftInput>
+}
+
+export type ProductUpdateWithoutDraftInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  comparePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sparkPlugType?: Prisma.NullableEnumSparkPlugTypeFieldUpdateOperationsInput | $Enums.SparkPlugType | null
+  isOEM?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  oemNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tags?: Prisma.ProductUpdatetagsInput | string[]
+  isOriginal?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isBestSeller?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brand?: Prisma.BrandUpdateOneWithoutProductsNestedInput
+  campaigns?: Prisma.SaleCampaignUpdateManyWithoutProductsNestedInput
+  files?: Prisma.FileUpdateManyWithoutProductNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutProductsNestedInput
+  orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
+  specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
+  oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
+  crossReferencesAsSource?: Prisma.CrossReferenceUpdateManyWithoutSourceProductNestedInput
+  crossReferencesAsTarget?: Prisma.CrossReferenceUpdateManyWithoutTargetProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutDraftInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  comparePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sparkPlugType?: Prisma.NullableEnumSparkPlugTypeFieldUpdateOperationsInput | $Enums.SparkPlugType | null
+  isOEM?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  oemNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tags?: Prisma.ProductUpdatetagsInput | string[]
+  isOriginal?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isBestSeller?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  campaigns?: Prisma.SaleCampaignUncheckedUpdateManyWithoutProductsNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutProductNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutProductsNestedInput
+  orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
+  specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
+  oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
+  crossReferencesAsSource?: Prisma.CrossReferenceUncheckedUpdateManyWithoutSourceProductNestedInput
+  crossReferencesAsTarget?: Prisma.CrossReferenceUncheckedUpdateManyWithoutTargetProductNestedInput
 }
 
 export type ProductCreateManyBrandInput = {
@@ -2820,6 +3041,7 @@ export type ProductUpdateWithoutBrandInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -2854,6 +3076,7 @@ export type ProductUncheckedUpdateWithoutBrandInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -2911,6 +3134,7 @@ export type ProductUpdateWithoutCategoriesInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -2945,6 +3169,7 @@ export type ProductUncheckedUpdateWithoutCategoriesInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -3003,6 +3228,7 @@ export type ProductUpdateWithoutCampaignsInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUpdateManyWithoutProductNestedInput
@@ -3037,6 +3263,7 @@ export type ProductUncheckedUpdateWithoutCampaignsInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutProductNestedInput
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutProductNestedInput
+  draft?: Prisma.ProductDraftUncheckedUpdateManyWithoutProductNestedInput
   vehicleCompatibility?: Prisma.VehicleSparkPlugCompatibilityUncheckedUpdateManyWithoutProductNestedInput
   specifications?: Prisma.SparkPlugSpecificationUncheckedUpdateOneWithoutProductNestedInput
   oemNumbers?: Prisma.OEMNumberUncheckedUpdateManyWithoutProductNestedInput
@@ -3080,6 +3307,7 @@ export type ProductCountOutputType = {
   orderItems: number
   reviews: number
   cartItems: number
+  draft: number
   vehicleCompatibility: number
   oemNumbers: number
   crossReferencesAsSource: number
@@ -3093,6 +3321,7 @@ export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   orderItems?: boolean | ProductCountOutputTypeCountOrderItemsArgs
   reviews?: boolean | ProductCountOutputTypeCountReviewsArgs
   cartItems?: boolean | ProductCountOutputTypeCountCartItemsArgs
+  draft?: boolean | ProductCountOutputTypeCountDraftArgs
   vehicleCompatibility?: boolean | ProductCountOutputTypeCountVehicleCompatibilityArgs
   oemNumbers?: boolean | ProductCountOutputTypeCountOemNumbersArgs
   crossReferencesAsSource?: boolean | ProductCountOutputTypeCountCrossReferencesAsSourceArgs
@@ -3154,6 +3383,13 @@ export type ProductCountOutputTypeCountCartItemsArgs<ExtArgs extends runtime.Typ
 /**
  * ProductCountOutputType without action
  */
+export type ProductCountOutputTypeCountDraftArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductDraftWhereInput
+}
+
+/**
+ * ProductCountOutputType without action
+ */
 export type ProductCountOutputTypeCountVehicleCompatibilityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.VehicleSparkPlugCompatibilityWhereInput
 }
@@ -3209,6 +3445,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   orderItems?: boolean | Prisma.Product$orderItemsArgs<ExtArgs>
   reviews?: boolean | Prisma.Product$reviewsArgs<ExtArgs>
   cartItems?: boolean | Prisma.Product$cartItemsArgs<ExtArgs>
+  draft?: boolean | Prisma.Product$draftArgs<ExtArgs>
   vehicleCompatibility?: boolean | Prisma.Product$vehicleCompatibilityArgs<ExtArgs>
   specifications?: boolean | Prisma.Product$specificationsArgs<ExtArgs>
   oemNumbers?: boolean | Prisma.Product$oemNumbersArgs<ExtArgs>
@@ -3300,6 +3537,7 @@ export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   orderItems?: boolean | Prisma.Product$orderItemsArgs<ExtArgs>
   reviews?: boolean | Prisma.Product$reviewsArgs<ExtArgs>
   cartItems?: boolean | Prisma.Product$cartItemsArgs<ExtArgs>
+  draft?: boolean | Prisma.Product$draftArgs<ExtArgs>
   vehicleCompatibility?: boolean | Prisma.Product$vehicleCompatibilityArgs<ExtArgs>
   specifications?: boolean | Prisma.Product$specificationsArgs<ExtArgs>
   oemNumbers?: boolean | Prisma.Product$oemNumbersArgs<ExtArgs>
@@ -3324,6 +3562,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     orderItems: Prisma.$OrderItemPayload<ExtArgs>[]
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
     cartItems: Prisma.$CartItemPayload<ExtArgs>[]
+    draft: Prisma.$ProductDraftPayload<ExtArgs>[]
     vehicleCompatibility: Prisma.$VehicleSparkPlugCompatibilityPayload<ExtArgs>[]
     specifications: Prisma.$SparkPlugSpecificationPayload<ExtArgs> | null
     oemNumbers: Prisma.$OEMNumberPayload<ExtArgs>[]
@@ -3753,6 +3992,7 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
   orderItems<T extends Prisma.Product$orderItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$orderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.Product$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cartItems<T extends Prisma.Product$cartItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$cartItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  draft<T extends Prisma.Product$draftArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$draftArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   vehicleCompatibility<T extends Prisma.Product$vehicleCompatibilityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$vehicleCompatibilityArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehicleSparkPlugCompatibilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   specifications<T extends Prisma.Product$specificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$specificationsArgs<ExtArgs>>): Prisma.Prisma__SparkPlugSpecificationClient<runtime.Types.Result.GetResult<Prisma.$SparkPlugSpecificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   oemNumbers<T extends Prisma.Product$oemNumbersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$oemNumbersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OEMNumberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4364,6 +4604,30 @@ export type Product$cartItemsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.CartItemScalarFieldEnum | Prisma.CartItemScalarFieldEnum[]
+}
+
+/**
+ * Product.draft
+ */
+export type Product$draftArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductDraft
+   */
+  select?: Prisma.ProductDraftSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductDraft
+   */
+  omit?: Prisma.ProductDraftOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductDraftInclude<ExtArgs> | null
+  where?: Prisma.ProductDraftWhereInput
+  orderBy?: Prisma.ProductDraftOrderByWithRelationInput | Prisma.ProductDraftOrderByWithRelationInput[]
+  cursor?: Prisma.ProductDraftWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductDraftScalarFieldEnum | Prisma.ProductDraftScalarFieldEnum[]
 }
 
 /**

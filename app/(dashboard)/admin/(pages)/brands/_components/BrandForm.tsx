@@ -121,6 +121,7 @@ const BrandForm = ({ id, onSuccess, onCancel, initialData }: IBrandForm) => {
               component={SwitchContainer}
               name="isActive"
               switchClassName="w-full"
+              defaultValue={true}
             />
 
             <div className="col-start-2 mt-4">

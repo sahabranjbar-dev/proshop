@@ -21,6 +21,9 @@ interface Props<T = any> {
   onChange?: (value: string[]) => void;
   label: string;
   name: string;
+  getLabel?: (data: any) => any;
+  getKey?: (data: any) => any;
+  [key: string]: any;
 }
 
 const MultiselectCombobox = ({
@@ -32,6 +35,8 @@ const MultiselectCombobox = ({
   label,
   name,
   onChange,
+  getKey,
+  getLabel,
   ...res
 }: Props<{
   resultList: { farsiTitle: string; englishTitle: string; id: string }[];
@@ -40,6 +45,11 @@ const MultiselectCombobox = ({
   const { invalid } = getFieldState(name);
   const resolvedOptions = options?.length ? options : data?.resultList;
 
+  const getItemKey = (item: any) =>
+    keyField === "id" ? item.id : getKey ? getKey(item) : item.englishTitle;
+
+  const getItemLabel = (item: any) =>
+    getLabel ? getLabel(item) : item.farsiTitle;
   const LoadingCompo: ReactElement = (
     <div>
       <Loader2 className="animate-spin" />
@@ -52,19 +62,16 @@ const MultiselectCombobox = ({
   );
   const DataCompo: ReactElement = (
     <div>
-      {resolvedOptions?.map(({ id, englishTitle, farsiTitle }) => (
-        <MultiSelectItem
-          key={keyField === "id" ? id : englishTitle}
-          value={keyField === "id" ? id : englishTitle}
-        >
-          {farsiTitle}
+      {resolvedOptions?.map((item) => (
+        <MultiSelectItem key={getItemKey(item)} value={getItemKey(item)}>
+          {getItemLabel(item)}
         </MultiSelectItem>
       ))}
     </div>
   );
   const EmptyDataCompo: ReactElement = (
-    <div>
-      <p>داده‌ای وجود ندارد</p>
+    <div className="flex justify-center items-center h-full">
+      <p className="text-gray-500 text-xs">داده‌ای وجود ندارد</p>
     </div>
   );
 
@@ -77,7 +84,7 @@ const MultiselectCombobox = ({
     : EmptyDataCompo;
 
   return (
-    <MultiSelect {...res} onValuesChange={onChange}>
+    <MultiSelect {...res} onValuesChange={onChange} values={res?.value}>
       <MultiSelectTrigger
         name={name}
         className={clsx("w-full", { "border-red-500": invalid })}

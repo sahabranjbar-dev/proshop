@@ -30,6 +30,7 @@ model User {
   addresses Address[] // آدرس‌های کاربر
   reviews   Review[] // نظرات کاربر
   cart      Cart? // سبد خرید کاربر
+  draft     ProductDraft[]
 
   vehicleSearches VehicleSearchHistory[] // تاریخچه جستجوهای خودرو
 
@@ -94,13 +95,13 @@ model Product {
   isFeatured   Boolean  @default(false) // محصول ویژه؟
 
   // روابط
-  campaigns  SaleCampaign[] @relation("CampaignProducts") // کمپین‌های فروش این محصول
-  files      File[]         @relation("ProductFiles") // فایل‌های محصول (عکس‌ها)
-  categories Category[]     @relation("ProductCategories") // دسته‌بندی‌های محصول
-  orderItems OrderItem[] // آیتم‌های سفارش شامل این محصول
-  reviews    Review[] // نظرات محصول
-  cartItems  CartItem[] // آیتم‌های سبد خرید شامل این محصول
-
+  campaigns               SaleCampaign[]                  @relation("CampaignProducts") // کمپین‌های فروش این محصول
+  files                   File[]                          @relation("ProductFiles") // فایل‌های محصول (عکس‌ها)
+  categories              Category[]                      @relation("ProductCategories") // دسته‌بندی‌های محصول
+  orderItems              OrderItem[] // آیتم‌های سفارش شامل این محصول
+  reviews                 Review[] // نظرات محصول
+  cartItems               CartItem[] // آیتم‌های سبد خرید شامل این محصول
+  draft                   ProductDraft[]
   // روابط مخصوص سیستم تطبیق خودرو
   vehicleCompatibility    VehicleSparkPlugCompatibility[] // لیست خودروهای سازگار
   specifications          SparkPlugSpecification? // مشخصات فنی شمع
@@ -476,9 +477,55 @@ model CrossReference {
   @@map("cross_references")
 }
 
+model ProductDraft {
+  id String @id @default(cuid())
+
+  /// مالک draft
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// مرحله فعلی فرم (۱، ۲، ۳، ...)
+  step Int @default(1)
+
+  /// داده خام فرم (هر مرحله)
+  data Json
+
+  /// وضعیت draft
+  status DraftStatus @default(DRAFT)
+
+  /// آیا کاربر عمداً ذخیره کرده یا autosave بوده
+  saveType DraftSaveType @default(AUTO)
+
+  /// نسخه فرم (برای تغییر ساختار در آینده)
+  version Int @default(1)
+
+  /// تبدیل شده به محصول؟
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  /// زمان‌ها
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([updatedAt])
+}
+
 // ==============================================
 // ENUM DEFINITIONS
 // ==============================================
+
+enum DraftStatus {
+  DRAFT // در حال تکمیل
+  SUBMITTED // ارسال شده (در حال تبدیل)
+  EXPIRED // منقضی شده
+}
+
+enum DraftSaveType {
+  AUTO // ذخیره خودکار
+  MANUAL // ذخیره با دکمه
+}
 
 enum Role {
   ADMIN // مدیر سیستم

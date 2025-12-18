@@ -9,6 +9,7 @@ const ComboboxItemDataGetter = ({
   children,
   url,
   queryKey,
+  enabled,
 }: PropsWithChildren<IComboboxItemDataGetter>) => {
   const { data, isFetching, isLoading, error, refetch } = useQuery({
     queryKey,
@@ -16,6 +17,7 @@ const ComboboxItemDataGetter = ({
       const response = await api.get(url);
       return response.data;
     },
+    enabled,
   });
 
   if (!React.isValidElement(children)) {

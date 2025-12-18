@@ -73,7 +73,8 @@ export const ModelName = {
   SparkPlugSpecification: 'SparkPlugSpecification',
   VehicleSearchHistory: 'VehicleSearchHistory',
   OEMNumber: 'OEMNumber',
-  CrossReference: 'CrossReference'
+  CrossReference: 'CrossReference',
+  ProductDraft: 'ProductDraft'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -436,6 +437,22 @@ export const CrossReferenceScalarFieldEnum = {
 export type CrossReferenceScalarFieldEnum = (typeof CrossReferenceScalarFieldEnum)[keyof typeof CrossReferenceScalarFieldEnum]
 
 
+export const ProductDraftScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  step: 'step',
+  data: 'data',
+  status: 'status',
+  saveType: 'saveType',
+  version: 'version',
+  productId: 'productId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductDraftScalarFieldEnum = (typeof ProductDraftScalarFieldEnum)[keyof typeof ProductDraftScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -450,6 +467,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: 'JsonNull'
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
